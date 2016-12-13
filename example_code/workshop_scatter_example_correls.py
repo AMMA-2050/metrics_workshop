@@ -5,12 +5,11 @@
 ######################
 import matplotlib.pyplot as plt
 import scipy.stats as stat
-import numpy as np
 
 def workshop_scatter_example_correls():
     list1 = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10]  # some data
     list2 = [5, 2, 6, 9, 12, 14, 17, 2, 8, 12]  # some other data
-    list3 = np.random.uniform(1,15,10)
+    list3 = [4, 2, 1, 7, 8, 3, 4, 12, 9] # yet some other data
 
     print(len(list1), len(list2), len(list3))  # debug test
 
@@ -21,7 +20,7 @@ def workshop_scatter_example_correls():
 
     plt.figure(figsize=(6, 6))  # set figure environment
     plt.scatter(list1[:], list2[:], c='r', marker='^', s=100, label='correl = ' + str(correl1))  # plot basic scatter
-    plt.scatter(list1[:], list3[:], c='k', marker='*', s=150, label='correl = ' + str(correl2))
+    plt.scatter(list1[:], list3[:], c=k, marker='*', s=150, label='correl = ' + str(correl2))
     plt.xlabel('Metric 1')  # label x and y axes
     plt.ylabel('Metric 2')
     plt.legend(fontsize=10, loc='best')
