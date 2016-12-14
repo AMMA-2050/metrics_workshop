@@ -19,6 +19,9 @@ def workshop_scatter_example():
     plt.ylabel('Do they like cake? ')
     plt.show()  # display
 
+def main():
+    # smthg
+
 if __name__ == "__main__":       # This statement makes sure that the code is only
     workshop_scatter_example()   # executed if it is run from command line (run as main).
                                  # Not when it is imported by another module
