@@ -64,18 +64,25 @@ def main():
     season_names   = ['June', 'July', 'August', 'September', 'October', 'JAS', 'JJ', 'JA', 'AS', 'SO']
     model_names    = ['ACCESS1-0', 'ACCESS1-3', 'bcc-csm1-1', 'bcc-csm1-1-m', 'BNU-ESM', 'CanESM2', 'CMCC-CESM', 'CMCC-CM', 'CMCC-CMS', 'CNRM-CM5', 'CSIRO-Mk3-6-0', 'GFDL-CM3', 'GFDL-ESM2G', 'GFDL-ESM2M', 'HadGEM2-AO', 'HadGEM2-CC', 'HadGEM2-ES', 'inmcm4', 'IPSL-CM5A-LR', 'IPSL-CM5A-MR', 'IPSL-CM5B-LR', 'MIROC-ESM', 'MIROC-ESM-CHEM', 'MIROC5', 'MIROCC5', 'MPI-ESM-LR', 'MPI-ESM-MR', 'MRI-CGCM3', 'MRI-ESM1', 'NorESM1-M']
     
-    for regname in region_names:
-        for seas in season_names:
+    #for regname in region_names:
+    #    for seas in season_names:
             for dtyp in datatypes:
-                for ind in indicator_list:
+                #for ind in indicator_list:
                     for modname in modnames:
-                        
+
                         # Load the data we need
-                        cube = ld.loadDaily(inpath, modname, regname, dtyp)
+                        cube = ld.loadDaily(inpath, modname, 'West_Africa', rcp, dtyp)
+                        
+                        # Call metrics script, which does:
+                        #   - load data
+                        #   - 
+                        if 'CDD' in indicator_list:
+                            call_CDD_code(model_names, seasons_list, regions_list, outdir, figdir, overwrite=overwrite)
+                            doPlotting()
                         
                         # Calculate the current indicator (untested)
-                        methodToCall = getattr(ci, ind) # Looks for the name of the indicator in the list of functions in this module
-                        cube_cdd = methodToCall(incube, opath, modname, regname, dtyp) # Calls the function
+                        #methodToCall = getattr(ci, ind) # Looks for the name of the indicator in the list of functions in this module
+                        #cube_cdd = methodToCall(incube, opath, modname, regname, dtyp) # Calls the function
                         
                         
                         # Plot the individual model
