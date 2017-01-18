@@ -13,7 +13,7 @@ def variable_setter(string):
 	if string =='seas':
 		string = 'jas'
 	if string =='plot_type':
-		string = 'barplot_year'
+		string = 'plot_bar_year'
 	return string
 
 if "__name__" == "__variable_setter__":
