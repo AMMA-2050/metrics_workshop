@@ -111,7 +111,7 @@ overwrite = 'No'
 # update on the user's local drive
 
 list_of_calc_files = glob.glob('calc*.py')
-print list_of_calc_files[:]
+#print list_of_calc_files[:]
 
 # Season dictionary is a slightly redundant dictionary
 # This is because the time slicing is done in each calc_ file.
@@ -170,12 +170,13 @@ boundary_dictionary = {'West_Africa': [-10., 10., 5., 25.],
 # To see how this works, look at the annotations in master.py
 
 list_of_plot_files = glob.glob('plot*.py')
-print list_of_plot_files[:]
+#print list_of_plot_files[:]
 
 bcs_dictionary = {'0.5 deg': '0.5x0.5',
                   'Bias corrected 0.5 deg': 'BC_0.5x0.5',
                   'Bias corrected model resolution': 'BC_mdlgrid',
                   'Model resolution': 'mdlgrid',
+                  'WA subset 0.5deg': 'WA_0.5x0.5'
                   }
 
 variables_dictionary = {'precipitation': 'pr',
@@ -472,14 +473,15 @@ def OnDoublePeriod(event):
 # recommended plot type (or the metric file did not actually set a suitable plot type.
 # You can overwrite the option given in the OnDoubleCalc here
 def OnDoublePlot(event):
-    global plot_dictionary
-    global plotter
-    widget = event.widget
+    global list_of_plot_files  # for this code, the dictionary was actually a list of files (see how we made list_of_calc_files earlier in the script
+    global plotter  # we will want to edit this variable in the whole script, so call the global variable file_name
+    widget = event.widget  # same as before
     selection = widget.curselection()[0]
-    value = widget.get(selection)
-    plotter = plot_dictionary[value]
+    key = widget.get(selection)
+    plotter = key
     print "selection:", selection, ": '%s'" % plotter
-
+    plotter = 'plot_' + str(plotter)
+    print ('Plot type:', plotter)  # and print to make sure it is all good to go
 
 def OnDoubleBC(event):
     global bcs_dictionary
@@ -706,7 +708,7 @@ class mainWindow(
         # Now we make the listbox, but it is empty.
         lbcalc = Listbox(lists, yscrollcommand=scrollbar.set, width=15, height=5, exportselection=False)
         scrollbar.config(command=lbcalc.yview)
-        scrollbar.pack(side=RIGHT, fill=Y)
+        scrollbar.pack(side=LEFT, fill=Y)
         # Let's fill it, with all the calc files in list_of_calc_files 
         # which if we remember is a list of strings
         for item in list_of_calc_files:  # for anything in list_of_calc_files
@@ -770,20 +772,21 @@ class mainWindow(
 
         labelplot = Label(labels, text='Please select \n plot type', width=15, height=2)
         labelplot.pack(side='left')
+
         global list_of_plot_files
         # Same as for calc files here
-        lbcalc = Listbox(lists, yscrollcommand=scrollbar.set, width=15, height=5, exportselection=False)
-        scrollbar.config(command=lbcalc.yview)
-        scrollbar.pack(side=RIGHT, fill=Y)
+        lbplot = Listbox(lists, yscrollcommand=scrollbar.set, width=15, height=5, exportselection=False)
+    #    scrollbar.config(command=lbplot.yview)
+     #   scrollbar.pack(side=, fill=Y)
 
         for item in list_of_plot_files:  # for anything in list_of_plot_files
             string = item.split('plot_')[-1]
             just_name = string.split(".")[0]  # ...so cut that off to!
-            lbcalc.insert(END, just_name)
+            lbplot.insert(END, just_name)
         # bind as normal
-        lbcalc.bind("<Double-Button-1>", OnDoubleCalc)
+        lbplot.bind("<Double-Button-1>", OnDoublePlot)
         # keep it clean
-        lbcalc.pack(side="left", expand=True)
+        lbplot.pack(side="left", expand=True)
 
         OVERvar = Label(labels, text='Overwrite \n existing files?', width=15, height=2)
         OVERvar.pack(side='left')
