@@ -93,10 +93,10 @@ def main(incube,outpath,what_am_i):
 	    high = np.max(range_finder[:])
 
 # First we do the postage stamps
-    plt.figure(figsize = (10,8))
+    plt.figure(figsize = (20,10))
     cntr = 0
     for t in modelnums:
-        plt.subplot(5,3,cntr+1)
+        plt.subplot(5,6,cntr+1)
         slicer = iris.Constraint(model_name = str(t))
         range_finder = incube.extract(slicer)
         range_finder = range_finder.data
@@ -110,12 +110,12 @@ def main(incube,outpath,what_am_i):
 # need to find out how to grab the units of the cube from the cube
     plt.suptitle(str(what_am_i))
     plt.tight_layout()
-    plt.subplots_adjust(top=0.85)
+    plt.subplots_adjust(top=0.91)
     plt.savefig(str(outpath)+'/'+str(what_am_i)+'_postage_stamps.png')
     plt.show()
 
  # multimodel average
-    plt.figure(figsize = (7,7))
+    plt.figure(figsize = (10,5))
 
 
     multimodel = incube.collapsed('model_name', iris.analysis.MEAN)
