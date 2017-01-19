@@ -35,41 +35,10 @@ def get_color(name):
             '24': 'y',
             '25': 'purple',
             '26': 'green'
-            }
-
-    return(sncon[name])
-
-def get_line_style(name):
-
-
-    sncon = {'0': '--',
-            '1' : '-',
-            '2' : '-.',
-            '3' : '--',
-            '4' : '-',
-            '5' : '-.',
-            '6' : '--',
-            '7' : '-',
-            '8' : '-.',
-            '9' : '--',
-            '10' : '-',
-            '11' : '-.',
-            '12' : '--',
-            '13' : '-',
-            '14' : '-.',
-            '15' : '--',
-            '16' : '-',
-            '17' : '-.',
-            '18': '--',
-            '19': '-',
-            '20': '-.',
-            '21': ':',
-            '22': ':',
-            '23': ':',
-            '24': ':',
-            '25': ':',
-            '26': ':'
-            }
+	    '27': 'k',
+            '28': 'r',
+            '29': 'b',
+            '30': 'y'   }
 
     return(sncon[name])
 
@@ -100,9 +69,8 @@ def main(incube,outpath,what_am_i):
         slicer = iris.Constraint(model_name = str(t))
         range_finder = incube.extract(slicer)
         range_finder = range_finder.data
-        color = get_color(str(cntr))
-        line_style = get_line_style(str(cntr))
-	print range_finder.shape, len(times)
+        color = get_color(str(cntr))	
+        print range_finder.shape, len(times)
         plt.bar(times[:],range_finder[:],width=1,color=color, label = t)
         plt.title(str(t))
 	plt.xlim(times[0] - 1, times[-1] +1)
