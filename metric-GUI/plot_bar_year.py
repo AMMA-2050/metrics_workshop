@@ -73,6 +73,7 @@ def main(incube,outpath,what_am_i):
         print range_finder.shape, len(times)
         plt.bar(times[:],range_finder[:],width=1,color=color, label = t)
         plt.title(str(t))
+        plt.ylim(-3,3)
 	plt.xlim(times[0] - 1, times[-1] +1)
 	cntr = cntr + 1
 # need to find out how to grab the units of the cube from the cube
