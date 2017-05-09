@@ -63,11 +63,7 @@ def main(cubein,season,ncfile):
     iris.coord_categorisation.add_month_number(cubein, 'time', name='month_number')
     iris.coord_categorisation.add_year(cubein,'time',name='year')
     slicer = getSeasConstr(season)
-    print "This is the cubein"
-    print cubein
     cube2plot = cubein.extract(slicer)
-    print "This is the cube2plot"
-    print cube2plot
 #    cubein = cubein.extract(slicer)
 # You do not need to do cubein.intersection here. This is done in the load data script
 # Instead, when you use ultimo_burrito, make a custom region with these boundaries
@@ -81,10 +77,10 @@ def main(cubein,season,ncfile):
     dates = []
     val=30.0
 
-    for yr in years: #loop through the years
+#    for yr in years: #loop through the years
            # so you have sliced the data here. 
-           yrslice = iris.Constraint(year = lambda cell: cell == yr)
-           N5 = cube2plot.extract(yrslice)
+#           yrslice = iris.Constraint(year = lambda cell: cell == yr)
+#           N5 = cube2plot.extract(yrslice)
     # So, at this point are you trying to aggregate by month?
     # If you just wanted to do this for every year, you do not need half of this.
     # If you just want a count for every year, delete the for yr in years loop and change the aggregated_by to what I have commented out.
@@ -92,11 +88,12 @@ def main(cubein,season,ncfile):
 #    bigger = cube2plot.aggregated_by('year', iris.analysis.COUNT, function = lambda values: values > val )
 #    monthcount = cube2plot.aggregated_by('year', iris.analysis.COUNT, function = lambda values: values > -5000)
 
-    bigger = N5.aggregated_by('month_number', iris.analysis.COUNT, function = lambda values: values > val )
-    monthcount = N5.aggregated_by('month_number', iris.analysis.COUNT, function = lambda values: values > -5000)
+    bigger = cube2plot.aggregated_by('year', iris.analysis.COUNT, function = lambda values: values > val )
+    monthcount = cube2plot.aggregated_by('year', iris.analysis.COUNT, function = lambda values: values > -5000)
     monthcount.data = monthcount.data.astype(float)
     numdays30mm = (bigger/monthcount)*100
-
+    print 'num30days'
+    print numdays30mm
     iris.save(numdays30mm,ncfile)
     
 

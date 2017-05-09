@@ -3,9 +3,9 @@
 def main(string):
 
 	if string == 'outp':
-		string = '/nfs/a266/earv061'
+		string = '/nfs/a277/js08rgjf/a266/master/ncfiles'
 	elif string == 'inp':
-		string = '/nfs/a266/data/CMIP5_Africa'
+		string = '/nfs/a277/js08rgjf/a266/data/CMIP5_AFRICA'
 	return(string)
 
 

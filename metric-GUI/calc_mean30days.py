@@ -65,15 +65,9 @@ if __name__ == "__getSeasConstr__":
 
 def main(cubein,season,ncfile):
 
-'''
-This code calculates the average of the 30 days of precipitation
-'''
-#In this part of the script, put your main
-#metric calculation work.
-#Some example lines of code that you may
-#want to use are included below.
-#
-# 
+	 '''
+	 This code calculates the average of the 30 days of precipitation
+         '''
          iris.coord_categorisation.add_month_number(cubein,'time',name = 'month_number')
          iris.coord_categorisation.add_year(cubein,'time',name='year')
          iris.coord_categorisation.add_day_of_year(cubein,'time',name='day_of_year')

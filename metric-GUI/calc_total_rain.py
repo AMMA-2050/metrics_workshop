@@ -8,57 +8,77 @@
 import itertools
 import iris
 import iris.coord_categorisation
-    
-def totRain(incube, outpath):
-    '''
-    Inputs
-        - incube : must have time dimension with year, month_number and season, and units in kg m-2 day-1
-    Outputs
-        - ?
-    '''
-    
-    try:
-        
-        seatotal=iris.load_cube(outpath+'meantotrain_perseason.nc')
-        swetdays=iris.load_cube(outpath+'meanwetdays_perseason.nc')
-        SavRainfall=iris.load_cube(outpath+'meanrainfall_perwetday.nc')
-    except IOError:
-    
-        print 'Calculating Total Rainfall per Season'
-        print incube
-               
-        totrain = incube.aggregated_by(['clim_season','season_year'], iris.analysis.SUM)
-        print totrain
-                        
-        seatotal = totrain.aggregated_by(['clim_season','season_year'], iris.analysis.MEAN)
-        iris.save(seatotal,outpath+'meantotrain_perseason.nc')
-        
-        wetdays = incube.aggregated_by(['clim_season','season_year'], iris.analysis.COUNT, function = lambda values: values > 1.0 )
-        print wetdays
-        
-        swetdays = wetdays.aggregated_by(['clim_season','season_year'], iris.analysis.MEAN)
-        iris.save(swetdays,outpath+'meanwetdays_perseason.nc')
-        
-        SavRainfall = seatotal / swetdays
-        iris.save(SavRainfall,outpath+'meanrainfall_perwetday.nc')
-    return(SavRainfall)
 
-def main():
+
+def variable_setter(string):
+
+        if string == 'var':
+           string = 'pr'
+        if string == 'plot_type':
+           string = 'contourf_map'
+        if string == 'seas':
+           string = 'mjjas'
+        return(string)
+
+
+
+if "__name__" == "__variable_setter__":
+        variable_setter(string)
+
+
+def getSeasConstr(name):
+
+    sncon = {'ann': iris.Constraint(month_number=lambda cell: 1 <= cell <= 12),
+            'mj' : iris.Constraint(month_number=lambda cell: 5 <= cell <= 6),
+            'jj' : iris.Constraint(month_number=lambda cell: 6 <= cell <= 7),
+            'ja' : iris.Constraint(month_number=lambda cell: 7 <= cell <= 8),
+            'as' : iris.Constraint(month_number=lambda cell: 8 <= cell <= 9),
+            'so' : iris.Constraint(month_number=lambda cell: 9 <= cell <= 10),
+            'jan' :  iris.Constraint(month_number=lambda cell: cell == 1),
+            'feb' :  iris.Constraint(month_number=lambda cell: cell == 2),
+            'mar' :  iris.Constraint(month_number=lambda cell: cell == 3),
+            'apr' :  iris.Constraint(month_number=lambda cell: cell == 4),
+            'may' :  iris.Constraint(month_number=lambda cell: cell == 5),
+            'jun' :  iris.Constraint(month_number=lambda cell: cell == 6),
+            'jul' :  iris.Constraint(month_number=lambda cell: cell == 7),
+            'aug' :  iris.Constraint(month_number=lambda cell: cell == 8),
+            'sep' :  iris.Constraint(month_number=lambda cell: cell == 9),
+            'oct' :  iris.Constraint(month_number=lambda cell: cell == 10),
+            'nov' :  iris.Constraint(month_number=lambda cell: cell == 11),
+            'dec' :  iris.Constraint(month_number=lambda cell: cell == 12),
+            'djf': iris.Constraint(month_number=lambda cell: (cell == 12) | (1 <= cell <= 2)),
+            'mam': iris.Constraint(month_number=lambda cell: 3 <= cell <= 5),
+            'jja': iris.Constraint(month_number=lambda cell: 6 <= cell <= 8),
+            'jas': iris.Constraint(month_number=lambda cell: 7 <= cell <= 9),
+            'jjas': iris.Constraint(month_number=lambda cell: 6 <= cell <= 9),
+            'mjjas': iris.Constraint(month_number=lambda cell: 5<= cell<=9),
+            'son': iris.Constraint(month_number=lambda cell: 9 <= cell <= 11)
+            }
+
+    return(sncon[name])
+
+
+
+
+if __name__ == "__getSeasConstr__":
+   getSeasConstr(season)
+
+
+def main(cubein,season,ncfile):
+
+        iris.coord_categorisation.add_month_number(cubein,'time',name = 'month_number')
+        iris.coord_categorisation.add_year(cubein,'time',name='year')
+        iris.coord_categorisation.add_day_of_year(cubein,'time',name='day_of_year')
+        slicer = getSeasConstr(season)
+        cubein = cubein.extract(slicer)
+
+
     
-    outpath = '/home/kobby/Desktop/'
-    # this is the function that controls everything 
-    mycube = iris.load_cube('/home/kobby/Desktop/pr_WFDEI_1979-2013_0.5x0.5_day_MPI-ESM-LR_west-africa_historical_r1i1p1_full.nc')
-    #print mycube
-    mycube_wafr = mycube.intersection(latitude=(2.0, 12.0), longitude=(-20.0, 20.0))
-    iris.coord_categorisation.add_season_year(mycube_wafr, 'time',name='season_year')
-    #iris.coord_categorisation.add_year(mycube_wafr, 'time',name='year')
-    iris.coord_categorisation.add_season(mycube_wafr, 'time',name='clim_season')
-    #iris.coord_categorisation.add_month_number(mycube_wafr, 'time',name='month_number')
-    
-    mycube_wafr.convert_units('kg m-2 day-1')
-    SavRainfall = totRain(mycube_wafr, outpath) 
-    print 'nc file saved'
+        print 'Calculating Total Rainfall per year'
+        totrain = cubein.aggregated_by(['year'], iris.analysis.SUM)
+	iris.save(totrain,ncfile)
+	return(totrain)
     
 if __name__ == '__main__': 
-    main()
+    main(cubein,season,ncfile)
     

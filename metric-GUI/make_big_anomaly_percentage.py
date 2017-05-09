@@ -18,6 +18,7 @@ def main(bigcube,file_searcher,sc):
     cubehist = cubehist.extract(yearslicehist)
     cubefuture = bigcube.extract(yearslicefuture)
     cubehist = cubehist.collapsed('year', iris.analysis.MEDIAN)
+    print cubefuture
     cubefuture = cubefuture.collapsed('year',iris.analysis.MEDIAN)
     Dimension_of_data = raw_input('Do you want data to be averaged zonally and meridionally (type y for yes)')
     if Dimension_of_data == 'Y' or Dimension_of_data == 'y':
@@ -28,6 +29,7 @@ def main(bigcube,file_searcher,sc):
     anom = cubefuture.copy()
     mdls = anom.coord('model_name').points
     mdls = np.ndarray.tolist(mdls)
+    print mdls
     for mdl in mdls:
 	fi = mdls.index(mdl)
         mdlextract = iris.Constraint(model_name = lambda cell: cell == mdl)
