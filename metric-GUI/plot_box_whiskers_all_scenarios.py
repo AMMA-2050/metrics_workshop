@@ -53,6 +53,7 @@ def main(incube,outpath,what_am_i,sc,file_searcher):
             labels = ['hist', 'rcp2.6','rcp4.5','rcp8.5']
             plt.boxplot(data, labels = labels)
             for i in hist:
+              print i
               plt.scatter(1,i, marker = '_', color = 'k')
             for i in rcp26:
               plt.scatter(2,i,marker = '_', color = 'k')

@@ -27,7 +27,7 @@ import load_file_names  # loads all files of a certain form from a given inpath
 import load_data  # loads and spatially slices the data for each file found by load_file_names
 import make_big_cube  # Andy's baby
 import iris  # loved and trusted since 1896
-
+import make_big_anomaly
 
 def master(variable, scenario, bc_and_resolution, inpath, outpath, season, region, calc_file, xmin, xmax, ymin, ymax,
            plotter, overwrite):  # All these variables are passed through from ultimo_burrito
@@ -90,16 +90,21 @@ def master(variable, scenario, bc_and_resolution, inpath, outpath, season, regio
 
 
                     # makea big cube of all the files that look like file_searcher. Read make_big_cube for more details
-                bigcube = make_big_cube.make_big_cube(file_searcher)
-
+                try:
+			bigcube = iris.load_cube(str(file_searcher)+'_all_models.nc')
+		except IOError: 
+	                bigcube = make_big_cube.make_big_cube(file_searcher)
+		else:
+			bigcube = iris.load_cube(str(file_searcher)+'_all_models.nc')
                 # This is another custom import. They blow my tiny little mind.
+                #print bigcube
                 make_big_plot = __import__(plotter)
 
                 # create a unique identifier for the plot made in make_big_plot (this will double up as the default plot title
                 # if one is not given in the calc file
                 what_am_i = str(calc_file) + '-' + str(bc) + '-' + str(sc) + '-' + str(seas) + '-' + str(region)
                 # send bigcube to plotter, and save file what_am_i in the directory outpath
-                make_big_plot.main(bigcube, outpath, what_am_i)
+                make_big_plot.main(bigcube, outpath, what_am_i,sc,file_searcher)
 
 
 if __name__ == "__main__":

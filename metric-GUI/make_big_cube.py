@@ -6,10 +6,11 @@ import glob
 import iris
 import numpy as np
 from iris.experimental.equalise_cubes import equalise_attributes
+import os
 
 def make_big_cube(file_searcher):
     
-    list_of_files = glob.glob(file_searcher+'*.nc')
+    list_of_files = [fn for fn in glob.glob(file_searcher+'*.nc') if 'all_models' not in fn]
     model_names = [f.split('/')[-1].split('_')[-1].split('.')[0] for f in list_of_files]
 
     cubelist = iris.cube.CubeList([])
@@ -37,7 +38,7 @@ def make_big_cube(file_searcher):
     
     #print bigcube
     print bigcube
-    
+    iris.save(bigcube,str(file_searcher)+'_all_models.nc')
     return(bigcube)
     
 if __name__ == "__main__":

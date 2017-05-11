@@ -36,6 +36,8 @@ def main(incube,outpath,what_am_i,sc,file_searcher):
     modelnums = incube.coord('model_name').points
 #    print incube.shape
     percentiles = incube.collapsed('model_name', iris.analysis.PERCENTILE, percent=[ 10,90])
+    if len(percentiles.coord('time').points) > 1:
+        percentiles = percentiles.collapsed('time', iris.analysis.SUM)
 #    iris.coord_categorisation.add_year(percentiles, 'time', name = 'year')
 #    averages = percentiles.collapsed('year', iris.analysis.MEDIAN)
     print percentiles

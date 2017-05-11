@@ -5,8 +5,6 @@ import matplotlib.pyplot as plt
 import iris.coord_categorisation
 import pdb
 
-
-
 def variable_setter(string):
 	if string == 'var':
 		string = 'pr'
@@ -74,3 +72,4 @@ def main(incube,season,ncfile):
 
 if __name__ == "__main__":
 	main(incube,season,ncfile)
+

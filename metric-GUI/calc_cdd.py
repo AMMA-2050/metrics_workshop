@@ -106,16 +106,13 @@ def main(cubein,season,ncfile):
                                break
                 pltdtes[y,x].data = current_dte
                 pltdur[y,x].data = current_max
-
-        outpath = '/home/dem/Bureau/'
-        iris.save(pltdtes,outpath+'ccd_dates.nc')
-        iris.save(pltdur,outpath+'ccd_dur.nc')
+        datfile = ncfile.replace('.nc','cdd_dates.nc')
+        durfile = ncfile.replace('.nc','cdd_dur.nc')
+        iris.save(pltdtes,datfile)
+        iris.save(pltdur,durfile)
         
         return(pltdtes,pltdur)
         
-    # so right now you are not saving the right files. You want to save pltdtes
-    # and pltdur
-        iris.save(outcube,outfile) 
           
 if __name__ == "__main__":
 	main(cubein,season,ncfile)

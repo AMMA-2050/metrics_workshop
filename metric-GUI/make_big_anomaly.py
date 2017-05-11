@@ -13,10 +13,12 @@ def main(bigcube,file_searcher,sc):
     file_historical = glob.glob(filehistorical+'*_all_models.nc')
     cubelist = iris.cube.CubeList([])
     cubehist = iris.load_cube(file_historical)
+    print cubehist
     yearslicehist = iris.Constraint(year = lambda cell: 1950 <= cell <= 1999)
     yearslicefuture = iris.Constraint(year = lambda cell: 2050 <= cell <= 2099)
     cubehist = cubehist.extract(yearslicehist)
     cubefuture = bigcube.extract(yearslicefuture)
+    print cubehist
     cubehist = cubehist.collapsed('year', iris.analysis.MEDIAN)
     cubefuture = cubefuture.collapsed('year',iris.analysis.MEDIAN)
     anom = cubefuture.copy()

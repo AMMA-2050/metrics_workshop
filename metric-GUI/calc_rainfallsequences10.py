@@ -64,9 +64,9 @@ if __name__ == "__getSeasConstr__":
 
 def main(cubein,season,ncfile):
 
-'''
-Write one line describing the code here
-'''
+	'''
+	Write one line describing the code here
+	'''
 #In this part of the script, put your main
 #metric calculation work.
 #Some example lines of code that you may
@@ -74,7 +74,7 @@ Write one line describing the code here
 #
         if axis < 0:
         # just cope with negative axis numbers
-        axis += data.ndim
+	        axis += data.ndim
         # Threshold the data to find the 'significant' points.
         data_hits = data > threshold
         # Make an array with data values "windowed" along the time axis.
