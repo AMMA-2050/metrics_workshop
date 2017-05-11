@@ -67,14 +67,15 @@ def main(incube,season,ncfile):
     incube = incube.extract(slicer)
     incube.convert_units('kg m-2 day-1')
 
-    incube = incube.collapsed(['latitude', 'longitude'], iris.analysis.SUM)
-
-    totrain = incube.aggregated_by(['year'], iris.analysis.SUM)
-    wetdays = incube.aggregated_by(['year'], iris.analysis.COUNT,
+    sum = incube.collapsed(['latitude', 'longitude'], iris.analysis.SUM)
+    wetdays = incube.collapsed(['latitude', 'longitude'], iris.analysis.COUNT,
                                    function=lambda values: values > 1.0)
 
-    meanrain = totrain/wetdays
+    totrain = sum.aggregated_by(['year'], iris.analysis.SUM)
+    wetdays = wetdays.aggregated_by(['year'], iris.analysis.SUM)
 
+
+    meanrain = totrain/wetdays
     iris.save(meanrain,ncfile)
 
 if __name__ == "__main__":

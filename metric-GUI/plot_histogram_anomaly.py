@@ -28,14 +28,15 @@ def main(incube, outpath, what_am_i, sc, file_searcher):
             incube = iris.load_cube(file_searcher+'_all_models_anomaly.nc')
 
     data = incube.data
-    data = np.random.random(100)
 
     hist, h = np.histogram(data, bins=np.linspace(data.min(), data.max(),10))
-    pdb.set_trace()
+
     f = plt.figure()
     ax = f.add_subplot(111)
-    ax.bar(h[0:-1]+(h[1::]-h[0:-1])/2  ,hist, edgecolor='black', width =(h[1::]-h[0:-1]))
-    ax.set_xlabel('')
+    ax.bar(h[0:-1]+((h[1::]-h[0:-1])/2) ,hist, edgecolor='black', width =(h[1::]-h[0:-1]))
+
+    ax.set_xlabel('Variable')
+    ax.set_ylabel('Number of models')
 
     plt.savefig(str(what_am_i) + '_histogram_anomaly_all_models.png')
     plt.show()
