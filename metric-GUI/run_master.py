@@ -6,14 +6,14 @@ scenario = ['rcp45']
 bc_and_resolution = ['WA_data']
 inpath = 'D://CMIP5/CMIP5_Africa'
 outpath ='D://CMIP5/save_files'
-season = ['mjjas']
-region = ['West_Africa']
-calc_file = 'Marteau_onset'
+season = ['jas']
+region = 'West_Africa'
+calc_file = 'mean_rain'
 xmin = -10
 xmax = 10
 ymin = 5
 ymax = 25
-plotter = 'contourf_map'
+plotter = 'plot_histogram_anomaly'
 overwrite = 'No'
 
 

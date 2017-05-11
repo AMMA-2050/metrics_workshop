@@ -6,6 +6,7 @@ import glob
 import iris
 import numpy as np
 from iris.experimental.equalise_cubes import equalise_attributes
+import pdb
 
 def main(bigcube,file_searcher,sc):
     
@@ -25,18 +26,18 @@ def main(bigcube,file_searcher,sc):
     mdls = anom.coord('model_name').points
     mdls = np.ndarray.tolist(mdls)
     for mdl in mdls:
-	fi = mdls.index(mdl)
+        fi = mdls.index(mdl)
         mdlextract = iris.Constraint(model_name = lambda cell: cell == mdl)
-	smllcubefuture = cubefuture.extract(mdlextract)
-	smllcubepast = cubehist.extract(mdlextract)
-    	differences = smllcubefuture - smllcubepast
+        smllcubefuture = cubefuture.extract(mdlextract)
+        smllcubepast = cubehist.extract(mdlextract)
+
+        try:
+            differences = smllcubefuture - smllcubepast
+        except TypeError:
+            continue
         cubelist.append(differences)
-#        anom[fi,:,:].data = differences[:,:].data
-#	print np.percentile(anom[fi,:,:].data,50)
 
     anom = cubelist.merge_cube()
-    print anom.data
-    print np.percentile(anom[fi,:,:].data,50)
     	
     iris.save(anom, file_searcher+'_all_models_anomalies.nc') 
     return (anom)
