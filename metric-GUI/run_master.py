@@ -1,4 +1,4 @@
-from metric_GUI import master
+import master
 
 
 variable = 'pr'
