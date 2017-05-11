@@ -35,6 +35,7 @@ def main(bigcube,file_searcher,sc):
 #	print np.percentile(anom[fi,:,:].data,50)
 
     anom = cubelist.merge_cube()
+    print anom.data
     print np.percentile(anom[fi,:,:].data,50)
     	
     iris.save(anom, file_searcher+'_all_models_anomalies.nc') 

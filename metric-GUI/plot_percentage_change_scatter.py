@@ -52,6 +52,10 @@ def main(incube,outpath,what_am_i,sc,file_searcher):
 	 for i in range(0,len(cube2plot)):
             
             plt.scatter(i, cube2plot[i], c = cube2plot[i], vmin = vmi, vmax = vma,cmap = cm)
+         ylab = raw_input("Please enter y variable (e.g. change in your metric)")
+         plt.ylabel(ylab)
+         plt.xlabel("All models")
+         plt.tick_params(acis='x', whcih='both', bottom = 'off', top = 'off')
 	 plt.savefig(str(what_am_i)+'_all_model_perc_scatter_difference.png')
 	 plt.show()
 
