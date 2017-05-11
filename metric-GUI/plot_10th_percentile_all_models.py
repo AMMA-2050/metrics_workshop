@@ -42,19 +42,40 @@ def main(incube,outpath,what_am_i,sc,file_searcher):
 #    averages = percentiles.collapsed('year', iris.analysis.MEDIAN)
     print percentiles
     plt.clf()
+    cbvar = raw_input("Please type what variable is shown in color bar (e.g. Onset date for calc_Marteau)")
+    parspace = 5
+    medspace = 5
+    medspace = raw_input("Please type how many degrees you want between longitude markings (default = 5)")
+    parspace = raw_input("Please type how many degrees you want between latitude markings (default = 5)")
     plt.subplot(2,1,1)
-    m = bm.Basemap(projection='cyl',llcrnrlat = y1, urcrnrlat = y2, llcrnrlon = x1, urcrnrlon = x2,  resolution = 'l')
+    m = bm.Basemap(projection='cyl',llcrnrlat = y1, urcrnrlat = y2, llcrnrlon = x1, urcrnrlon = x2,  resolution = 'h')
     m.drawcoastlines(linewidth= 2)
-    m.drawcountries(linewidth = 1)     
+    m.drawcountries(linewidth = 1)
+    if medspace >= 1.0:    
+         meridians = np.arange(x1, x2, float(medspace))
+         m.drawmeridians(meridians, labels = [False, False, False, True])
+    if parspace >= 1.0:
+         parallels = np.arange(y1,y2,float(parspace))  
+         m.drawparallels(parallels, labels = [False,True,False,False])
+
     cd = plt.contourf(lon,lat,percentiles[0,:,:].data)
     cb = plt.colorbar(cd, orientation = 'horizontal')
+    cb.label('10th Percentile '+str(cbvar)+' ensemble anomaly')
     plt.text(float(x1) - 1., float(y2) - 1., '(a)')
     plt.subplot(2,1,2)
-    m = bm.Basemap(projection='cyl',llcrnrlat = y1, urcrnrlat = y2, llcrnrlon = x1, urcrnrlon = x2,  resolution = 'l')
+    m = bm.Basemap(projection='cyl',llcrnrlat = y1, urcrnrlat = y2, llcrnrlon = x1, urcrnrlon = x2,  resolution = 'h')
     m.drawcoastlines(linewidth= 2)
     m.drawcountries(linewidth = 1)     
+    if medspace >= 1.0:    
+         meridians = np.arange(x1, x2, medspace)
+         m.drawmeridians(meridians, labels = [False, False, False, True])
+    if parspace >= 1.0:
+         parallels = np.arange(y1,y2,parspace)  
+         m.drawparallels(parallels, labels = [False,True,False,False])
+
     cd = plt.contourf(lon,lat,percentiles[1,:,:].data)
     cb = plt.colorbar(cd, orientation = 'horizontal')
+    cb.label('90th Percentile '+str(cbvar)+' ensemble anomaly')
     plt.text(float(x1) - 1., float(y2) - 1., '(b)')
     plt.savefig(str(what_am_i)+'_10th_90th_percentile.png')
     plt.show()

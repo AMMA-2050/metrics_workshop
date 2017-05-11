@@ -151,7 +151,7 @@ season_dictionary = {'ann': 'ann',
 # longitude values. Dictionaries can contain lists and handle these 
 # just fine
 
-boundary_dictionary = {'West_Africa': [-10., 10., 5., 25.],
+boundary_dictionary = {'West_Africa': [-20., 20., 4., 25.],
                        'Senegal': [-20., -13., 12.5, 17.5],
                        'Burkina_Faso': [-14., -9., 8., 12.],
                        'Sahel': [-10., 10., 8., 12.],
