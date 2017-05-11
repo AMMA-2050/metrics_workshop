@@ -58,7 +58,7 @@ if __name__ == "__getSeasConstr__":
 
 def main(incube,season,ncfile):
     '''Calculates the total rain over the time period'''
-    print 'This is the calc script: calc_total_rain'
+    print 'This is the calc script: calc_mean_rain'
 
     slicer = getSeasConstr(season)
     iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')

@@ -22,10 +22,10 @@ def main(incube, outpath, what_am_i, sc, file_searcher):
     # BUT WE ONLY WANT TO DO THIS IF WE ARE USING AN RCP scenario!
     if "rcp" in sc:
         print 'rcp in scenario'
-        if not os.path.isfile(file_searcher+'_all_models_ano.nc'):
+        if not os.path.isfile(file_searcher+'_all_models_anomaly.nc'):
             incube = make_big_anomaly.main(incube, file_searcher, sc)
         else:
-            incube = iris.load_cube(file_searcher+'_all_models_ano.nc')
+            incube = iris.load_cube(file_searcher+'_all_models_anomaly.nc')
 
     data = incube.data
     data = np.random.random(100)
