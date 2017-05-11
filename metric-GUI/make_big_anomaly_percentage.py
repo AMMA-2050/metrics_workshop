@@ -42,7 +42,7 @@ def main(bigcube,file_searcher,sc):
 
     anom = cubelist.merge_cube()
     	
-    iris.save(anom, file_searcher+'_anomalies_percentage.nc') 
+    iris.save(anom, file_searcher+'_all_models_anomalies_percentage.nc') 
     return (anom)
     
 if __name__ == "__main__":
