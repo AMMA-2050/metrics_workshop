@@ -26,16 +26,25 @@ def main(incube, outpath, what_am_i, sc, file_searcher):
             incube = make_big_anomaly.main(incube, file_searcher, sc)
         else:
             incube = iris.load_cube(file_searcher+'_all_models_anomaly.nc')
-
+    try:
+       print len(incube.coord('longitude').points)
+       incube = incube.collapsed('longitude',iris.analysis.MEAN)
+    except AttributeError:
+	print 'data already has lon collapsed'
+    try:
+	print len(incube.coord('latitude').points)
+	incube = incube.collapsed('latitude',iris.analysis.MEAN)	
+    except AttributeError:
+	print 'data already has lat collapsed'
     data = incube.data
-
+    print data.shape
     hist, h = np.histogram(data, bins=np.linspace(data.min(), data.max(),10))
 
     f = plt.figure()
     ax = f.add_subplot(111)
     ax.bar(h[0:-1]+((h[1::]-h[0:-1])/2) ,hist, edgecolor='black', width =(h[1::]-h[0:-1]))
-
-    ax.set_xlabel('Variable')
+    xlab = raw_input("What metric is on the x axis (e.g. Marteau onset)")
+    ax.set_xlabel(str(xlab)+' anomaly, '+str(sc)+' minus historical')
     ax.set_ylabel('Number of models')
 
     plt.savefig(str(what_am_i) + '_histogram_anomaly_all_models.png')
