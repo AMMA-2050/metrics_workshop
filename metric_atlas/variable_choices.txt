@@ -1,0 +1,70 @@
+#####################################
+
+ #   # #    ###### # #   # #####
+ #   # #      #    # ## ## #   #
+ #   # #      #    # # # # #   #
+ #   # #      #    # #   # #   #
+ ##### ####   #    # #   # #####
+ 
+#### #   # #### #### # ##### #####
+#  # #   # #  # #  # #   #   #   #
+###  #   # ###  ###  #   #   #   #
+#  # #   # # #  # #  #   #   #   #
+#### ##### #  # #  # #   #   #####
+
+
+#####################################
+
+Variable_setter help
+
+So, you have made your calc file and want to know what options are
+available for the varaibles you set in the variable_setter module.
+
+Note, currently, the only three options you can auto set in your
+metric calculation file are:
+Season
+Variable
+plot type
+
+This is because (in our opinion) the other variables (e.g. scenario)
+should be made fully variable and would not change the running of the
+metric calculation files. So they are best left alone.
+
+Here are the current options for each of the three variables aforementioned
+as of present time.
+
+Season: ['ann','mj','jj','ja','as',
+            'so','jan','feb','mar',
+            'apr','may','jun','jul',
+            'aug','sep','oct','nov',
+            'dec','djf','mam','jja',
+            'jas','jjas','mjjas','son']
+            
+
+Variable [pr,rsds,tasmax,tasmin.tasav,wind]
+
+plot type = 
+ 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
