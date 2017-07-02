@@ -84,9 +84,6 @@ def main(cubein,season,ncfile):
         wetdays = cubein.aggregated_by(['year'], iris.analysis.COUNT, function = lambda values: values > 1.0 )
 
 
-
-    
-    
         print 'Calculating Number of Wet Days per Year'
         
         

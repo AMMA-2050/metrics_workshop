@@ -10,11 +10,11 @@ import os
 
 def make_big_cube(file_searcher):
     
-    list_of_files = [fn for fn in glob.glob(file_searcher+'*.nc') if 'all_models' not in fn]
+    list_of_files = glob.glob(file_searcher+'_single_model.nc')
     model_names = [f.split('/')[-1].split('_')[-1].split('.')[0] for f in list_of_files]
 
     cubelist = iris.cube.CubeList([])
-    #print cubelist
+
     for file in list_of_files:
         
         fi = list_of_files.index(file)
@@ -35,12 +35,5 @@ def make_big_cube(file_searcher):
     
     equalise_attributes(cubelist)
     bigcube = cubelist.merge_cube()
-    
-    #print bigcube
-    print bigcube
+
     iris.save(bigcube,str(file_searcher)+'_all_models.nc')
-    return(bigcube)
-    
-if __name__ == "__main__":
-    outpath = '/nfs/a266/earv061'
-    make_big_cube(file_searcher)    

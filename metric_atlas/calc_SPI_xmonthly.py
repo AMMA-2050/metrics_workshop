@@ -1,7 +1,5 @@
 import iris
 import numpy as np
-import scipy as sci
-import matplotlib.pyplot as plt
 import iris.coord_categorisation
 import ipdb
 
@@ -89,7 +87,6 @@ def main(incube,season,ncfile):
     spi = (c_monthly - clim_mean_cube) / clim_std_cube
 
     spi = spi.collapsed(['longitude', 'latitude'], iris.analysis.MEAN)
-    #spi = spi.collapsed('latitude', iris.analysis.MEAN)
 
     iris.save(spi,ncfile)
 
