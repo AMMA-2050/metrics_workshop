@@ -57,36 +57,18 @@ if __name__ == "__getSeasConstr__":
 
 def main(cubein,season,ncfile):    
     '''
-    Write something here to describe the file
+    Calculate number of days with more than rainfall threshold
     '''
     print "This is the calc script"
     iris.coord_categorisation.add_month_number(cubein, 'time', name='month_number')
     iris.coord_categorisation.add_year(cubein,'time',name='year')
     slicer = getSeasConstr(season)
     cube2plot = cubein.extract(slicer)
-#    cubein = cubein.extract(slicer)
-# You do not need to do cubein.intersection here. This is done in the load data script
-# Instead, when you use ultimo_burrito, make a custom region with these boundaries
-#    cube2plot = cubein.intersection(longitude=(-20.0, -11.0), latitude=(12.0, 20.0))
     cube2plot.coord('latitude').guess_bounds()
     cube2plot.coord('longitude').guess_bounds()
     cube2plot.convert_units('kg m-2 day-1')
-    yrs = cube2plot.aggregated_by('year',iris.analysis.MEAN)
-    empty = yrs.data
-    years = yrs.coord('year').points
-    dates = []
-    val=30.0
 
-#    for yr in years: #loop through the years
-           # so you have sliced the data here. 
-#           yrslice = iris.Constraint(year = lambda cell: cell == yr)
-#           N5 = cube2plot.extract(yrslice)
-    # So, at this point are you trying to aggregate by month?
-    # If you just wanted to do this for every year, you do not need half of this.
-    # If you just want a count for every year, delete the for yr in years loop and change the aggregated_by to what I have commented out.
-    # otherwise, these need to be in the loop...       
-#    bigger = cube2plot.aggregated_by('year', iris.analysis.COUNT, function = lambda values: values > val )
-#    monthcount = cube2plot.aggregated_by('year', iris.analysis.COUNT, function = lambda values: values > -5000)
+    val=30.0
 
     bigger = cube2plot.aggregated_by('year', iris.analysis.COUNT, function = lambda values: values > val )
     monthcount = cube2plot.aggregated_by('year', iris.analysis.COUNT, function = lambda values: values > -5000)

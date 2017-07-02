@@ -1,18 +1,16 @@
 import iris
-import numpy as np
-import scipy as sci
-import matplotlib.pyplot as plt
 import iris.coord_categorisation
-import pdb
+
 
 def variable_setter(string):
-	if string == 'var':
-		string = 'pr'
-	if string =='seas':
-		string = 'jas'
-	if string =='plot_type':
-		string = 'plot_bar_year'
-	return string
+    if string == 'var':
+        string = 'pr'
+    if string == 'seas':
+        string = 'jas'
+    if string == 'plot_type':
+        string = 'plot_bar_year'
+    return string
+
 
 if "__name__" == "__variable_setter__":
     variable_setter(string)
@@ -52,9 +50,10 @@ def getSeasConstr(name):
 if __name__ == "__getSeasConstr__":
     getSeasConstr(season)
 
+
 ############################################
 
-def main(incube,season,ncfile):
+def main(incube, season, ncfile):
     '''Calculates the total rain over the time period'''
     print 'This is the calc script: calc_total_rain'
 
@@ -66,10 +65,10 @@ def main(incube,season,ncfile):
     incube.convert_units('kg m-2 day-1')
 
     totrain = incube.aggregated_by(['year'], iris.analysis.SUM)
-    totrain = totrain.collapsed(['latitude', 'longitude'], iris.analysis.SUM )
+    totrain = totrain.collapsed(['latitude', 'longitude'], iris.analysis.SUM)
 
-    iris.save(totrain,ncfile)
+    iris.save(totrain, ncfile)
+
 
 if __name__ == "__main__":
-	main(incube,season,ncfile)
-
+    main(incube, season, ncfile)
