@@ -11,15 +11,19 @@ def saves():
     outpath = 'C://Users/cornkle/OneDrive - NERC/data/CMIP5_Africa/save_files'
 
     bc_and_resolution = ['WA_0.5x0.5']
-    variable = 'pr'
-    scenario = ['historical']
+    variable = ['pr', 'tas']
+    scenario = ['historical','rcp26', 'rcp45', 'rcp85']
     season = ['jas']
     calc_file = 'annual_max'
     overwrite = 'No'
 
-    # write all single model and big_cube files - make sure all scenarios are written for anomaly files!
+    # write all single model and big_cube files - make sure all scenarios are written to create anomaly files!
     wNetcdf.model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, calc_file, overwrite)
+    # write anomaly files
     wNetcdf.anomaly_files(variable, bc_and_resolution, outpath, season, calc_file, scenario)
+
+
+    # annual_max finished, other metrics here
 
     print('All Netcdf files written, ready to plot!')
 
@@ -28,19 +32,17 @@ def plot():
 
     """
     Plotting script, could run loops. Has to define regions etc. (full cube is West Africa) 
-    Plots must handle collapsing e.g hovmoeller lon collapse if needed. 
+    Plots must also handle collapsing e.g hovmoeller lon collapse if needed. 
     
-    :return: 
     """
 
     saves_path = 'C://Users/cornkle/OneDrive - NERC/data/CMIP5_Africa/save_files'
 
     bc_and_resolution = ['WA_0.5x0.5']
     variable = 'pr'
-    scenario = ['historical']
+    scenario = ['rcp26']
     season = ['jas']
     calc_file = 'annual_max'
-    overwrite = 'No'
     region = [-10,10,5,9]
 
     cube_path = saves_path+'/'+ str(calc_file) + str(variable) + '_' + \
