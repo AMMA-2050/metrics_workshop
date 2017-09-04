@@ -25,7 +25,7 @@ def read_metrics_avail(inpath):
         fname = os.path.basename(nf)
         mlist.append(fname.split('_')[0])
     metrics = np.array(mlist)
-    print 'Available metrics from save files: '+ np.unique(metrics)
+    print 'Available metrics from save files: '+ str(np.unique(metrics))
     return np.unique(metrics)
 
 
