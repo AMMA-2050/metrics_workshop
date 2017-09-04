@@ -463,3 +463,116 @@ def onsetMarteau(incube, season, ncfile):
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
     iris.save(tseries, ncfile)
     iris.save(c2d, nc2d)
+
+
+def rainfallSequences10(cubein, season, ncfile):
+    '''
+    Calculates the number of periods where rainfall exceeded 1mm per day for 10 consecutive days
+
+    :param incube: daily precipitation cube from CMIP5 raw data
+    :param ncfile: full string for output netcdf file
+
+    returns: single model netcdf 
+    '''
+    
+    # just cope with negative axis numbers
+    axis += data.ndim
+    # Threshold the data to find the 'significant' points.
+
+
+    data_hits = data > threshold  # Make an array with data values "windowed" along the time axis.
+    hit_windows = iris.util.rolling_window(data_hits, window=rain_length, axis=axis)
+    # Find the windows "full of True-s" (along the added 'window axis').
+    full_windows = np.all(hit_windows, axis=axis + 1)
+    # Count points fulfilling the condition (along the time axis).
+    rain_point_counts = np.sum(full_windows, axis=axis, dtype=int)
+    return rain_point_counts
+
+    iris.coord_categorisation.add_month_number(cubein, 'time', name='month_number')
+    iris.coord_categorisation.add_year(cubein, 'time', name='year')
+    iris.coord_categorisation.add_day_of_year(cubein, 'time', name='day_of_year')
+    slicer = getSeasConstr(season)
+    cubein = cubein.extract(slicer)
+    #
+    cube2plot = cubein
+    cube2plot.convert_units('kg m-2 day-1')
+
+    #        yrs = cube2plot.aggregated_by('year',iris.analysis.MEAN)
+
+    # Start computation of rain days
+    # Make an aggregator from rain days count
+    count = iris.analysis.Aggregator('rain_count', count_spells,
+                                        units_func=lambda units: 1)
+
+    # Define the parameters
+    thresh_rain = 1
+    rain_days = 10
+
+    # Calculate the statistic
+    rain_days10 = pcp.collapsed('time', count, threshold=thresh_rain,
+                                rain_length=rain_days)
+    rain_days.rename('Number of days with rain > 1mm day-1 over 10 consecutive days')
+
+    iris.save(rain_days10, ncfile)
+
+
+def cdd(cubein,season,ncfile):
+
+    iris.coord_categorisation.add_day_of_month(cubein, 'time', name='day_of_month')
+    iris.coord_categorisation.add_season_year(cubein, 'time', name='season_year', seasons=('djf', 'mam', 'jja', 'son'))
+    cubein.convert_units('kg m-2 day-1')
+    outcube = cubein.aggregated_by('season_year', iris.analysis.MEAN)
+
+    #the rainfall threshold
+    total = 1.0
+    
+    # first bring in the data
+    # this code will need to know the starting day of the data
+    for yr in cubein.coord('season_year').points:
+    #pdb.set_trace()
+        incube_yr = cubein.extract(iris.Constraint(season_year=yr))
+
+        strt_day = incube_yr.coord('day_of_month').points[0]
+        yeardata = incube_yr.data
+        # We do not need these as we will not be working with lists
+        #        dtes = []
+        #        duration = []
+
+        # you will need to check that the bolw line works. We are collapsing the 3d
+        # file in to 2 dimensions
+        yearcoll = incube_yr.collapsed ('season_year', iris.analysis.MEAN)
+        #yearcoll = incube_yr.collapsed('season_year')
+
+        # then we will have 2 identical cubes we fill the data in to
+        pltdtes = yearcoll
+        pltdur = yearcoll
+
+        for x in range(0,yeardata.shape[2]):
+            for y in range(0,yeardata.shape[1]):
+                current_max = 0
+                current_dte = 0
+                dte = 0
+                duratn = 0
+                for t in range(0,yeardata.shape[0]):
+                    if yeardata[t,y,x] <= float(total):
+                        dte = t
+                        print dte, yeardata[t,y,x]
+                        for t1 in xrange(t,yeardata.shape[0]):
+                            if yeardata[t1,y,x] <= float(total):
+                                continue
+                            else:
+                                    duratn = t1 - t
+                                    if duratn > current_max:
+                                        current_dte = dte + strt_day
+                                        current_max = duratn
+                            break
+            pltdtes[y,x].data = current_dte
+            pltdur[y,x].data = current_max
+            
+    datfile = ncfile.replace('.nc','cdd_dates.nc')
+    durfile = ncfile.replace('.nc','cdd_dur.nc')
+    iris.save(pltdtes,datfile)
+    iris.save(pltdur,durfile)
+
+    return(pltdtes,pltdur)
+

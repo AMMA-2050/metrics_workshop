@@ -2,6 +2,7 @@
 Master script for writing netcdf files and plotting metrics
 """
 
+import iris
 import writeNetcdf as wNetcdf
 import os
 import mplot
@@ -9,6 +10,8 @@ import itertools
 import constants as cnst
 import utils
 import pdb
+
+iris.FUTURE.netcdf_promote = True
 
 def allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric):
     ###
@@ -59,16 +62,17 @@ def saves():
     Function to create all netcdf files that are needed for later plotting. All scenarios!
     :return: Netcdf files for single models (_singleModel.nc), multi-model cube (_allModels.nc) and anomalies per model
      in a multi-model cube in absolute values (_anomalies.nc) and in percentage change (_anomaliesPerc.nc).
-
     """
 
     ###
     # CHOOSE OPTIONS RELATED TO ALL METRICS
     ###
-    inpath = '/users/global/cornkle/CMIP/CMIP5_Africa'
-    outpath = '/users/global/cornkle/CMIP/CMIP5_Africa/save_files'
-    bc_and_resolution = ['BC_0.5x0.5']  # mdlgrid does not work cause models are not on the same grid!
-    region = [cnst.REGIONS['WA'], cnst.REGIONS['BF']]
+    #inpath = '/users/global/cornkle/CMIP/CMIP5_Africa'
+    #outpath = '/users/global/cornkle/CMIP/CMIP5_Africa/save_files'
+    inpath = cnst.DATADIR
+    outpath = cnst.METRIC_DATADIR
+    bc_and_resolution = cnst.BC_RES  # mdlgrid does not work cause models are not on the same grid!
+    region = cnst.REGIONS_LIST #[cnst.REGIONS['WA'], cnst.REGIONS['BF']]
 
     utils.create_outdirs(outpath, bc_and_resolution)
 
@@ -123,13 +127,15 @@ def plot():
     ###
     # USER CHOICE: SET OPTIONS RELATED TO ALL METRICS
     ###
-    inpath = '/users/global/cornkle/CMIP/CMIP5_Africa/save_files'
-    outpath = inpath + os.sep + 'plots'
-    bc_and_resolution = ['BC_0.5x0.5']
-    region = [cnst.REGIONS['WA'], cnst.REGIONS['BF']]
+    inpath = cnst.METRIC_DATADIR
+    outpath = cnst.METRIC_PLOTDIR
+    #inpath = '/users/global/cornkle/CMIP/CMIP5_Africa/save_files'
+    #outpath = inpath + os.sep + 'plots'
+    bc_and_resolution = cnst.BC_RES #['BC_0.5x0.5']
+    region = cnst.REGIONS_LIST #[cnst.REGIONS['WA'], cnst.REGIONS['BF']]
     #####
+    
     utils.create_outdirs(outpath, bc_and_resolution, metrics=inpath)
-
 
     ###
     #Start plot annual max metric
@@ -153,4 +159,6 @@ def plot():
     singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
 
 
-
+if __name__ == "__main__":
+    saves()
+    plot()
