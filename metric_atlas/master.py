@@ -25,6 +25,7 @@ def allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, seas
 
         #### CHOICE OF PLOTS BELOW HERE
         mplot.boxplot_scenarios(cube_path, out, reg, anomaly=False)
+        #if metric not in ['onsetMarteau']:           
         mplot.boxplot_scenarios(cube_path, out, reg, anomaly=True)
         mplot.lineplot_scenarios(cube_path, out, reg)
         mplot.barplot_scenarios(cube_path, out, reg, anomaly=False)
@@ -140,7 +141,7 @@ def plot():
     ###
     #Start plot annual max metric
     ###
-    variable = ['pr']
+    variable = ['pr', 'tasmax']
     season = ['jas']
     metric = 'annualMax'
 
@@ -158,7 +159,17 @@ def plot():
     allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
     singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
 
+    ###
+    # Start plot nbTmax metric
+    ###
+    variable = ['pr']
+    season = ['mjjas']
+    metric = 'onsetMarteau'
+
+    allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
+    singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
+
 
 if __name__ == "__main__":
-    saves()
+    #saves()
     plot()

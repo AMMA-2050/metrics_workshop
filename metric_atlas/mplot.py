@@ -7,7 +7,7 @@ Anomaly percentage change is with respect to the historical period.
 Time periods are as defined in constants.py for the FUTURE and HIST variables.
 (e.g. time period 1950-2000 (historical) and 2040-2069 (scenario))
 
-C. Klein 2017
+C. Klein (CEH) & Andy Hartley (Met Office) 2017
 """
 import matplotlib as mpl
 
@@ -17,6 +17,7 @@ import matplotlib.pyplot as plt
 import numpy as np
 import os
 import constants as cnst
+import labeller as lblr
 import sys
 import glob
 import utils
@@ -24,6 +25,25 @@ import cartopy
 import cartopy.crs as ccrs
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 import pdb
+
+
+def rand_jitter(arr):
+    if max(arr) != min(arr):
+        stdev = .05*(max(arr)-min(arr)) # The default, assuming that x has some values that vary.
+    else:
+        stdev = 0.1 # Varies +/- 0.3 around the median value
+    return arr + np.random.randn(len(arr)) * stdev
+
+def jitter(x, y, ax=None, s=20, c='r', marker='o', cmap=None, norm=None, vmin=None, vmax=None, alpha=None, linewidths=0, verts=None, **kwargs):
+    return ax.scatter(rand_jitter(x), rand_jitter(y), s=s, c=c, marker=marker, cmap=cmap, norm=norm, vmin=vmin, vmax=vmax, alpha=alpha, linewidths=linewidths, verts=verts, **kwargs) # hold=hold, 
+
+
+def do_jitter(plotdata, axis):
+    # Assumes that plotdata is a list of lists. Each element of the first dimension refers to a scenario (on the x-axis of a boxplot)
+    for i in np.arange(len(plotdata)):
+        xvals = np.repeat(i+1, len(plotdata[i]))
+        yvals = plotdata[i]
+        jitter(x=xvals, y=yvals, ax=axis, alpha=0.2)
 
 
 def map_percentile_single(incubes, outpath, region, anomaly=False):
@@ -42,6 +62,11 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
 
     fdict = utils.split_filename_path(ano)
     scen = fdict['scenario']
+    metric = fdict['metric']
+    variable = fdict['variable']
+    season = fdict['season']
+    bc = fdict['bc_res']
+
     if (anomaly == True) & (scen == 'historical'):
         return
 
@@ -90,17 +115,18 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         toplot = [plot_dic1]
 
     for p in toplot:
-        f = plt.figure(figsize=(6, 5), dpi=300)
+        f = plt.figure(figsize=lblr.getFigSize(region[0], 'map'), dpi=300)
         siz = 6
         lon = data.coord('longitude').points
         lat = data.coord('latitude').points
 
         ax1 = f.add_subplot(211, projection=ccrs.PlateCarree())
 
-        ax1.set_title(vname + ': ' + fdict['metric'], fontsize=10)
+        #ax1.set_title(vname + ': ' + fdict['metric'], fontsize=10)
+        ax1.set_title('90th Percentile')
 
-        map1 = ax1.contourf(lon, lat, p['data'][0].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],
-                            levels=p['levels'][0], extend='both')
+        map1 = ax1.contourf(lon, lat, p['data'][1].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],
+                            levels=p['levels'][1], extend='both')
         ax1.coastlines()
         # Gridlines
         siz = 6
@@ -114,12 +140,13 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         # Countries
         ax1.add_feature(cartopy.feature.BORDERS, linestyle='--');
         cb = plt.colorbar(map1, format='%1.1f')
-        cb.set_label('10th percentile ' + p['cblabel'])
+        #cb.set_label('10th percentile ' + p['cblabel'])
+        cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']))
 
         ax2 = f.add_subplot(212, projection=ccrs.PlateCarree())
-        map2 = ax2.contourf(lon, lat, p['data'][1].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],
-                            levels=p['levels'][1], extend='both')
+        map2 = ax2.contourf(lon, lat, p['data'][0].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],levels=p['levels'][0], extend='both')
         ax2.coastlines()
+        ax2.set_title('10th Percentile')
         # Gridlines
         xl = ax2.gridlines(draw_labels=True, );
         xl.xlabels_top = False
@@ -131,9 +158,11 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         # Countries
         ax2.add_feature(cartopy.feature.BORDERS, linestyle='--');
         cb = plt.colorbar(map2, format='%1.1f')
-        cb.set_label('90th percentile ' + p['cblabel'])
+        cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']))
 
-        plt.tight_layout()
+        #plt.tight_layout()
+        #f.suptitle('Long figure title')
+        f.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['cblabel']))
         f.subplots_adjust(left=0.05)
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_mapPerc_' + p['ftag'] + '.png')
@@ -159,6 +188,12 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
     for ano in ano_list:
 
         fdict = utils.split_filename_path(ano)
+        metric = fdict['metric']
+        variable = fdict['variable']
+        season = fdict['season']
+        scenario = fdict['scenario']
+        bc = fdict['bc_res']
+        
         if (anomaly == True) & (fdict['scenario'] == 'historical'):
             continue
 
@@ -175,17 +210,20 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
             data_perc = utils.anomalies(hist, cube, percentage=True)
 
             an = 'anomaly'
-            ylabel = vname + ' anomaly: ' + fdict['metric']
+            ylabel = lblr.getYlab(metric, variable, anom='absolute')
+            #ylabel = vname + ' anomaly: ' + fdict['metric']
 
             an_p = 'percentageAnomaly'
-            ylabel_p = vname + ' anomaly percentage: ' + fdict['metric']
+            #ylabel_p = vname + ' anomaly percentage: ' + fdict['metric']
+            ylabel_p = lblr.getYlab(metric, variable, anom='percentage')
             dat_perc = np.ndarray.tolist(data_perc.data)
             perc.append(dat_perc)
 
         else:
             data = cube
             an = 'scenarios'
-            ylabel = vname + ': ' + fdict['metric']
+            #ylabel = vname + ': ' + fdict['metric']
+            ylabel = lblr.getYlab(metric, variable, anom=None)
 
         dat = data.data
         dat = np.ndarray.tolist(dat)
@@ -210,16 +248,17 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
 
     for p in toplot:
 
-        f = plt.figure()
+        f = plt.figure(figsize=(9,7))
 
-        bp = plt.boxplot(p['data'], labels=p['xlabel'], patch_artist=True, notch=True)
-        plt.title(region[1])
+        #do_jitter(p['data'], f.gca())
+        bp = plt.boxplot(p['data'], labels=p['xlabel'], sym='', patch_artist=True, notch=False)
+        plt.title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag'])) # (region[1])
         plt.xlabel('Scenario')
         plt.ylabel(p['ylabel'])
 
         for median, box in zip(bp['medians'], bp['boxes']):
-            box.set(facecolor='darkseagreen')
-            median.set(color='k', linewidth=2)
+            box.set(facecolor='none')
+            median.set(linewidth=0) #median.set(color='k', linewidth=2)
 
         for id, d in enumerate(p['data']):
             plt.scatter([id + 1] * len(d), d, marker='_', color='darkgreen')
@@ -229,6 +268,7 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
                         'ftag'] + '.png')
 
         plt.close(f)
+
 
 
 def barplot_scenarios(incubes, outpath, region, anomaly=False):
@@ -251,6 +291,12 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
     for ano in ano_list:
 
         fdict = utils.split_filename_path(ano)
+        scenario = fdict['scenario']
+        metric = fdict['metric']
+        variable = fdict['variable']
+        season = fdict['season']
+        bc = fdict['bc_res']
+
         if (anomaly == True) & (fdict['scenario'] == 'historical'):
             continue
 
@@ -330,7 +376,8 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
             plt.xticks(xticks_pos, p['models'][id], ha='right', rotation=45)
 
             plt.ylabel(p['ylabel'])
-            plt.title(p['xlabel'][id] + ': ' + fdict['metric'] + ' ' + vname)
+            plt.title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']))
+            #plt.title(p['xlabel'][id] + ': ' + fdict['metric'] + ' ' + vname)
 
         plt.tight_layout()
 
@@ -357,6 +404,11 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
 
     fdict = utils.split_filename_path(ano)
     scen = fdict['scenario']
+    metric = fdict['metric']
+    variable = fdict['variable']
+    season = fdict['season']
+    bc = fdict['bc_res']
+
     if (anomaly == True) & (scen == 'historical'):
         return
 
@@ -411,7 +463,8 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
 
         ax.set_xlabel(p['ylabel'])
         ax.set_ylabel('Number of models')
-        ax.set_title(region[1] + ': ' + scen)
+        ax.set_title(lblr.getTitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag'])))
+        #ax.set_title(region[1] + ': ' + scen)
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_nbModelHistogram_' + p[
                         'ftag'] + '.png')
@@ -437,6 +490,12 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
     for ano in ano_list:
 
         fdict = utils.split_filename_path(ano)
+        scenario = fdict['scenario']
+        metric = fdict['metric']
+        variable = fdict['variable']
+        season = fdict['season']
+        bc = fdict['bc_res']
+
         if (anomaly == True) & (fdict['scenario'] == 'historical'):
             continue
 
@@ -517,7 +576,8 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
 
             ax.set_xlabel(p['ylabel'] + ': ' + fdict['metric'])
             ax.set_ylabel('Number of models')
-            ax.set_title(scen[id])
+            #ax.set_title(scen[id])
+            ax.set_title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']))
 
         plt.tight_layout()
 
@@ -544,6 +604,11 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
 
     fdict = utils.split_filename_path(ano)
     scen = fdict['scenario']
+    metric = fdict['metric']
+    variable = fdict['variable']
+    season = fdict['season']
+    bc = fdict['bc_res']
+
     if (anomaly == True) & (scen == 'historical'):
         return
 
@@ -594,14 +659,15 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
 
         cm = plt.get_cmap('seismic')
 
-        f = plt.figure()
+        f = plt.figure(figsize=(9,9))
         for i in range(0, len(p['data'])):
             plt.scatter(i, p['data'][i], c=p['data'][i], vmin=p['minmax'][0], vmax=p['minmax'][1], cmap=cm,
                         edgecolors='k')
 
         plt.ylabel(p['ylabel'])
         plt.xlabel("Model rank")
-        plt.title(region[1] + ': ' + scen)
+        #plt.title(region[1] + ': ' + scen)
+        plt.title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']))
         plt.tick_params(axis='x', which='both', bottom='off', top='off')
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_allModelRank_' + p['ftag'] + '.png')
@@ -629,6 +695,12 @@ def lineplot_scenarios(incubes, outpath, region):
     for ano, co, ta in zip(ano_list, colors, tag):
 
         fdict = utils.split_filename_path(ano)
+        scen = fdict['scenario']
+        metric = fdict['metric']
+        variable = fdict['variable']
+        season = fdict['season']
+        bc = fdict['bc_res']
+
         vname = cnst.VARNAMES[fdict['variable']]
 
         cube = iris.load_cube(ano)
@@ -642,7 +714,8 @@ def lineplot_scenarios(incubes, outpath, region):
     bottom, top = ax.get_ylim()
     plt.vlines(2005, bottom, top, linestyle='--', linewidth=1.5, zorder=10)
     plt.ylabel(vname + ': ' + fdict['metric'])
-    plt.title(region[1])
+    #plt.title(region[1])
+    plt.title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=''))
     plt.legend()
     plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                 fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_lineplot_allscen_' + '.png')
