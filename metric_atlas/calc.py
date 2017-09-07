@@ -206,8 +206,8 @@ def monthlyClimatologicalMean(incube, season, ncfile):
 
     iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
 
-    slicer = _getSeasConstr(season)
-    cubein = incube.extract(slicer)
+#    slicer = _getSeasConstr(season)
+#    cubein = incube.extract(slicer)
 
     cube2plot = incube
 
@@ -331,7 +331,7 @@ def AnnualnbDay(incube, season, ncfile, threshold=None):
     iris.save(c2d, nc2d)
 
 def AnnualHotDays(incube, season, ncfile):
-    AnnualnbDay(incube, season, ncfile, threshold=40)
+    AnnualnbDay(incube, season, ncfile, threshold=cnst.HOTDAYS_THRESHOLD)
 
 def AnnualExtremeRain50(incube, season, ncfile):
     AnnualnbDay(incube, season, ncfile, threshold=50)
@@ -473,6 +473,8 @@ def rainfallSequences10(cubein, season, ncfile):
     :param ncfile: full string for output netcdf file
 
     returns: single model netcdf 
+
+    TODO: Review code, and fix some of the errors
     '''
     
     # just cope with negative axis numbers
@@ -517,6 +519,11 @@ def rainfallSequences10(cubein, season, ncfile):
 
 
 def cdd(cubein,season,ncfile):
+    '''
+    Calculates Consecutive Dry Days
+    
+    TODO: Review code, and fix some of the errors
+    '''
 
     iris.coord_categorisation.add_day_of_month(cubein, 'time', name='day_of_month')
     iris.coord_categorisation.add_season_year(cubein, 'time', name='season_year', seasons=('djf', 'mam', 'jja', 'son'))
