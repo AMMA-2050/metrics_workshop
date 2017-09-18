@@ -20,7 +20,7 @@ import calc
 import constants as cnst
 import sys
 from iris.experimental.equalise_cubes import equalise_attributes
-import pdb
+#import pdb
 
 
 def load_file_names(inpath, variable, scenario, bc_and_resolution):
@@ -29,7 +29,7 @@ def load_file_names(inpath, variable, scenario, bc_and_resolution):
     """
 
     filepath = inpath + '/' + str(bc_and_resolution) + '/*/' + str(scenario) + '/' + str(variable) + '*.nc'
-    print filepath
+#    print filepath
     files_good = glob.glob(filepath)
 
     modelID = [f.split(os.sep)[-3] for f in files_good]
@@ -38,7 +38,7 @@ def load_file_names(inpath, variable, scenario, bc_and_resolution):
 
 
 
-def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, calc_file, region, overwrite):
+def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, metric, region, overwrite):
     """
     Computes respective metric and returns single model files and multi-model cube at different aggregations
     """
@@ -51,47 +51,53 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
         ymin = box[2]
         ymax = box[3]
 
-        print inpath, sc, bc, seas
         files_good, modelID = load_file_names(inpath, var, sc, bc)
 
         if files_good == []:
-            sys.exit('No files found. Check your input directory!')
+            print inpath, sc, bc, seas, var
+            sys.exit('No files found. Check your input directory!!!')
 
         out = outpath + os.sep + bc
 
-        calc_to_call = getattr(calc, calc_file) # calls the metric calc function from calc.py
-        file_searcher = out + os.sep + str(calc_file) + '_' +str(var) + '_' + str(bc) + \
+        calc_to_call = getattr(calc, metric) # calls the metric calc function from calc.py
+        file_searcher = out + os.sep + str(metric) + '_' +str(var) + '_' + str(bc) + \
                         '_' + str(sc) + '_' + str(seas) +'_' + str(reg[0])
-
+        
         for file, nme in zip(files_good, modelID):
-            nc_file = file_searcher + '_' + str(nme) + '_singleModel_'+cnst.AGGREGATION[0]+'.nc'
-            if os.path.isfile(nc_file) & (overwrite == 'No'):
-                continue
-
-            cubeout = utils.load_data(file, xmin, xmax, ymin, ymax)
-
-            calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
-
-        for agg in cnst.AGGREGATION:
-            print agg
-            big_cube(file_searcher, agg)
+            
+            # Check if we have any missing files for all aggregation types, if so, run the metric calculation again
+            # Note: the calc functions run for 2 or 3 aggregation methods
+            for agg in cnst.METRIC_AGGS[metric]:
+                print agg
+                
+                nc_file = file_searcher + '_' + str(nme) + '_singleModel_'+agg+'.nc'
+                print 'nc_file: ' + nc_file
+                
+                if not os.path.isfile(nc_file) or (overwrite == 'Yes'):
+                    cubeout = utils.load_data(file, xmin, xmax, ymin, ymax)
+                    calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
+                
+                big_cube(file_searcher, agg)
+                
+            
 
 
 def big_cube(file_searcher, aggregation):
     """
     Reads single model files and creates multi model cubes for time series and 2d cubes
     """
-
+    print file_searcher, aggregation
+    
     if aggregation not in cnst.AGGREGATION:
-        sys.exit('Data aggregation does not exist, choose either tseries or 2d')
-
+        sys.exit('Data aggregation does not exist, choose either trend, tseries or 2d')
+        
     list_of_files = glob.glob(file_searcher + '*_singleModel_' + aggregation + '.nc')
 
     model_names = [f.split('/')[-1].split('_')[-3].split('.')[0] for f in list_of_files]
     cubelist = iris.cube.CubeList([])
 
     for file in list_of_files:
-
+#        print file
         fi = list_of_files.index(file)
         mod_coord = iris.coords.AuxCoord([model_names[fi]], long_name='model_name', var_name='model_name', units='1')
 
@@ -108,13 +114,17 @@ def big_cube(file_searcher, aggregation):
             newcube.data = cube.data
             cubelist.append(newcube)
 
-    equalise_attributes(cubelist)
-    bigcube = cubelist.merge_cube()
+#    print cubelist
+#    pdb.set_trace()
+    if not cubelist:
+        print "No cubes found"
+    else:
+        equalise_attributes(cubelist)
+        bigcube = cubelist.merge_cube()
+        iris.save(bigcube, str(file_searcher) + '_allModels_' + aggregation + '.nc')
 
-    iris.save(bigcube, str(file_searcher) + '_allModels_' + aggregation + '.nc')
 
-
-def run(variable, bc_and_resolution, inpath, outpath, season, calc_file, region, overwrite,):
+def run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite,):
 
     """
     Calls the functions to write single model, multi-model and anomaly NetCDF files.
@@ -125,10 +135,10 @@ def run(variable, bc_and_resolution, inpath, outpath, season, calc_file, region,
     :param inpath: path to CMIP5 Africa directory: '/my/path/CMIP5_Africa'
     :param outpath: path where intermediate NetCDF files should be saved (single / multi-model / anomalies)
     :param season: string list months for which the metric is to be computed: ['jas', 'ann']
-    :param calc_file: STRING identifing a metric (the calculation file), no list: 'annualMax'
+    :param metric: STRING identifing a metric (the calculation file), no list: 'annualMax'
     :param overwrite: whether or not existing NetCDF files should be overwritten
     :return: NetCDF files
     """
 
     # write all single model and big_cube files - make sure all scenarios are written to calculate anomalies!
-    model_files(variable, cnst.SCENARIO, bc_and_resolution, inpath, outpath, season, calc_file, region, overwrite)
+    model_files(variable, cnst.SCENARIO, bc_and_resolution, inpath, outpath, season, metric, region, overwrite)
