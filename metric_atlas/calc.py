@@ -9,8 +9,11 @@ C. Klein 2017
 
 import iris
 import iris.coord_categorisation
-import numpy as np
 import constants as cnst
+import numpy as np
+import numpy.ma as ma
+import cf_units
+from scipy import stats
 import pdb
 
 
@@ -51,6 +54,12 @@ def _getSeasConstr(name):
 
     return (sncon[name])
 
+def _subsetByTime(cube, start_int, end_int):
+    
+    time_constraint = iris.Constraint(year=lambda cell: start_int < cell <= end_int)
+    subset = cube.extract(time_constraint)
+    
+    return(subset)
 
 def annualMax(cubein, season, ncfile):
     '''
@@ -81,11 +90,14 @@ def annualMax(cubein, season, ncfile):
     calc = cube2plot.aggregated_by(['year'], iris.analysis.MAX)
     tseries = calc.collapsed(['longitude','latitude'], iris.analysis.MEAN)
     c2d = calc.collapsed('year', iris.analysis.MEAN)
+    trend2d = trend(calc, season, ncfile)
 
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
 
     iris.save(tseries, ncfile)
     iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)
 
 
 def annualMin(cubein, season, ncfile):
@@ -117,10 +129,14 @@ def annualMin(cubein, season, ncfile):
     calc = cube2plot.aggregated_by(['year'], iris.analysis.MIN)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEAN)
     c2d = calc.collapsed('year', iris.analysis.MEAN)
+    trend2d = trend(calc, season, ncfile)
 
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+
     iris.save(tseries, ncfile)
     iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)
 
 
 def annualTotalRain(incube, season, ncfile):
@@ -146,10 +162,14 @@ def annualTotalRain(incube, season, ncfile):
     calc = incube.aggregated_by(['year'], iris.analysis.SUM)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEAN)
     c2d = calc.collapsed('year', iris.analysis.MEAN)
+    trend2d = trend(calc, season, ncfile)
 
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+
     iris.save(tseries, ncfile)
     iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)
 
 
 def annualMean(incube, season, ncfile):
@@ -180,13 +200,18 @@ def annualMean(incube, season, ncfile):
     if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
         cube2plot.convert_units('Celsius')
 
-        calc = incube.aggregated_by(['year'], iris.analysis.MEAN)
+    calc = incube.aggregated_by(['year'], iris.analysis.MEAN)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEAN)
     c2d = calc.collapsed('year', iris.analysis.MEAN)
+    trend2d = trend(calc, season, ncfile)
 
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+
     iris.save(tseries, ncfile)
     iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)
+    
 
 
 def monthlyClimatologicalMean(incube, season, ncfile):
@@ -205,6 +230,7 @@ def monthlyClimatologicalMean(incube, season, ncfile):
     print 'Calculating climatological monthly mean'
 
     iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
+    iris.coord_categorisation.add_year(incube, 'time', name='year')
 
 #    slicer = _getSeasConstr(season)
 #    cubein = incube.extract(slicer)
@@ -220,10 +246,15 @@ def monthlyClimatologicalMean(incube, season, ncfile):
     calc = cube2plot.aggregated_by('month_number', iris.analysis.MEAN)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEAN)
     c2d = calc.collapsed('year', iris.analysis.MEAN)
+    trend2d = trend(calc, season, ncfile)
 
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+
     iris.save(tseries, ncfile)
     iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)
+
 
 
 def AnnualnbDayPerc(incube, season, ncfile, upper_threshold=None, lower_threshold=None):
@@ -243,7 +274,8 @@ def AnnualnbDayPerc(incube, season, ncfile, upper_threshold=None, lower_threshol
     :return: single model netcdf file
     '''
     if not upper_threshold:
-        "No threshold given, please provide upper threshold, stopping calculation"
+        print "No threshold given, please provide upper threshold, stopping calculation"
+        return
 
     print ncfile
     print "Calculating percentage of days with variable above " + str(upper_threshold)
@@ -301,7 +333,7 @@ def AnnualnbDay(incube, season, ncfile, threshold=None):
     :return: single model netcdf file
     '''
     if not threshold:
-        print('No threshold given, stopping calculation')
+        print 'No threshold given, stopping calculation'
         return
 
     print ncfile
@@ -325,10 +357,16 @@ def AnnualnbDay(incube, season, ncfile, threshold=None):
 
     tseries = bigger.collapsed(['longitude', 'latitude'], iris.analysis.MEAN)
     c2d = bigger.collapsed('year', iris.analysis.MEAN)
-
+    trend2d = trend(bigger, season, ncfile)
+    
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+
     iris.save(tseries, ncfile)
     iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)    
+
+
 
 def AnnualHotDays(incube, season, ncfile):
     AnnualnbDay(incube, season, ncfile, threshold=cnst.HOTDAYS_THRESHOLD)
@@ -459,10 +497,15 @@ def onsetMarteau(incube, season, ncfile):
 
     tseries = yrs.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
     c2d = yrs.collapsed('year', iris.analysis.MEDIAN)
+    trend2d = trend(yrs, season, ncfile)
 
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+
     iris.save(tseries, ncfile)
     iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)    
+
 
 
 def rainfallSequences10(cubein, season, ncfile):
@@ -583,3 +626,92 @@ def cdd(cubein,season,ncfile):
 
     return(pltdtes,pltdur)
 
+
+def trend(cubein, season, ncfile):
+    '''
+    Calculates the annual trend either for 1950-2000 or for 2010-2060
+    Can calculate the trend for one period, or (if 'month_number' is a coordinate name), it will calculate the trend for each month
+    
+    :param incube: timeseries of a metric either for 1 period (e.g. JAS), or for all months of the year
+    :param season: season name as recognised by the function _getSeasConstr
+    :param ncfile: full string for output netcdf file
+    returns: trend for a single model netcdf 
+
+    TODO: Review code & check that behaviour for multiple months is as expected
+    '''
+    if 'month_number' not in [coord.name() for coord in cubein.coords()]:
+        iris.coord_categorisation.add_month_number(cubein, 'time', name='month_number')
+    if 'year' not in [coord.name() for coord in cubein.coords()]:
+        iris.coord_categorisation.add_year(cubein, 'time', name='year')
+
+    if "historical_" in ncfile:
+        incube = _subsetByTime(cubein, cnst.HIST[0], cnst.HIST[1])
+    else:
+        incube = _subsetByTime(cubein, cnst.FUT_TREND[0], cnst.FUT_TREND[1])
+    
+    # Assume unknown units only exist for precip (NB: Units are kg/m2/s)
+    if incube.units == 'unknown':
+        incube.units = cf_units.Unit('kg m-2 s-1')
+    
+    # Make sure there aren't any invalid grid cells in the data
+    incube.data = ma.masked_invalid(incube.data)
+    
+    # Are we quantifying the trend for each month of the year ('ann') or just for one period (e.g. JAS)?
+    if "pr_" in ncfile:
+        incube_y = incube.aggregated_by(['year'], iris.analysis.SUM)
+        incube_y.convert_units('kg m-2 month-1')
+
+    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
+        incube_y = incube.aggregated_by(['year'], iris.analysis.MEAN)
+        incube_y.convert_units('Celsius')
+    
+    month_numbers = np.unique(incube_y.coord('month_number').points)
+    
+    if len(month_numbers) > 1:
+        
+        if "pr_" in ncfile:
+            incube_ym = incube.aggregated_by(['year','month_number'], iris.analysis.SUM)
+            incube_ym.convert_units('kg m-2 month-1')
+    
+        if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
+            incube_ym = incube.aggregated_by(['year','month_number'], iris.analysis.MEAN)
+            incube_ym.convert_units('Celsius')
+        
+        slopedata1mon = np.zeros(incube_ym[0].shape).reshape((1,incube_ym[0].shape[0], incube_ym[0].shape[1]))
+        slopedata = np.repeat(slopedata1mon, 12, axis=0)
+        moncoord = iris.coords.DimCoord(points=np.arange(1,13), long_name='month_number', units='1')
+        slope = iris.cube.Cube(slopedata, long_name='Trend', units=incube_ym.units, dim_coords_and_dims=[(moncoord, 0), (incube.coord('latitude'), 1), (incube.coord('longitude'), 2)])
+        for mon in month_numbers:
+            #print mon
+            slicer = iris.Constraint(month_number=lambda cell: cell == mon)
+            incube1mon = incube_ym.extract(slicer)
+            for x in np.arange(len(incube.coord('longitude').points)):
+                for y in np.arange(len(incube.coord('latitude').points)):
+                    if np.all(incube1mon.data[:,y,x].mask):
+                        slope.data[mon-1,y,x] = ma.masked
+                    else:
+                        # Outputs: slope, intercept, r-value, pvalue, std_err 
+                        # for py34: reg.slope                        
+                        reg = stats.linregress(np.arange(incube1mon.shape[0]), incube1mon.data[:,y,x])
+                        slope.data[mon-1,y,x] = reg[0]
+    
+    else:
+        # No need to loop through months in this case
+        slopedata = np.zeros(incube_y[0].shape)
+        slope = iris.cube.Cube(slopedata, long_name='Trend', units=incube_y.units, dim_coords_and_dims=[(incube.coord('latitude'), 0), (incube.coord('longitude'), 1)])
+        for x in np.arange(len(incube.coord('longitude').points)):
+            for y in np.arange(len(incube.coord('latitude').points)):
+                if np.all(incube_y.data[:,y,x].mask):
+                    slope.data[y,x] = ma.masked
+                else:
+                    # Outputs: slope, intercept, r-value, pvalue, std_err 
+                    # for py34: reg.slope
+                    reg = stats.linregress(np.arange(incube_y.shape[0]), incube_y.data[:,y,x])
+                    slope.data[y,x] = reg[0] 
+        
+    return(slope)
+#    ncfile_trend = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])    
+#    iris.save(slope, ncfile)
+
+
+    

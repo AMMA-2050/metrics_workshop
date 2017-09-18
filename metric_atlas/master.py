@@ -12,6 +12,7 @@ import utils
 import pdb
 
 iris.FUTURE.netcdf_promote = True
+iris.FUTURE.netcdf_no_unlimited = True
 
 def allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric):
     ###
@@ -51,6 +52,9 @@ def singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, se
         # mplot.nbModels_histogram(cube_path, out, reg, anomaly=False)
         # mplot.nbModels_histogram(cube_path, out, reg, anomaly=True)
 
+        mplot.nbModels_histogram_single(cube_path, out, reg, anomaly=False)
+        mplot.nbModels_histogram_single(cube_path, out, reg, anomaly=True)
+
         mplot.modelRank_scatter_single(cube_path, out, reg, anomaly=False)
         mplot.modelRank_scatter_single(cube_path, out, reg, anomaly=True)
 
@@ -76,42 +80,43 @@ def saves():
     region = cnst.REGIONS_LIST #[cnst.REGIONS['WA'], cnst.REGIONS['BF']]
 
     utils.create_outdirs(outpath, bc_and_resolution)
-
+    
+    
     ###
     #Choose metric specific options
     ###
     variable = ['pr', 'tasmax']
     season = ['jas']
-    calc_file = 'annualMax'
+    metric = 'annualMax'
     overwrite = 'No'
-    wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, calc_file, region, overwrite)
+    wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite)
 
     ###
     #Choose metric specific options
     ###
     variable = ['tasmax']
     season = ['jas']
-    calc_file = 'AnnualHotDaysPerc'
+    metric = 'AnnualHotDaysPerc'
     overwrite = 'No'
-    wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, calc_file, region, overwrite)
+    wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite)
 
     ###
     # Choose metric specific options
     ###
     variable = ['tasmax']
     season = ['jas']
-    calc_file = 'AnnualHotDays'
+    metric = 'AnnualHotDays'
     overwrite = 'No'
-    wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, calc_file, region, overwrite)
+    wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite)
 
     ###
     # Choose metric specific options
     ###
     variable = ['pr']
     season = ['mjjas']
-    calc_file = 'onsetMarteau'
+    metric = 'onsetMarteau'
     overwrite = 'No'
-    wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, calc_file, region, overwrite)
+    wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite)
 
 
     print('All Netcdf files written, ready to plot!')
@@ -171,5 +176,5 @@ def plot():
 
 
 if __name__ == "__main__":
-    #saves()
-    plot()
+    saves()
+    #plot()

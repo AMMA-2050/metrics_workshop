@@ -65,20 +65,25 @@ def getYlab(m, v, anom=None):
     except:
         ylab = cnst.VARNAMES[v] + ': ' + m
     
-    if anom == 'percentage':
+    if anom in ['percentage', 'percentageAnomaly']:
         ylab = '% Change in ' + ylab
-    if anom == 'absolute':
+    if anom in ['absolute', 'anomaly']:
         ylab = 'Change in ' + ylab
     
     return(ylab)
 
 def getFigSize(region, plottype):
-    comb = region + '_' + plottype
+    
+    if region:
+        comb = plottype + '_' + region
+    else:
+        comb = plottype
     
     # (width, height)
-    thisLUT = {'BF_map': (6,8),
-               'SG_map': (6,8),
-               'WA_map': (8,6)
+    thisLUT = {'map_BF': (7,8),
+               'map_SG': (6,8),
+               'map_WA': (8,6),
+               'nbModelHistogram': (7,6)
             }
     
     try:

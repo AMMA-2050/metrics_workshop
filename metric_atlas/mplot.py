@@ -93,7 +93,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
 
         plot_dic2 = {'data': data_perc,
                      'ftag': scen + 'PercentageAnomaly',
-                     'cblabel': 'anomaly',
+                     'cblabel': 'percentageAnomaly',
                      'levels': (utils.datalevels_ano(data_perc[0].data), utils.datalevels_ano(data_perc[1].data)),
                      'cmap': 'RdBu'
                      }
@@ -281,9 +281,10 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
        :param anomaly: boolean, switch for anomaly calculation
        :return: plot
        """
+    # This creates a list of '*allModels_tseries.nc' files, one element for each scenario
     ano_list = glob.glob(incubes + '_tseries.nc')
-    ano_list = utils.order(ano_list)
-
+    ano_list = utils.order(ano_list) 
+    
     ldata = []
     scen = []
     perc = []
@@ -300,7 +301,7 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
         if (anomaly == True) & (fdict['scenario'] == 'historical'):
             continue
 
-        vname = cnst.VARNAMES[fdict['variable']]
+        #vname = cnst.VARNAMES[fdict['variable']]
         cube = iris.load_cube(ano)
         cube = cube.collapsed('year', iris.analysis.MEAN)
         lmodels.append(np.ndarray.tolist(cube.coord('model_name').points))
@@ -314,23 +315,26 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
             data_perc = utils.anomalies(hist, cube, percentage=True)
 
             an = 'anomaly'
-            ylabel = ' anomaly'
+#            ylabel = ' anomaly'
+            ylabel = lblr.getYlab(metric, variable, anom="anomaly")
 
             an_p = 'percentageAnomaly'
-            ylabel_p = 'percentage anomaly'
+#            ylabel_p = 'percentage anomaly'
+            ylabel_p = lblr.getYlab(metric, variable, anom="percentageAnomaly")
             dat_perc = np.ndarray.tolist(data_perc.data)
             perc.append(dat_perc)
 
         else:
             data = cube
             an = 'scenarios'
-            ylabel = vname
+#            ylabel = vname
+            ylabel = lblr.getYlab(metric, variable, anom="")
 
         dat = data.data
         dat = np.ndarray.tolist(dat)
         ldata.append(dat)
 
-        scen.append(fdict['scenario'])
+        scen.append(scenario)
 
     plot_dic1 = {'data': ldata,
                  'xlabel': scen,
@@ -376,10 +380,12 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
             plt.xticks(xticks_pos, p['models'][id], ha='right', rotation=45)
 
             plt.ylabel(p['ylabel'])
-            plt.title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']))
+            plt.title(p['xlabel'][id])
+            #plt.title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']))
             #plt.title(p['xlabel'][id] + ': ' + fdict['metric'] + ' ' + vname)
 
-        plt.tight_layout()
+        plt.tight_layout(h_pad=0.2, rect=(0,0,1,0.92))
+        plt.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']))
 
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_allModelHisto_' + p[
@@ -432,13 +438,13 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
 
         plot_dic1 = {'data': histo,
                      'ftag': scen + 'Anomaly',
-                     'ylabel': vname + ' anomaly: ' + fdict['metric'],
+                     'ylabel': lblr.getYlab(metric, variable, anom="anomaly"),
                      'bins': h
                      }
 
         plot_dic2 = {'data': histop,
                      'ftag': scen + 'PercentageAnomaly',
-                     'ylabel': vname + ' anomaly percentage: ' + fdict['metric'],
+                     'ylabel': lblr.getYlab(metric, variable, anom="percentageAnomaly"),
                      'bins': hp
                      }
 
@@ -449,13 +455,13 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
         histo, h = np.histogram(cube, bins=np.linspace(cube.min(), cube.max(), 10))
         plot_dic1 = {'data': histo,
                      'ftag': scen,
-                     'ylabel': vname + ' anomaly: ' + fdict['metric'],
+                     'ylabel': lblr.getYlab(metric, variable, anom=""),
                      'bins': h
                      }
         toplot = [plot_dic1]
 
     for p in toplot:
-        f = plt.figure()
+        f = plt.figure(figsize=lblr.getFigSize(None, 'nbModelHistogram'))
         ax = f.add_subplot(111)
         bin = p['bins']
         ax.bar(bin[0:-1] + ((bin[1::] - bin[0:-1]) / 2), p['data'], edgecolor='black', width=(bin[1::] - bin[0:-1]),
@@ -463,7 +469,7 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
 
         ax.set_xlabel(p['ylabel'])
         ax.set_ylabel('Number of models')
-        ax.set_title(lblr.getTitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag'])))
+        ax.set_title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']))
         #ax.set_title(region[1] + ': ' + scen)
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_nbModelHistogram_' + p[
@@ -518,10 +524,12 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
             hhistop, bip = np.histogram(data_perc, bins=np.linspace(data_perc.min(), data_perc.max(), 10))
 
             an = 'anomaly'
-            ylabel = ' anomaly'
+            #ylabel = ' anomaly'
+            ylabel = lblr.getYlab(metric, variable, anom="anomaly")
 
             an_p = 'percentageAnomaly'
-            ylabel_p = 'percentage anomaly'
+            #ylabel_p = 'percentage anomaly'
+            ylabel_p = lblr.getYlab(metric, variable, anom="percentageAnomaly")
 
             ldata.append((hhisto, bi))
             perc.append((hhistop, bip))
@@ -530,7 +538,8 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
             cube = cube.data
             hhisto, bi = np.histogram(cube, bins=np.linspace(cube.min(), cube.max(), 10))
             ldata.append((hhisto, bi))
-            ylabel = vname
+            #ylabel = vname
+            ylabel = lblr.getYlab(metric, variable, anom="")
             an = 'scenarios'
 
         scen.append(fdict['scenario'])
@@ -574,7 +583,7 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
                    width=(bin[1::] - bin[0:-1]),
                    align='edge', color='darkseagreen')
 
-            ax.set_xlabel(p['ylabel'] + ': ' + fdict['metric'])
+            ax.set_xlabel(p['ylabel']) #  + ': ' + fdict['metric']
             ax.set_ylabel('Number of models')
             #ax.set_title(scen[id])
             ax.set_title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']))
@@ -631,12 +640,12 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
 
         plot_dic1 = {'data': data,
                      'ftag': scen + 'Anomaly',
-                     'ylabel': vname + ' anomaly: ' + fdict['metric'],
+                     'ylabel': lblr.getYlab(metric, variable, anom="anomaly"), #vname + ' anomaly: ' + fdict['metric'],
                      'minmax': utils.data_minmax(data)}
 
         plot_dic2 = {'data': data_perc,
                      'ftag': scen + 'PercentageAnomaly',
-                     'ylabel': vname + ' anomaly percentage: ' + fdict['metric'],
+                     'ylabel': lblr.getYlab(metric, variable, anom="percentageAnomaly"), #vname + ' anomaly percentage: ' + fdict['metric'],
                      'minmax': utils.data_minmax(data_perc)
                      }
 
@@ -649,7 +658,7 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
 
         plot_dic1 = {'data': cube,
                      'ftag': scen,
-                     'ylabel': vname + ': ' + fdict['metric'],
+                     'ylabel': lblr.getYlab(metric, variable, anom=""),
                      'minmax': utils.data_minmax(cube)
                      }
 
@@ -665,7 +674,7 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
                         edgecolors='k')
 
         plt.ylabel(p['ylabel'])
-        plt.xlabel("Model rank")
+        plt.xlabel("Model Rank")
         #plt.title(region[1] + ': ' + scen)
         plt.title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']))
         plt.tick_params(axis='x', which='both', bottom='off', top='off')
@@ -691,6 +700,7 @@ def lineplot_scenarios(incubes, outpath, region):
 
     colors = ['gray', 'gold', 'green', 'mediumblue'][::-1]
     tag = cnst.SCENARIO[::-1]
+    scenarios = []
 
     for ano, co, ta in zip(ano_list, colors, tag):
 
@@ -700,8 +710,7 @@ def lineplot_scenarios(incubes, outpath, region):
         variable = fdict['variable']
         season = fdict['season']
         bc = fdict['bc_res']
-
-        vname = cnst.VARNAMES[fdict['variable']]
+        scenarios.append(scen)
 
         cube = iris.load_cube(ano)
         time = cube.coord('year').points
@@ -709,13 +718,13 @@ def lineplot_scenarios(incubes, outpath, region):
 
         ax.plot(time[0], 0, color=co, label=ta)
         for nb in range(cube.shape[0]):
-            ax.plot(time, cube[nb, :], color=co, alpha=0.5)
+            ax.plot(time, cube[nb, :], color=co, alpha=0.5, lw=0.75)
 
     bottom, top = ax.get_ylim()
     plt.vlines(2005, bottom, top, linestyle='--', linewidth=1.5, zorder=10)
-    plt.ylabel(vname + ': ' + fdict['metric'])
+    plt.ylabel(lblr.getYlab(metric, variable, anom=""))
     #plt.title(region[1])
-    plt.title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=''))
+    plt.title(lblr.getTitle(metric, variable, season, scenarios, bc, region[1], anom=''))
     plt.legend()
     plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                 fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_lineplot_allscen_' + '.png')
