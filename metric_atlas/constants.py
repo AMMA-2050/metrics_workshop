@@ -31,23 +31,32 @@ FUTURE = [2040, 2069]
 HIST = [1950, 2000]
 
 HOTDAYS_THRESHOLD = 40
+RAINYDAY_THRESHOLD = 1
+STRONGWIND_THRESHOLD = 70
 
 METRIC_AGGS = {
             'annualMax' : ['tseries', '2d', 'trend'],
             'annualMin' : ['tseries', '2d', 'trend'],
             'annualTotalRain' : ['tseries', '2d', 'trend'],
             'annualMean' : ['tseries', '2d', 'trend'],
+            'annualMeanRainyDay' : ['tseries', '2d', 'trend'],
             'monthlyClimatologicalMean' : ['tseries', '2d', 'trend'],
-            'AnnualnbDayPerc' : ['tseries', '2d'],
-            'AnnualHotDaysPerc' : ['tseries', '2d'],
-            'AnnualRainyDaysPerc' : ['tseries', '2d'],
-            'AnnualRainyDaysPerc50' : ['tseries', '2d'],
-            'AnnualnbDay' : ['tseries', '2d', 'trend'],
-            'AnnualHotDays' : ['tseries', '2d', 'trend'],
-            'AnnualExtremeRain50' : ['tseries', '2d', 'trend'],
-            'AnnualExtremeRain100' : ['tseries', '2d', 'trend'],
+            'annualHotDaysPerc' : ['tseries', '2d'],
+            'annualRainyDays' : ['tseries', '2d'],
+            'annualRainyDaysPerc' : ['tseries', '2d'],
+            'annualHotDays' : ['tseries', '2d', 'trend'],
+            'annualExtremeRain30' : ['tseries', '2d', 'trend'],
+            'annualExtremeRain50' : ['tseries', '2d', 'trend'],
+            'annualExtremeRain100' : ['tseries', '2d', 'trend'],
+            'wetSpell10': ['tseries', '2d', 'trend'],
+            'drySpell6': ['tseries', '2d', 'trend'],
+            'annualMaxRain_5dSum': ['tseries', '2d'],
+            'annualMaxRain_3dSum' : ['tseries', '2d'],
+            'annualMaxRain_2dSum' : ['tseries', '2d'],
+            'annualMaxRain_5dMean': ['tseries', '2d'],
+            'annualMaxRain_3dMean': ['tseries', '2d'],
+            'annualMaxRain_2dMean': ['tseries', '2d'],
             'SPIxMonthly' : ['tseries', '2d'],
             'onsetMarteau' : ['tseries', '2d', 'trend'],
-            'rainfallSequences10' : ['tseries', '2d'],
             'cdd' : ['tseries', '2d']
         }
