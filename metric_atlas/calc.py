@@ -4,7 +4,7 @@ This module contains all calculation functions for the climate metrics atlas
 Every calc script must return a 2d cube (collapsed over time) and a 1d time series cube (collapsed over area). Based
 on these two aggregations, all possible following anomaly calculations and plots can be handled.
 
-C. Klein 2017
+2017
 """
 
 import iris
@@ -81,14 +81,13 @@ def annualMax(cubein, season, ncfile):
     slicer = _getSeasConstr(season)
     cubein = cubein.extract(slicer)
 
-    cube2plot = cubein
     if "pr_" in ncfile:
-        cube2plot.convert_units('kg m-2 day-1')
+        cubein.convert_units('kg m-2 day-1')
 
     if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        cube2plot.convert_units('Celsius')
+        cubein.convert_units('Celsius')
 
-    calc = cube2plot.aggregated_by(['year'], iris.analysis.MAX)
+    calc = cubein.aggregated_by(['year'], iris.analysis.MAX)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
     c2d = calc.collapsed('year', iris.analysis.MEDIAN)
     trend2d = trend(calc, season, ncfile)
@@ -120,14 +119,13 @@ def annualMin(cubein, season, ncfile):
     slicer = _getSeasConstr(season)
     cubein = cubein.extract(slicer)
 
-    cube2plot = cubein
     if "pr_" in ncfile:
-        cube2plot.convert_units('kg m-2 day-1')
+        cubein.convert_units('kg m-2 day-1')
 
     if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        cube2plot.convert_units('Celsius')
+        cubein.convert_units('Celsius')
 
-    calc = cube2plot.aggregated_by(['year'], iris.analysis.MIN)
+    calc = cubein.aggregated_by(['year'], iris.analysis.MIN)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
     c2d = calc.collapsed('year', iris.analysis.MEDIAN)
     trend2d = trend(calc, season, ncfile)
@@ -193,13 +191,12 @@ def _annualMeanThresh(incube, season, ncfile, lower_threshold=None):
     iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
 
     incube = incube.extract(slicer)
-    cube2plot = incube
 
     if "pr_" in ncfile:
-        cube2plot.convert_units('kg m-2 day-1')
+        incube.convert_units('kg m-2 day-1')
 
     if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        cube2plot.convert_units('Celsius')
+        incube.convert_units('Celsius')
 
     csum = incube.aggregated_by(['year'], iris.analysis.SUM)
     ccount = incube.aggregated_by(['year'], iris.analysis.COUNT, function=lambda values: values >= lower_threshold)
@@ -237,15 +234,14 @@ def monthlyClimatologicalMean(incube, season, ncfile):
     #    slicer = _getSeasConstr(season)
     #    cubein = incube.extract(slicer)
 
-    cube2plot = incube
 
     if "pr_" in ncfile:
-        cube2plot.convert_units('kg m-2 day-1')
+        incube.convert_units('kg m-2 day-1')
 
     if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        cube2plot.convert_units('Celsius')
+        incube.convert_units('Celsius')
 
-    calc = cube2plot.aggregated_by('month_number', iris.analysis.MEAN)
+    calc = incube.aggregated_by('month_number', iris.analysis.MEAN)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
     c2d = calc.collapsed('year', iris.analysis.MEDIAN)
     trend2d = trend(calc, season, ncfile)
@@ -281,17 +277,17 @@ def _annualnbDayPerc(incube, season, ncfile, upper_threshold=None, lower_thresho
     iris.coord_categorisation.add_year(incube, 'time', name='year')
 
     slicer = _getSeasConstr(season)
-    cube2plot = incube.extract(slicer)
-    cube2plot.coord('latitude').guess_bounds()
-    cube2plot.coord('longitude').guess_bounds()
+    incube = incube.extract(slicer)
+    incube.coord('latitude').guess_bounds()
+    incube.coord('longitude').guess_bounds()
     if "pr_" in ncfile:
-        cube2plot.convert_units('kg m-2 day-1')
+        incube.convert_units('kg m-2 day-1')
 
     if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        cube2plot.convert_units('Celsius')
+        incube.convert_units('Celsius')
 
-    bigger = cube2plot.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= upper_threshold)
-    monthcount = cube2plot.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= lower_threshold)
+    bigger = incube.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= upper_threshold)
+    monthcount = incube.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= lower_threshold)
     bigger.data = bigger.data.astype(float)
     monthcount.data = monthcount.data.astype(float)
 
@@ -330,20 +326,22 @@ def _annualnbDay(incube, season, ncfile, threshold=None):
     iris.coord_categorisation.add_year(incube, 'time', name='year')
 
     slicer = _getSeasConstr(season)
-    cube2plot = incube.extract(slicer)
-    cube2plot.coord('latitude').guess_bounds()
-    cube2plot.coord('longitude').guess_bounds()
+    incube = incube.extract(slicer)
+    incube.coord('latitude').guess_bounds()
+    incube.coord('longitude').guess_bounds()
     if "pr_" in ncfile:
-        cube2plot.convert_units('kg m-2 day-1')
+        incube.convert_units('kg m-2 day-1')
 
     if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        cube2plot.convert_units('Celsius')
+        incube.convert_units('Celsius')
 
-    bigger = cube2plot.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= threshold)
+    bigger = incube.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= threshold)
+    bigger.units = incube.units
     bigger.data = bigger.data.astype(float)
 
     tseries = bigger.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
     c2d = bigger.collapsed('year', iris.analysis.MEDIAN)
+
     trend2d = trend(bigger, season, ncfile)
 
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
@@ -362,22 +360,22 @@ def _xDaySum_AnnualMax(incube, season, ncfile, nb_days=None):
     print ncfile
     print "Aggregating variable for " + str(nb_days) + "-day moving windows."
 
+    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
     iris.coord_categorisation.add_year(incube, 'time', name='year')
 
     slicer = _getSeasConstr(season)
     incube = incube.extract(slicer)
 
-    cube2plot = incube
-
     if "pr_" in ncfile:
-        cube2plot.convert_units('kg m-2 day-1')
+        incube.convert_units('kg m-2 day-1')
 
     if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
         print('This aggregation makes no sense for temperature. Stopping calculation')
         return
 
-    calc = cube2plot.rolling_window('time', iris.analysis.SUM, nb_days)
+    calc = incube.rolling_window('time', iris.analysis.SUM, nb_days)
     calc = calc.aggregated_by(['year'], iris.analysis.MAX)
+
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
     c2d = calc.collapsed('year', iris.analysis.MEDIAN)
     trend2d = trend(calc, season, ncfile)
@@ -399,6 +397,7 @@ def _xDayMean_AnnualMax(incube, season, ncfile, nb_days=None):
     print ncfile
     print "Aggregating variable for " + str(nb_days) + "-day moving windows."
 
+    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
     iris.coord_categorisation.add_year(incube, 'time', name='year')
 
     slicer = _getSeasConstr(season)
@@ -535,6 +534,51 @@ def SPIxMonthly(incube, season, ncfile):
     spi = (c_monthly - clim_mean_cube) / clim_std_cube
 
     iris.save(spi, ncfile)
+
+
+# def SPIbiannual(incube, season, ncfile):
+#     """
+#     Calculate SPI for given period up to one year.
+#     The SPI is the anomaly with respect to the chosen scenario baseline period.
+#     period - climatological_mean / climatological_std
+#
+#     :param incube: precipitation cube from CMIP5 raw data
+#     :param season: string indicating season, read by _getSeasConstr() to get season contraint
+#     :param ncfile: full string for output netcdf file
+#     :return: single model netcdf file
+#     """
+#
+#     print 'Calculating SPI for ' + str(season)
+#
+#     iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
+#     iris.coord_categorisation.add_year(incube, 'time', name='year')
+#     slicer = _getSeasConstr(season)
+#
+#     incube = incube.extract(slicer)
+#
+#     c_monthly = incube.aggregated_by(['year'], iris.analysis.MEAN)
+#     c_monthly.convert_units('kg m-2 day-1')
+#
+#     # This is the monthly climatology (mean and std deviation)
+#     std = c_monthly.collapsed('year', iris.analysis.STD_DEV)
+#     mean = c_monthly.collapsed('year', iris.analysis.MEAN)
+#
+#     # We need to change the shape of the monthly climatologies to match the shape of the timeseries (in the cube c_monthly)
+#     mean = mean.data
+#     std = std.data
+#
+#     clim_mean_data = np.repeat(mean.reshape(1, mean.shape[0], mean.shape[1]), c_monthly.shape[0],
+#                                axis=0)  # np.tile(mean.data, (c_monthly.shape[0] / mean.shape[0], 1, 1))
+#     clim_std_data = np.repeat(std.reshape(1, std.shape[0], std.shape[1]), c_monthly.shape[0],
+#                               axis=0)  # np.tile(std.data, (c_monthly.shape[0] / std.shape[0], 1, 1))
+#
+#     clim_mean_cube = c_monthly.copy(clim_mean_data)
+#     clim_std_cube = c_monthly.copy(clim_std_data)
+#
+#     spi = (c_monthly - clim_mean_cube) / clim_std_cube
+#
+#     iris.save(spi, ncfile)
+
 
 
 def onsetMarteau(incube, season, ncfile):
@@ -675,24 +719,23 @@ def _countSpells(incube, season, ncfile, spell_length=None, lower_threshold=None
     iris.coord_categorisation.add_year(incube, 'time', name='year')
 
     slicer = _getSeasConstr(season)
-    cube2plot = incube.extract(slicer)
-    cube2plot.coord('latitude').guess_bounds()
-    cube2plot.coord('longitude').guess_bounds()
+    incube = incube.extract(slicer)
+    incube.coord('latitude').guess_bounds()
+    incube.coord('longitude').guess_bounds()
     if "pr_" in ncfile:
-        cube2plot.convert_units('kg m-2 day-1')
+        incube.convert_units('kg m-2 day-1')
 
     if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        cube2plot.convert_units('Celsius')
+        incube.convert_units('Celsius')
 
     #Start spell calculation
     # Make an aggregator from days count
     SPELL_COUNT = iris.analysis.Aggregator('spell_count', count_func,
                                      units_func=lambda units: 1)
-
     # Calculate the statistic
     calc = incube.aggregated_by(['year'], SPELL_COUNT, threshold=threshold,
                                 spell_length=spell_length)
-
+    calc.units = incube.units
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
     c2d = calc.collapsed('year', iris.analysis.MEDIAN)
     trend2d = trend(calc, season, ncfile)
