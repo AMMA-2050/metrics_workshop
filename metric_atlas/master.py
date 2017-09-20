@@ -85,7 +85,7 @@ def saves():
     ###
     variable = ['pr']
     season = ['jas']
-    metric_list = ['SPIxMonthly']#, 'annualMaxRain_5dSum', 'annualTotalRain', 'wetSpell10', 'annualMeanRainyDay', 'drySpell6'] #
+    metric_list = ['annualRainyDaysPerc']#, 'annualMaxRain_5dSum', 'annualTotalRain', 'wetSpell10', 'annualMeanRainyDay', 'drySpell6'] #
     overwrite = 'No'
     for metric in metric_list:
         wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite)

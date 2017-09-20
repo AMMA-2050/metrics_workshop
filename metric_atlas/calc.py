@@ -255,12 +255,13 @@ def monthlyClimatologicalMean(incube, season, ncfile):
     if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
         incube.convert_units('Celsius')
 
-    calc = incube.aggregated_by('month_number', iris.analysis.MEAN)
-    tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
+    tcalc = incube.aggregated_by(['month_number', 'year'], iris.analysis.MEAN) # prepare trend calc
+    trend2d = trend(tcalc, season, ncfile)
 
-    calc2d = utils.time_slicer(calc, fdict['scenario'])
-    c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)
-    trend2d = trend(calc, season, ncfile)
+    incube = utils.time_slicer(incube, fdict['scenario'])
+    calc = incube.aggregated_by('month_number', iris.analysis.MEAN) # time slicing for 2d and time series
+    tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
+    c2d = calc.collapsed('year', iris.analysis.MEDIAN)
 
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
     nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
@@ -268,6 +269,7 @@ def monthlyClimatologicalMean(incube, season, ncfile):
     iris.save(tseries, ncfile) # monthly time series, 12 entries
     iris.save(c2d, nc2d)
     iris.save(trend2d, nctrend2d)
+
 
 
 def _annualnbDayPerc(incube, season, ncfile, upper_threshold=None, lower_threshold=None):
@@ -308,6 +310,11 @@ def _annualnbDayPerc(incube, season, ncfile, upper_threshold=None, lower_thresho
     bigger.data = bigger.data.astype(float)
     monthcount.data = monthcount.data.astype(float)
 
+    trend_data = bigger/monthcount * 100
+
+    trend_data.units = incube.units
+    trend2d = trend(trend_data, season, ncfile)
+
     bigger_tseries = bigger.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
 
     bigger2d = utils.time_slicer(bigger, fdict['scenario'])
@@ -322,8 +329,10 @@ def _annualnbDayPerc(incube, season, ncfile, upper_threshold=None, lower_thresho
     c2d = (bigger_c2d / monthcount_c2d) * 100
 
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
     iris.save(tseries, ncfile)
     iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)
 
 
 def _annualnbDay(incube, season, ncfile, threshold=None):
@@ -784,9 +793,9 @@ def _countSpells(incube, season, ncfile, spell_length=None, lower_threshold=None
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
     nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
 
-    iris.save(tseries, ncfile)  # monthly time series, 12 entries
-    iris.save(c2d, nc2d)
-    iris.save(trend2d, nctrend2d)
+    iris.save(tseries, ncfile)  #full time period
+    iris.save(c2d, nc2d)        #sliced time period
+    iris.save(trend2d, nctrend2d) #values for trend period
 
 def wetSpell10(incube, season, ncfile):
     _countSpells(incube, season, ncfile, spell_length=10, lower_threshold=cnst.RAINYDAY_THRESHOLD)
