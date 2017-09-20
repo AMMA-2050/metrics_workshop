@@ -80,26 +80,25 @@ def saves():
 
     utils.create_outdirs(outpath, bc_and_resolution)
 
-    # p = Pool(7)
-    # ###
-    # #Choose metric specific options
-    # ###
-    # variable = ['pr']
-    # season = ['jas']
-    # metric_list = [ 'annualMaxRain_5dSum', 'annualTotalRain', 'wetSpell10', 'annualMeanRainyDay', 'drySpell6'] #
-    # overwrite = 'No'
-    # for metric in metric_list:
-    #     wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite)
-
     ###
     #Choose metric specific options
     ###
-    variable = ['tasmax']
+    variable = ['pr']
     season = ['jas']
-    metric_list = ['annualHotDays', 'annualMax']
+    metric_list = ['SPIxMonthly']#, 'annualMaxRain_5dSum', 'annualTotalRain', 'wetSpell10', 'annualMeanRainyDay', 'drySpell6'] #
     overwrite = 'No'
     for metric in metric_list:
         wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite)
+
+    # ###
+    # #Choose metric specific options
+    # ###
+    # variable = ['tasmax']
+    # season = ['jas']
+    # metric_list = ['annualMax']
+    # overwrite = 'No'
+    # for metric in metric_list:
+    #     wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite)
 
 
     # ###
@@ -139,33 +138,35 @@ def plot():
     ###
     #Start plot annual max metric
     ###
-    variable = ['pr', 'tasmax']
-    season = ['jas']
-    metric = 'annualMax'
-
-    allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
-    singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
-
-
-    ###
-    # Start plot nbTmax metric
-    ###
     variable = ['tasmax']
     season = ['jas']
-    metric = 'AnnualHotDays'
+    metric_list = ['annualHotDays', 'annualMax']
 
-    allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
-    singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
+    for metric in metric_list:
 
-    ###
-    # Start plot nbTmax metric
-    ###
-    variable = ['pr']
-    season = ['mjjas']
-    metric = 'onsetMarteau'
+        allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
+        singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
 
-    allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
-    singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
+    #
+    # ###
+    # # Start plot nbTmax metric
+    # ###
+    # variable = ['tasmax']
+    # season = ['jas']
+    # metric = 'AnnualHotDays'
+    #
+    # allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
+    # singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
+    #
+    # ###
+    # # Start plot nbTmax metric
+    # ###
+    # variable = ['pr']
+    # season = ['mjjas']
+    # metric = 'onsetMarteau'
+    #
+    # allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
+    # singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
 
 
 if __name__ == "__main__":

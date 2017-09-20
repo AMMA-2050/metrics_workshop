@@ -199,11 +199,14 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
 
         vname = cnst.VARNAMES[fdict['variable']]
         cube = iris.load_cube(ano)
+        cube = utils.time_slicer(cube, fdict['scenario'])
         cube = cube.collapsed('year', iris.analysis.MEAN)
 
         if anomaly:
             ano_hist = ano.replace(fdict['scenario'], 'historical')
             hist = iris.load_cube(ano_hist)
+            hist = utils.time_slicer(hist, 'historical')
+
             hist = hist.collapsed('year', iris.analysis.MEAN)
 
             data = utils.anomalies(hist, cube, percentage=False)
@@ -303,12 +306,14 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
 
         #vname = cnst.VARNAMES[fdict['variable']]
         cube = iris.load_cube(ano)
+        cube = utils.time_slicer(cube, fdict['scenario'])
         cube = cube.collapsed('year', iris.analysis.MEAN)
         lmodels.append(np.ndarray.tolist(cube.coord('model_name').points))
 
         if anomaly:
             ano_hist = ano.replace(fdict['scenario'], 'historical')
             hist = iris.load_cube(ano_hist)
+            hist = utils.time_slicer(hist, 'historical')
             hist = hist.collapsed('year', iris.analysis.MEAN)
 
             data = utils.anomalies(hist, cube, percentage=False)
@@ -420,11 +425,13 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
 
     vname = cnst.VARNAMES[fdict['variable']]
     cube = iris.load_cube(ano)
+    cube = utils.time_slicer(cube, fdict['scenario'])
     cube = cube.collapsed('year', iris.analysis.MEAN)
 
     if anomaly:
         ano_hist = ano.replace(fdict['scenario'], 'historical')
         hist = iris.load_cube(ano_hist)
+        hist = utils.time_slicer(hist, 'historical')
         hist = hist.collapsed('year', iris.analysis.MEAN)
 
         data = utils.anomalies(hist, cube, percentage=False)
@@ -507,11 +514,14 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
 
         vname = cnst.VARNAMES[fdict['variable']]
         cube = iris.load_cube(ano)
+        cube = utils.time_slicer(cube, fdict['scenario'])
+
         cube = cube.collapsed('year', iris.analysis.MEAN)
 
         if anomaly:
             ano_hist = ano.replace(fdict['scenario'], 'historical')
             hist = iris.load_cube(ano_hist)
+            hist = utils.time_slicer(hist, 'historical')
             hist = hist.collapsed('year', iris.analysis.MEAN)
 
             data = utils.anomalies(hist, cube, percentage=False)
@@ -623,11 +633,13 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
 
     vname = cnst.VARNAMES[fdict['variable']]
     cube = iris.load_cube(ano)
+    cube = utils.time_slicer(cube, fdict['scenario'])
     cube = cube.collapsed('year', iris.analysis.MEAN)
 
     if anomaly:
         ano_hist = ano.replace(fdict['scenario'], 'historical')
         hist = iris.load_cube(ano_hist)
+        hist = utils.time_slicer(hist, 'historical')
         hist = hist.collapsed('year', iris.analysis.MEAN)
 
         data = utils.anomalies(hist, cube, percentage=False)
