@@ -186,7 +186,7 @@ def _annualMeanThresh(incube, season, ncfile, lower_threshold=None):
     '''
 
     print ncfile
-    print 'Calculating annual mean'
+    print 'Calculating annual mean for ' + season
 
     slicer = _getSeasConstr(season)
     iris.coord_categorisation.add_year(incube, 'time', name='year')
@@ -747,7 +747,13 @@ def trend(cubein, season, ncfile):
 
     if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
         incube_y = incube.aggregated_by(['year'], iris.analysis.MEAN)
-        incube_y.convert_units('Celsius')
+        try:
+            incube_y.convert_units('Celsius')
+        except ValueError:
+            if np.mean(incube_y.data) > 100:
+                incube_y.units = cf_units.Unit('K')
+            else:
+                incube_y.units = cf_units.Unit('Celsius')
 
     month_numbers = np.unique(incube_y.coord('month_number').points)
 
