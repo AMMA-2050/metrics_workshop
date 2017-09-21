@@ -485,6 +485,10 @@ def annualHotDaysPerc(incube, season, ncfile):
     _annualnbDayPerc(incube, season, ncfile, upper_threshold=cnst.HOTDAYS_THRESHOLD, lower_threshold=-50)
 
 
+def annualStrongWindDays(incube, season, ncfile):
+    _annualnbDay(incube, season, ncfile, threshold=cnst.STRONGWIND_THRESHOLD)
+
+
 def annualRainyDays(incube, season, ncfile):
     _annualnbDay(incube, season, ncfile, threshold=cnst.RAINYDAY_THRESHOLD)
 
@@ -847,6 +851,8 @@ def trend(cubein, season, ncfile):
                 incube_y.units = cf_units.Unit('K')
             else:
                 incube_y.units = cf_units.Unit('Celsius')
+    else:
+        incube_y = incube.aggregated_by(['year'], iris.analysis.MEAN)
 
     month_numbers = np.unique(incube_y.coord('month_number').points)
 

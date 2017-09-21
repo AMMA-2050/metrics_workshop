@@ -2,7 +2,7 @@
 Contains global constants for the CMIP5 atlas
 """
 
-DATADIR = '/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' # '/project/FCFA/CMIP5/bias_corrected/WA_data'
+DATADIR = '/project/FCFA/CMIP5/bias_corrected/WA_data' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
 METRIC_DATADIR = DATADIR + '/save_files/metric_data'
 METRIC_PLOTDIR = DATADIR + '/save_files/metric_plots'
 METRIC_ATLASDIR = DATADIR + '/save_files/metric_atlas'
@@ -24,7 +24,9 @@ FTYPES = ['singleModels', 'allModels', 'anomalies', 'anomaliesPerc']
 VARNAMES = {'pr' : 'daily precipitation',
             'tas' : 'daily mean temperature',
             'tasmin' : 'daily minimum temperature',
-            'tasmax' : 'daily maximum temperature'
+            'tasmax' : 'daily maximum temperature',
+            'rsds' : 'surface downwelling shortwave radiation',
+            'wind' : 'near surface wind speed'
             }
 
 FUT_TREND = [2010, 2060]
@@ -49,6 +51,7 @@ METRIC_AGGS = {
             'annualExtremeRain30' : ['tseries', '2d', 'trend'],
             'annualExtremeRain50' : ['tseries', '2d', 'trend'],
             'annualExtremeRain100' : ['tseries', '2d', 'trend'],
+            'annualStrongWindDays' : ['tseries', '2d', 'trend'],
             'wetSpell10': ['tseries', '2d'],
             'drySpell6': ['tseries', '2d'],
             'annualMaxRain_5dSum': ['tseries', '2d'],
@@ -73,13 +76,29 @@ OVERWRITE = 'No' # 'Yes'
 # variable: list of climate variable(s) to send to the calc function
 # season: list of seasons to run the metric-variable combination for
 METRICS_TORUN = [
-            ['annualMax', ['pr','tasmax'], ['jas']],
-            ['annualMin', ['tasmin'], ['jas', 'ann']],
-            ['annualTotalRain', ['pr'], ['jas', 'ann']],
-            ['annualMean', ['tas', 'rsds'], ['jas','ann']],
-            ['annualHotDaysPerc', ['tasmax'], ['jas']],
+            ['annualMax', ['pr','tasmax', 'rsds'], ['jas']],
+            ['annualMin', ['tasmin'], ['jas']],
+            ['annualTotalRain', ['pr'], ['jas']],
+            ['annualMean', ['tas', 'rsds'], ['jas']],
+            ['annualMeanRainyDay', ['pr'], ['jas']],
+            ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['jas']],
+            #['annualHotDaysPerc', ['tasmax'], ['jas']],
+            ['annualRainyDays', ['pr'], ['jas']],
+            #['annualRainyDaysPerc', ['pr'], ['jas']],
             ['annualHotDays', ['tasmax'], ['jas']],
+            ['annualExtremeRain30', ['pr'], ['jas']],
+            ['annualExtremeRain50', ['pr'], ['jas']],
+            ['annualExtremeRain100', ['pr'], ['jas']],
+            ['annualStrongWindDays', ['wind'], ['jas']],
+            ['wetSpell10', ['pr'], ['jas']],
+            ['drySpell6', ['pr'], ['jas']],
+            ['annualMaxRain_5dSum', ['pr'], ['jas']],
+            ['annualMaxRain_3dSum', ['pr'], ['jas']],
+            ['annualMaxRain_2dSum', ['pr'], ['jas']],
+            ['annualMaxRain_5dMean', ['pr'], ['jas']],
+            ['annualMaxRain_3dMean', ['pr'], ['jas']],
+            ['annualMaxRain_2dMean', ['pr'], ['jas']],
+            ['SPIxMonthly', ['pr'], ['jas']],
             ['onsetMarteau', ['pr'], ['mjjas']]
-    
-    ]            
+    ]
 
