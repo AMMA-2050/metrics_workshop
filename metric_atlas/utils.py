@@ -165,11 +165,6 @@ def anomalies(hist, future, percentage=False):
     cubelist = iris.cube.CubeList([])
     mdls = hist.coord('model_name').points
 
-    yearslicehist = iris.Constraint(year = lambda cell: cnst.HIST[0] <= cell <= cnst.HIST[1])
-    yearslicefuture = iris.Constraint(year = lambda cell: cnst.FUTURE[0] <= cell <= cnst.FUTURE[1])
-    hist = hist.extract(yearslicehist)
-    future = future.extract(yearslicefuture)
-
     for mdl in mdls:
 
         mdlextract = iris.Constraint(model_name=lambda cell: cell == mdl)
@@ -190,6 +185,19 @@ def anomalies(hist, future, percentage=False):
     anom = cubelist.merge_cube()
 
     return anom
+
+
+def time_slicer(incube, scen):
+
+    yearslicehist = iris.Constraint(year=lambda cell: cnst.HIST[0] <= cell <= cnst.HIST[1])
+    yearslicefuture = iris.Constraint(year=lambda cell: cnst.FUTURE[0] <= cell <= cnst.FUTURE[1])
+
+    if scen == 'historical':
+        incube = incube.extract(yearslicehist)
+    else:
+        incube = incube.extract(yearslicefuture)
+
+    return incube
 
 
 def datalevels_ano(data):

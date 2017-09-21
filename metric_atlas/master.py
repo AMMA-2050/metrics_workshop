@@ -10,6 +10,7 @@ import itertools
 import constants as cnst
 import utils
 import pdb
+from multiprocessing import Pool
 
 iris.FUTURE.netcdf_promote = True
 iris.FUTURE.netcdf_no_unlimited = True
@@ -40,8 +41,8 @@ def singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, se
     ###
     for bc, var, scen, seas, reg in itertools.product(bc_and_resolution, variable, cnst.SCENARIO, season, region):
 
-        if (scen == 'rcp26'):  # we leave rcp26 out for now - less plots!
-            continue
+        # if (scen == 'rcp26'):  # we leave rcp26 out for now - less plots!
+        #     continue
 
         ### DOES NOT CHANGE
         cube_path = inpath + os.sep + bc + os.sep + str(metric) + '_' + str(var) + '_' + \
@@ -72,15 +73,13 @@ def saves():
     ###
     # CHOOSE OPTIONS RELATED TO ALL METRICS
     ###
-    #inpath = '/users/global/cornkle/CMIP/CMIP5_Africa'
-    #outpath = '/users/global/cornkle/CMIP/CMIP5_Africa/save_files'
     inpath = cnst.DATADIR
     outpath = cnst.METRIC_DATADIR
     bc_and_resolution = cnst.BC_RES  # mdlgrid does not work cause models are not on the same grid!
-    region = cnst.REGIONS_LIST #[cnst.REGIONS['WA'], cnst.REGIONS['BF']]
+    region = cnst.REGIONS_LIST
 
     utils.create_outdirs(outpath, bc_and_resolution)
-
+    
     # Metric-specific options are set in constants.py
     for row in cnst.METRICS_TORUN:
         

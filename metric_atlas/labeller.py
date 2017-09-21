@@ -5,9 +5,9 @@ import constants as cnst
 
 DC = u'\N{DEGREE SIGN}C'
 
-METRICLONGNAME = {'AnnualHotDays': 'Number of Days Exceeding ' + \
+METRICLONGNAME = {'annualHotDays': 'Number of Days Exceeding ' + \
                str(cnst.HOTDAYS_THRESHOLD) + u'\N{DEGREE SIGN}C',
-               'AnnualHotDaysPerc': 'Percentage of Days Exceeding ' + \
+               'annualHotDaysPerc': 'Percentage of Days Exceeding ' + \
                str(cnst.HOTDAYS_THRESHOLD) + u'\N{DEGREE SIGN}C', 
                'annualMax': 'Annual Maximum',
                'onsetMarteau': 'Date of Monsoon Onset (Marteau method)'
