@@ -79,39 +79,21 @@ def saves():
     region = cnst.REGIONS_LIST
 
     utils.create_outdirs(outpath, bc_and_resolution)
+    
+    # Metric-specific options are set in constants.py
+    for row in cnst.METRICS_TORUN:
+        
+        metric = row[0]
+        variable = row[1]
+        season = row[2]
+        print '#######################################'
+        print 'Saving data for: '
+        print metric, variable, season
+        print '#######################################'
 
-    ###
-    #Choose metric specific options
-    ###
-    variable = ['pr']
-    season = ['jas']
-    metric_list = ['annualRainyDaysPerc']#, 'annualMaxRain_5dSum', 'annualTotalRain', 'wetSpell10', 'annualMeanRainyDay', 'drySpell6'] #
-    overwrite = 'No'
-    for metric in metric_list:
-        wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite)
+        wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, metric, region, cnst.OVERWRITE)
 
-    # ###
-    # #Choose metric specific options
-    # ###
-    # variable = ['tasmax']
-    # season = ['jas']
-    # metric_list = ['annualMax']
-    # overwrite = 'No'
-    # for metric in metric_list:
-    #     wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite)
-
-
-    # ###
-    # # Choose metric specific options
-    # ###
-    # variable = ['pr']
-    # season = ['mjjas']
-    # metric = 'onsetMarteau'
-    # overwrite = 'No'
-    # wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite)
-
-
-    print('All Netcdf files written, ready to plot!')
+    print 'All Netcdf files written, ready to plot!'
 
 
 
@@ -135,40 +117,21 @@ def plot():
     
     utils.create_outdirs(outpath, bc_and_resolution, metrics=inpath)
 
-    ###
-    #Start plot annual max metric
-    ###
-    variable = ['tasmax']
-    season = ['jas']
-    metric_list = ['annualHotDays', 'annualMax']
+    # Metric-specific options are set in constants.py
+    for row in cnst.METRICS_TORUN:
 
-    for metric in metric_list:
+        metric = row[0]
+        variable = row[1]
+        season = row[2]
+        print '#######################################'
+        print 'Plotting data for: '
+        print metric, variable, season
+        print '#######################################'
 
         allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
         singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
 
-    #
-    # ###
-    # # Start plot nbTmax metric
-    # ###
-    # variable = ['tasmax']
-    # season = ['jas']
-    # metric = 'AnnualHotDays'
-    #
-    # allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
-    # singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
-    #
-    # ###
-    # # Start plot nbTmax metric
-    # ###
-    # variable = ['pr']
-    # season = ['mjjas']
-    # metric = 'onsetMarteau'
-    #
-    # allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
-    # singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
-
 
 if __name__ == "__main__":
     saves()
-    #plot()
+    plot()

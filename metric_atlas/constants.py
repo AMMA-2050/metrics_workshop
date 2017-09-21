@@ -5,6 +5,7 @@ Contains global constants for the CMIP5 atlas
 DATADIR = '/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' # '/project/FCFA/CMIP5/bias_corrected/WA_data'
 METRIC_DATADIR = DATADIR + '/save_files/metric_data'
 METRIC_PLOTDIR = DATADIR + '/save_files/metric_plots'
+METRIC_ATLASDIR = DATADIR + '/save_files/metric_atlas'
 BC_RES = ['BC_0.5x0.5'] #['0.5x0.5', 'BC_0.5x0.5', 'BC_mdlgrid', 'mdlgrid']
 
 SCENARIO = ['historical', 'rcp85'] #['historical', 'rcp26', 'rcp45', 'rcp85']
@@ -57,5 +58,28 @@ METRIC_AGGS = {
             'annualMaxRain_3dMean': ['tseries', '2d'],
             'annualMaxRain_2dMean': ['tseries', '2d'],
             'SPIxMonthly' : ['tseries', '2d'],
-            'onsetMarteau' : ['tseries', '2d', 'trend']
+            'onsetMarteau' : ['tseries', '2d', 'trend'],
+            'cdd' : ['tseries', '2d']
         }
+
+
+OVERWRITE = 'No' # 'Yes'
+
+#######################################
+# Choose metric specific options
+#######################################
+# metric, variable, season
+# metric: exact name as appears in calc.py as a character string
+# variable: list of climate variable(s) to send to the calc function
+# season: list of seasons to run the metric-variable combination for
+METRICS_TORUN = [
+            ['annualMax', ['pr','tasmax'], ['jas']],
+            ['annualMin', ['tasmin'], ['jas', 'ann']],
+            ['annualTotalRain', ['pr'], ['jas', 'ann']],
+            ['annualMean', ['tas', 'rsds'], ['jas','ann']],
+            ['annualHotDaysPerc', ['tasmax'], ['jas']],
+            ['annualHotDays', ['tasmax'], ['jas']],
+            ['onsetMarteau', ['pr'], ['mjjas']]
+    
+    ]            
+
