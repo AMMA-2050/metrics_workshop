@@ -411,8 +411,9 @@ def _xDaySum_AnnualMax(incube, season, ncfile, nb_days=None):
     calc = calc.aggregated_by(['year'], iris.analysis.MAX)
 
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
-
+    
     calc2d = utils.time_slicer(calc, fdict['scenario'])
+#    pdb.set_trace()
     c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)
     trend2d = trend(calc, season, ncfile)
 
@@ -511,22 +512,22 @@ def annualHotDays(incube, season, ncfile):
 def annualWindDays(incube, season, ncfile):
     _annualnbDay(incube, season, ncfile, threshold=cnst.STRONGWIND_THRESHOLD)
 
-def annualMaxRain_5dSum(incube,season,ncfile):
+def annualMaxRain5dSum(incube,season,ncfile):
     _xDaySum_AnnualMax(incube,season,ncfile, nb_days=5)
 
-def annualMaxRain_3dSum(incube,season,ncfile):
+def annualMaxRain3dSum(incube,season,ncfile):
     _xDaySum_AnnualMax(incube,season,ncfile, nb_days=3)
 
-def annualMaxRain_2dSum(incube,season,ncfile):
+def annualMaxRain2dSum(incube,season,ncfile):
     _xDaySum_AnnualMax(incube,season,ncfile, nb_days=2)
 
-def annualMax_5dMean(incube,season,ncfile):
+def annualMax5dMean(incube,season,ncfile):
     _xDaySum_AnnualMax(incube,season,ncfile, nb_days=5)
 
-def AnnualMax_3dMean(incube,season,ncfile):
+def AnnualMax3dMean(incube,season,ncfile):
     _xDaySum_AnnualMax(incube,season,ncfile, nb_days=3)
 
-def annualMax_2dMean(incube,season,ncfile):
+def annualMax2dMean(incube,season,ncfile):
     _xDaySum_AnnualMax(incube,season,ncfile, nb_days=2)
 
 def annualMean(incube,season,ncfile):
@@ -578,9 +579,22 @@ def SPIxMonthly(incube, season, ncfile):
 
     spi = (c_monthly - clim_mean_cube) / clim_std_cube
 
-    pdb.set_trace()
+#    pdb.set_trace()
 
     iris.save(spi, ncfile)  #SPI is 3d cube at the moment. Not sure what we want to plot!
+    
+    tseries = spi.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
+
+    calc2d = utils.time_slicer(spi, fdict['scenario'])
+    c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)
+    trend2d = trend(spi, season, ncfile)
+
+    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+
+    iris.save(tseries, ncfile)  # monthly time series, 12 entries
+    iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)
 
 
 # def SPIbiannual(incube, season, ncfile):
@@ -820,16 +834,16 @@ def trend(cubein, season, ncfile):
 
     TODO: Review code & check that behaviour for multiple months is as expected
     '''
+    
+    fdict = utils.split_filename_path(ncfile)
+    
     if 'month_number' not in [coord.name() for coord in cubein.coords()]:
         iris.coord_categorisation.add_month_number(cubein, 'time', name='month_number')
     if 'year' not in [coord.name() for coord in cubein.coords()]:
         iris.coord_categorisation.add_year(cubein, 'time', name='year')
-
-    if "historical_" in ncfile:
-        incube = _subsetByTime(cubein, cnst.HIST[0], cnst.HIST[1])
-    else:
-        incube = _subsetByTime(cubein, cnst.FUT_TREND[0], cnst.FUT_TREND[1])
-
+    
+    incube = utils.time_slicer(cubein, fdict['scenario'])
+    
     # Assume unknown units only exist for precip (NB: Units are kg/m2/s)
     if incube.units == 'unknown':
         incube.units = cf_units.Unit('kg m-2 s-1')
@@ -838,7 +852,7 @@ def trend(cubein, season, ncfile):
     incube.data = ma.masked_invalid(incube.data)
 
     # Are we quantifying the trend for each month of the year ('ann') or just for one period (e.g. JAS)?
-    if "pr_" in ncfile:
+    if "pr_" in ncfile and not "SPIxMonthly" in ncfile:
         incube_y = incube.aggregated_by(['year'], iris.analysis.SUM)
         incube_y.convert_units('kg m-2 month-1')
 

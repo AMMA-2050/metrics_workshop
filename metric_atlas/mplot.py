@@ -9,9 +9,10 @@ Time periods are as defined in constants.py for the FUTURE and HIST variables.
 
 C. Klein (CEH) & Andy Hartley (Met Office) 2017
 """
+import os
 import matplotlib as mpl
-
-mpl.use('Agg')
+if not 'eld' in os.uname()[1]:
+    mpl.use('Agg')
 import iris
 import matplotlib.pyplot as plt
 import numpy as np
@@ -26,6 +27,7 @@ import cartopy.crs as ccrs
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
 import pdb
 
+print mpl.__version__
 
 def rand_jitter(arr):
     if max(arr) != min(arr):
@@ -144,7 +146,13 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']))
 
         ax2 = f.add_subplot(212, projection=ccrs.PlateCarree())
-        map2 = ax2.contourf(lon, lat, p['data'][0].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],levels=p['levels'][0], extend='both')
+        try:
+            map2 = ax2.contourf(lon, lat, p['data'][0].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],levels=p['levels'][0], extend='both')
+        except:
+            # TODO : Fix bug here for annualMeanRainyDay / JAS / rcp85 / anomaly
+            # Seems that there's an error in picking up the contour levels. They come out as [ 0.  0.  0.  0.  0.  0.  0.  0.  0.  0.]
+#            pdb.set_trace()
+            continue
         ax2.coastlines()
         ax2.set_title('10th Percentile')
         # Gridlines
@@ -254,7 +262,10 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
         f = plt.figure(figsize=(9,7))
 
         #do_jitter(p['data'], f.gca())
-        bp = plt.boxplot(p['data'], labels=p['xlabel'], sym='', patch_artist=True, notch=False)
+        try:
+            bp = plt.boxplot(p['data'], labels=p['xlabel'], sym='', patch_artist=True, notch=False)
+        except:
+            pdb.set_trace()
         plt.title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag'])) # (region[1])
         plt.xlabel('Scenario')
         plt.ylabel(p['ylabel'])

@@ -54,12 +54,12 @@ METRIC_AGGS = {
             'annualStrongWindDays' : ['tseries', '2d', 'trend'],
             'wetSpell10': ['tseries', '2d'],
             'drySpell6': ['tseries', '2d'],
-            'annualMaxRain_5dSum': ['tseries', '2d'],
-            'annualMaxRain_3dSum' : ['tseries', '2d'],
-            'annualMaxRain_2dSum' : ['tseries', '2d'],
-            'annualMaxRain_5dMean': ['tseries', '2d'],
-            'annualMaxRain_3dMean': ['tseries', '2d'],
-            'annualMaxRain_2dMean': ['tseries', '2d'],
+            'annualMaxRain5dSum': ['tseries', '2d'],
+            'annualMaxRain3dSum' : ['tseries', '2d'],
+            'annualMaxRain2dSum' : ['tseries', '2d'],
+            'annualMaxRain5dMean': ['tseries', '2d'],
+            'annualMaxRain3dMean': ['tseries', '2d'],
+            'annualMaxRain2dMean': ['tseries', '2d'],
             'SPIxMonthly' : ['tseries', '2d'],
             'onsetMarteau' : ['tseries', '2d', 'trend'],
             'cdd' : ['tseries', '2d']
@@ -76,15 +76,13 @@ OVERWRITE = 'No' # 'Yes'
 # variable: list of climate variable(s) to send to the calc function
 # season: list of seasons to run the metric-variable combination for
 METRICS_TORUN = [
-            ['annualMax', ['pr','tasmax', 'rsds'], ['jas']],
+            ['annualMax', ['rsds', 'pr','tasmax'], ['jas']], # , 'rsds'
             ['annualMin', ['tasmin'], ['jas']],
             ['annualTotalRain', ['pr'], ['jas']],
-            ['annualMean', ['tas', 'rsds'], ['jas']],
+            ['annualMean', ['tas', 'rsds'], ['jas']], # , 'rsds'
             ['annualMeanRainyDay', ['pr'], ['jas']],
-            ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['jas']],
-            #['annualHotDaysPerc', ['tasmax'], ['jas']],
+            ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['jas']], # 'rsds', 
             ['annualRainyDays', ['pr'], ['jas']],
-            #['annualRainyDaysPerc', ['pr'], ['jas']],
             ['annualHotDays', ['tasmax'], ['jas']],
             ['annualExtremeRain30', ['pr'], ['jas']],
             ['annualExtremeRain50', ['pr'], ['jas']],
@@ -92,13 +90,16 @@ METRICS_TORUN = [
             ['annualStrongWindDays', ['wind'], ['jas']],
             ['wetSpell10', ['pr'], ['jas']],
             ['drySpell6', ['pr'], ['jas']],
-            ['annualMaxRain_5dSum', ['pr'], ['jas']],
-            ['annualMaxRain_3dSum', ['pr'], ['jas']],
-            ['annualMaxRain_2dSum', ['pr'], ['jas']],
-            ['annualMaxRain_5dMean', ['pr'], ['jas']],
-            ['annualMaxRain_3dMean', ['pr'], ['jas']],
-            ['annualMaxRain_2dMean', ['pr'], ['jas']],
+            ['annualMaxRain5dSum', ['pr'], ['jas']],
+            ['annualMaxRain3dSum', ['pr'], ['jas']],
+            ['annualMaxRain2dSum', ['pr'], ['jas']],
             ['SPIxMonthly', ['pr'], ['jas']],
             ['onsetMarteau', ['pr'], ['mjjas']]
     ]
 
+# Do not include:
+#            ['annualHotDaysPerc', ['tasmax'], ['jas']],
+#            ['annualRainyDaysPerc', ['pr'], ['jas']],
+#            ['annualMaxRain5dMean', ['pr'], ['jas']],
+#            ['annualMaxRain3dMean', ['pr'], ['jas']],
+#            ['annualMaxRain2dMean', ['pr'], ['jas']],

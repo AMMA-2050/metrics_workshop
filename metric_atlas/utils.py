@@ -106,7 +106,7 @@ def split_filename_path(path):
     :param path: full path to the netCDF file
     :return: dictionary
     """
-
+    
     ano_file = os.path.basename(path)
     return split_filename(ano_file)
 
@@ -208,7 +208,11 @@ def datalevels_ano(data):
     :return: list of 10 data levels with same numbers for positive and negative values
     """
     dmax = np.percentile(abs(data), 90)
-    return np.linspace(-1 * int(dmax), int(dmax), 10)
+    outlevels = np.linspace(-1 * int(dmax), int(dmax), 10)
+    if np.all(outlevels == 0):
+        outlevels = np.linspace(-1 * int(dmax * 1000)/1000., int(dmax * 100)/100., 10)
+        
+    return outlevels
 
 
 def datalevels(data):

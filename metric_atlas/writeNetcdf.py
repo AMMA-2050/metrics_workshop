@@ -63,7 +63,7 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
         calc_to_call = getattr(calc, metric) # calls the metric calc function from calc.py
         file_searcher = out + os.sep + str(metric) + '_' +str(var) + '_' + str(bc) + \
                         '_' + str(sc) + '_' + str(seas) +'_' + str(reg[0])
-        
+#        pdb.set_trace()
         for file, nme in zip(files_good, modelID):
             
             # Check if we have any missing files for all aggregation types, if so, run the metric calculation again
@@ -79,7 +79,9 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
                     cubeout = utils.load_data(file, xmin, xmax, ymin, ymax)
                     calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
                 
-                big_cube(file_searcher, agg)
+        for agg in cnst.METRIC_AGGS[metric]:
+#            pdb.set_trace()
+            big_cube(file_searcher, agg)
                 
             
 
@@ -89,13 +91,14 @@ def big_cube(file_searcher, aggregation):
     Reads single model files and creates multi model cubes for time series and 2d cubes
     """
     print file_searcher, aggregation
+    overwrite = cnst.OVERWRITE # 'Yes'
 
     ofile = str(file_searcher) + '_allModels_' + aggregation + '.nc'
     
     if aggregation not in cnst.AGGREGATION:
         sys.exit('Data aggregation does not exist, choose either trend, tseries or 2d')
 
-    if not os.path.isfile(ofile) or cnst.OVERWRITE == 'Yes':
+    if not os.path.isfile(ofile) or overwrite == 'Yes':
         list_of_files = glob.glob(file_searcher + '*_singleModel_' + aggregation + '.nc')
 
         model_names = [f.split('/')[-1].split('_')[-3].split('.')[0] for f in list_of_files]
@@ -126,7 +129,8 @@ def big_cube(file_searcher, aggregation):
         else:
             equalise_attributes(cubelist)
             bigcube = cubelist.merge_cube()
-            iris.save(bigcube, str(file_searcher) + '_allModels_' + aggregation + '.nc')
+            iris.save(bigcube, ofile)
+            print 'Saved: ' + ofile
 
 
 def run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite,):
