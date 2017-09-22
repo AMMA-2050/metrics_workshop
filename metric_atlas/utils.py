@@ -64,6 +64,39 @@ def create_outdirs(save_path, bc_and_resolution, metrics=None):
                         sys.exit(bc + ' directory could not be created. Check path and permission')
 
 
+def split_imgname(filename):
+    """
+    Splits the file names of netCDF metric files and returns a dictionary for the different parts of the file name
+    :param filename: string indicating the file name of any metric NetCDF file
+    :return: dictionary
+    """
+    fileonly = os.path.basename(filename)
+    string = fileonly.split('_')
+
+    if 'BC' in filename:
+
+        file_dic = {'metric': string[0],
+                    'variable': string[1],
+                    'bc_res': string[2]+'_'+string[3],
+                    'season': string[4],
+                    'region' : string[5],
+                    'plotname': string[6],
+                    'plottype': string[7].split('.')[0]
+                    }
+
+    else:
+
+        file_dic = {'metric': string[0],
+                    'variable': string[1],
+                    'bc_res': string[2],
+                    'season': string[3],
+                    'region': string[4],
+                    'plotname': string[5],
+                    'plottype': string[6].split('.')[0]
+                    }
+
+    return file_dic
+
 
 def split_filename(filename):
     """
@@ -207,10 +240,19 @@ def datalevels_ano(data):
     :param data: anomaly data array
     :return: list of 10 data levels with same numbers for positive and negative values
     """
-    dmax = np.percentile(abs(data), 90)
+#    scalefacs = [1., 10., 100., 1000., 10000., 100000.]
+    
+    dmax = np.percentile(abs(data), 95)
     outlevels = np.linspace(-1 * int(dmax), int(dmax), 10)
+    
+#    for sf in scalefacs:
+#        outlevels = np.linspace(-1 * int(dmax * sf)/sf, int(dmax * sf)/sf, 10)
+#        if not np.all(outlevels == 0):
+#            break
+        
+    
     if np.all(outlevels == 0):
-        outlevels = np.linspace(-1 * int(dmax * 1000)/1000., int(dmax * 100)/100., 10)
+        outlevels = np.round(np.linspace(-1 * int(dmax * 1000)/1000., int(dmax * 1000)/1000., 10), 2)
         
     return outlevels
 
