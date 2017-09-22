@@ -89,18 +89,21 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         plot_dic1 = {'data': data,
                      'ftag': scen + 'Anomaly',
                      'cblabel': 'anomaly',
-                     'levels': (utils.datalevels_ano(data[0].data), utils.datalevels_ano(data[1].data)),
-                     'cmap': 'RdBu'
+                     'levels': (utils.datalevels(np.append(data[0].data, data[1].data)), utils.datalevels(np.append(data[0].data, data[1].data))),
+                     'cmap': 'RdBu_r' if 'tas' in variable else 'RdBu'
                      }
-
-        plot_dic2 = {'data': data_perc,
-                     'ftag': scen + 'PercentageAnomaly',
-                     'cblabel': 'percentageAnomaly',
-                     'levels': (utils.datalevels_ano(data_perc[0].data), utils.datalevels_ano(data_perc[1].data)),
-                     'cmap': 'RdBu'
-                     }
-
-        toplot = [plot_dic1, plot_dic2]
+        
+        if not 'tas' in variable:
+            plot_dic2 = {'data': data_perc,
+                         'ftag': scen + 'PercentageAnomaly',
+                         'cblabel': 'percentageAnomaly',
+                         'levels': (utils.datalevels(np.append(data[0].data, data[1].data)), utils.datalevels(np.append(data[0].data, data[1].data))),
+                         'cmap': 'RdBu_r' if 'tas' in variable else 'RdBu'
+                         }
+    
+            toplot = [plot_dic1, plot_dic2]
+        else:
+            toplot = [plot_dic1]
 
     else:
 
@@ -110,7 +113,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         plot_dic1 = {'data': data,
                      'ftag': scen,
                      'cblabel': '',
-                     'levels': (utils.datalevels(data[0].data), utils.datalevels(data[1].data)),
+                     'levels': (utils.datalevels(np.append(data[0].data, data[1].data)), utils.datalevels(np.append(data[0].data, data[1].data))),
                      'cmap': 'viridis'
                      }
 
@@ -126,9 +129,13 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
 
         #ax1.set_title(vname + ': ' + fdict['metric'], fontsize=10)
         ax1.set_title('90th Percentile')
-
-        map1 = ax1.contourf(lon, lat, p['data'][1].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],
+        
+        try:
+            map1 = ax1.contourf(lon, lat, p['data'][1].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],
                             levels=p['levels'][1], extend='both')
+        except:
+#            pdb.set_trace()
+            continue
         ax1.coastlines()
         # Gridlines
         siz = 6
@@ -249,7 +256,7 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
 
     toplot = [plot_dic1]
 
-    if anomaly:
+    if anomaly and not 'tas' in variable:
         plot_dic2 = {'data': perc,
                      'xlabel': scen,
                      'ftag': an_p,
@@ -360,7 +367,7 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
 
     toplot = [plot_dic1]
 
-    if anomaly:
+    if anomaly and not 'tas' in variable:
         plot_dic2 = {'data': perc,
                      'xlabel': scen,
                      'ftag': an_p,
@@ -421,6 +428,7 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
    """
     ano = glob.glob(incubes + '_tseries.nc')
     if len(ano) != 1:
+        print incubes
         sys.exit('Found too many files, need one file')
     ano = ano[0]
 
@@ -459,15 +467,19 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
                      'ylabel': lblr.getYlab(metric, variable, anom="anomaly"),
                      'bins': h
                      }
-
-        plot_dic2 = {'data': histop,
-                     'ftag': scen + 'PercentageAnomaly',
-                     'ylabel': lblr.getYlab(metric, variable, anom="percentageAnomaly"),
-                     'bins': hp
-                     }
-
-        toplot = [plot_dic1, plot_dic2]
-
+        
+        if not 'tas' in variable:
+            plot_dic2 = {'data': histop,
+                         'ftag': scen + 'PercentageAnomaly',
+                         'ylabel': lblr.getYlab(metric, variable, anom="percentageAnomaly"),
+                         'bins': hp
+                         }
+    
+            toplot = [plot_dic1, plot_dic2]
+            
+        else:
+            toplot = [plot_dic1]
+            
     else:
         cube = cube.data
         histo, h = np.histogram(cube, bins=np.linspace(cube.min(), cube.max(), 10))
@@ -542,7 +554,10 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
             data_perc = data_perc.data
 
             hhisto, bi = np.histogram(data, bins=np.linspace(data.min(), data.max(), 10))
-            hhistop, bip = np.histogram(data_perc, bins=np.linspace(data_perc.min(), data_perc.max(), 10))
+            try:
+                hhistop, bip = np.histogram(data_perc, bins=np.linspace(data_perc.min(), data_perc.max(), 10))
+            except:
+                continue
 
             an = 'anomaly'
             #ylabel = ' anomaly'
@@ -572,7 +587,7 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
 
         toplot = [plot_dic1]
 
-        if anomaly:
+        if anomaly and not 'tas' in variable:
             plot_dic2 = {'data': perc,
                          'ftag': an_p,
                          'ylabel': ylabel_p,
@@ -665,14 +680,16 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
                      'ftag': scen + 'Anomaly',
                      'ylabel': lblr.getYlab(metric, variable, anom="anomaly"), #vname + ' anomaly: ' + fdict['metric'],
                      'minmax': utils.data_minmax(data)}
-
-        plot_dic2 = {'data': data_perc,
-                     'ftag': scen + 'PercentageAnomaly',
-                     'ylabel': lblr.getYlab(metric, variable, anom="percentageAnomaly"), #vname + ' anomaly percentage: ' + fdict['metric'],
-                     'minmax': utils.data_minmax(data_perc)
-                     }
-
-        toplot = [plot_dic1, plot_dic2]
+        
+        if not 'tas' in variable:
+            plot_dic2 = {'data': data_perc,
+                         'ftag': scen + 'PercentageAnomaly',
+                         'ylabel': lblr.getYlab(metric, variable, anom="percentageAnomaly"), #vname + ' anomaly percentage: ' + fdict['metric'],
+                         'minmax': utils.data_minmax(data_perc)
+                         }    
+            toplot = [plot_dic1, plot_dic2]
+        else:
+            toplot = [plot_dic1]
 
     else:
         cube = cube.data

@@ -1,14 +1,14 @@
 """
 Contains global constants for the CMIP5 atlas
 """
-
+VERSION = 'v0.2.2'
 DATADIR = '/project/FCFA/CMIP5/bias_corrected/WA_data' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
 METRIC_DATADIR = DATADIR + '/save_files/metric_data'
 METRIC_PLOTDIR = DATADIR + '/save_files/metric_plots'
 METRIC_ATLASDIR = DATADIR + '/save_files/metric_atlas'
 BC_RES = ['BC_0.5x0.5'] #['0.5x0.5', 'BC_0.5x0.5', 'BC_mdlgrid', 'mdlgrid']
 
-SCENARIO = ['historical', 'rcp85'] #['historical', 'rcp26', 'rcp45', 'rcp85']
+SCENARIO = ['historical', 'rcp85'] # ['historical', 'rcp85'] #['historical', 'rcp26', 'rcp45', 'rcp85']
 
 REGIONS = {'WA' : ['WA', 'West Africa', [-18, 25, 4, 25]],   # lon1, lon2, lat1, lat2
            'BF' : ['BF','Burkina Faso',[-6, 2.8, 9 ,15.5]],
@@ -43,7 +43,7 @@ METRIC_AGGS = {
             'annualTotalRain' : ['tseries', '2d', 'trend'],
             'annualMean' : ['tseries', '2d', 'trend'],
             'annualMeanRainyDay' : ['tseries', '2d', 'trend'],
-            'monthlyClimatologicalMean' : ['tseries', '2d', 'trend'],
+            'monthlyClimatologicalMean' : ['tseries'], # Removed '2d', 'trend' because they don't really make sense
             'annualHotDaysPerc' : ['tseries', '2d', 'trend'],
             'annualRainyDays' : ['tseries', '2d', 'trend'],
             'annualRainyDaysPerc' : ['tseries', '2d'],
