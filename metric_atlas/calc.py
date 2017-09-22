@@ -124,7 +124,7 @@ def _countSpells(incube, season, ncfile, spell_length=None, lower_threshold=None
 
     def count_func(data, threshold, axis, spell_length):
         # print(data.shape)
-        print(axis)
+        #print(axis)
         if axis < 0:
             # just cope with negative axis numbers
             axis += data.ndim
