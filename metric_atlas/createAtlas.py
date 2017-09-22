@@ -3,6 +3,7 @@ from glob import glob
 from operator import itemgetter
 import subprocess
 import constants as cnst
+import labeller as lblr
 
 '''
 This script loops through all images created by the atlas plotting script, 
@@ -17,9 +18,9 @@ def getIntroText(metric):
     
     intro_text = {
         'SPI_xmonthly' : 'The Standardised Precipitation Index (SPI) is a metric which was developed primarily for defining and monitoring drought. It allows a user to determine the rarity of drought at a given time scale of interest. It can also be used to determine periods of anomalously wet events.',
-        'Marteau_onset': 'Local Agronomic Monsoon Onset Date (Marteau) is defined as the first rainy day (precipitation greater than 1 mm) of two consecutive rainy days (with total precipitation greater than 20 mm) and no 7-day dry spell with less than 5 mm of rainfall during the subsequent 20 days',
+        'onsetMarteau': 'Local Agronomic Monsoon Onset Date (Marteau) is defined as the first rainy day (precipitation greater than 1 mm) of two consecutive rainy days (with total precipitation greater than 20 mm) and no 7-day dry spell with less than 5 mm of rainfall during the subsequent 20 days',
         'Fitzpatrick_onset' : 'Local Agronomic Monsoon Onset Date (Fitzpatrick)',
-        'annual_max'   : 'Annual Maximum Precipitation',
+        'annualMax'   : 'Annual Maximum Precipitation',
         'numberdays30mm' : 'Number of days where precipitation is greater than 30mm in the aggregation period',
         'total_rain'   : 'Total amount of precipitation during the aggregation period'
     }
@@ -46,15 +47,7 @@ def monthLookUp(abrv):
     
 def getMetricNiceName(name):
     
-    full_name = {
-        'SPI_xmonthly' : 'Standardised Precipitation Index',
-        'Marteau_onset': 'Local Agronomic Monsoon Onset Date (Marteau)',
-        'Fitzpatrick_onset' : 'Local Agronomic Monsoon Onset Date (Fitzpatrick)',
-        'annual_max' : 'Annual Maximum Precipitation',
-        'numberdays30mm' : 'Number of days where precipitation is greater than 30mm',
-        'total_rain'   : 'Total amount of precipitation during the aggregation period'
-    }
-    return(full_name[name])
+    return(lblr.METRICLONGNAME[name])
     
 def getNicePlotName(plot_name):
     
@@ -79,11 +72,13 @@ def getFullCaption(metric, bc, rcp, seas, plotnm):
     }
     
     metric_desc = {
-        'Marteau_onset' : 'the date of monsoon onset as defined by Marteau et al. (2009) for the season '+monthLookUp(seas)+' in the 2050s (2040 to 2069). ',
+        'onsetMarteau' : 'the date of monsoon onset as defined by Marteau et al. (2009) for the season '+monthLookUp(seas)+' in the 2050s (2040 to 2069). ',
         'SPI_xmonthly'  : 'the Standardised Precipitation Index for the season '+monthLookUp(seas)+' in the 2050s (2040 to 2069). ',
         'Fitzpatrick_onset' : 'the date of monsoon onset as defined by Fitzpatrick et al. (2016) for the season '+monthLookUp(seas)+' in the 2050s (2040 to 2069). ',
-        'annual_max'    : 'annual maximum precipitation',
-        'numberdays30mm' : 'the number of days where precipitation is greater than 30mm for the season '+monthLookUp(seas)+' in the 2050s (2040 to 2069). ',
+        'annualMax'    : 'annual maximum precipitation',
+        'annualExtremeRain30' : 'the number of days when rainfall exceeds 30mm/day for the season '+monthLookUp(seas)+' in the 2050s ('+str(cnst.FUTURE[0])+' to '+str(cnst.FUTURE[0])+'). ',
+        'annualExtremeRain50' : 'the number of days when rainfall exceeds 50mm/day for the season '+monthLookUp(seas)+' in the 2050s ('+str(cnst.FUTURE[0])+' to '+str(cnst.FUTURE[0])+'). ',
+        'annualExtremeRain100' : 'the number of days when rainfall exceeds 100mm/day for the season '+monthLookUp(seas)+' in the 2050s ('+str(cnst.FUTURE[0])+' to '+str(cnst.FUTURE[0])+'). ',
         'total_rain'   : 'Total amount of precipitation for the season '+monthLookUp(seas)+' in the 2050s (2040 to 2069). '
     }
     
@@ -109,7 +104,7 @@ def getShortCaption(metric, bc, rcp, seas, plotnm):
 #         \documentclass[11pt, oneside]{article}
 # \usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
 # \geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
-# \usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+# \usepackage{graphicx}				% Use pdf, png, jpg, or eps with pdflatex; use eps in DVI mode
 # \usepackage{grffile}                                   % Searches for welknown image extensions. graphicx uses the first dot it finds ... which doesn't help when we have long filenames with dots in
 # \usepackage{amssymb}
 # \usepackage{setspace,caption}

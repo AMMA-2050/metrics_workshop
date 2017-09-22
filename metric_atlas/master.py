@@ -1,12 +1,16 @@
 """
 Master script for writing netcdf files and plotting metrics
 """
-
+# Needed by Andy to run internally on the Met Office system
+import sys
+#print sys.path
+sys.path = [pth for pth in sys.path if '/usr/local/sci/lib' not in pth]
 import iris
 import writeNetcdf as wNetcdf
 import os
 import mplot
 import itertools
+import createAtlas
 import constants as cnst
 import utils
 import pdb
@@ -132,6 +136,12 @@ def plot():
         singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
 
 
-if __name__ == "__main__":
+def main():
     saves()
     plot()
+    createAtlas()
+
+
+if __name__ == "__main__":
+    main()
+    

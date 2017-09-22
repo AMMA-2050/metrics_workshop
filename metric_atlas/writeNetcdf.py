@@ -19,6 +19,7 @@ import numpy as np
 import calc
 import constants as cnst
 import sys
+import pdb
 from iris.experimental.equalise_cubes import equalise_attributes
 #import pdb
 
@@ -62,7 +63,7 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
         calc_to_call = getattr(calc, metric) # calls the metric calc function from calc.py
         file_searcher = out + os.sep + str(metric) + '_' +str(var) + '_' + str(bc) + \
                         '_' + str(sc) + '_' + str(seas) +'_' + str(reg[0])
-        
+#        pdb.set_trace()
         for file, nme in zip(files_good, modelID):
             
             # Check if we have any missing files for all aggregation types, if so, run the metric calculation again
@@ -71,13 +72,16 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
                 print agg
                 
                 nc_file = file_searcher + '_' + str(nme) + '_singleModel_'+agg+'.nc'
-                print 'nc_file: ' + nc_file
                 
                 if not os.path.isfile(nc_file) or (overwrite == 'Yes'):
+                    print 'nc_file: ' + nc_file
+                    #pdb.set_trace()
                     cubeout = utils.load_data(file, xmin, xmax, ymin, ymax)
                     calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
                 
-                big_cube(file_searcher, agg)
+        for agg in cnst.METRIC_AGGS[metric]:
+#            pdb.set_trace()
+            big_cube(file_searcher, agg)
                 
             
 
@@ -87,41 +91,46 @@ def big_cube(file_searcher, aggregation):
     Reads single model files and creates multi model cubes for time series and 2d cubes
     """
     print file_searcher, aggregation
+    overwrite = cnst.OVERWRITE # 'Yes'
+
+    ofile = str(file_searcher) + '_allModels_' + aggregation + '.nc'
     
     if aggregation not in cnst.AGGREGATION:
         sys.exit('Data aggregation does not exist, choose either trend, tseries or 2d')
-        
-    list_of_files = glob.glob(file_searcher + '*_singleModel_' + aggregation + '.nc')
 
-    model_names = [f.split('/')[-1].split('_')[-3].split('.')[0] for f in list_of_files]
-    cubelist = iris.cube.CubeList([])
+    if not os.path.isfile(ofile) or overwrite == 'Yes':
+        list_of_files = glob.glob(file_searcher + '*_singleModel_' + aggregation + '.nc')
 
-    for file in list_of_files:
-#        print file
-        fi = list_of_files.index(file)
-        mod_coord = iris.coords.AuxCoord([model_names[fi]], long_name='model_name', var_name='model_name', units='1')
+        model_names = [f.split('/')[-1].split('_')[-3].split('.')[0] for f in list_of_files]
+        cubelist = iris.cube.CubeList([])
 
-        cube = iris.load_cube(file)
-        cube.data = np.ma.masked_invalid(cube.data)
+        for file in list_of_files:
+    #        print file
+            fi = list_of_files.index(file)
+            mod_coord = iris.coords.AuxCoord([model_names[fi]], long_name='model_name', var_name='model_name', units='1')
 
-        if fi == 0:
-            template = cube.copy()
-            cube.add_aux_coord(mod_coord, data_dims=None)
-            cubelist.append(cube)
+            cube = iris.load_cube(file)
+            cube.data = np.ma.masked_invalid(cube.data)
+
+            if fi == 0:
+                template = cube.copy()
+                cube.add_aux_coord(mod_coord, data_dims=None)
+                cubelist.append(cube)
+            else:
+                newcube = template.copy()
+                newcube.add_aux_coord(mod_coord, data_dims=None)
+                newcube.data = cube.data
+                cubelist.append(newcube)
+
+    #    print cubelist
+    #    pdb.set_trace()
+        if not cubelist:
+            print "No cubes found"
         else:
-            newcube = template.copy()
-            newcube.add_aux_coord(mod_coord, data_dims=None)
-            newcube.data = cube.data
-            cubelist.append(newcube)
-
-#    print cubelist
-#    pdb.set_trace()
-    if not cubelist:
-        print "No cubes found"
-    else:
-        equalise_attributes(cubelist)
-        bigcube = cubelist.merge_cube()
-        iris.save(bigcube, str(file_searcher) + '_allModels_' + aggregation + '.nc')
+            equalise_attributes(cubelist)
+            bigcube = cubelist.merge_cube()
+            iris.save(bigcube, ofile)
+            print 'Saved: ' + ofile
 
 
 def run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite,):
