@@ -63,6 +63,488 @@ def _subsetByTime(cube, start_int, end_int):
     return (subset)
 
 
+def _annualMeanThresh(incube, season, ncfile, lower_threshold=None):
+    '''
+    Calculates the annual mean over the time period
+
+    TODO: allow lower threshold to compute mean based on e.g. RAINY days rather than all days
+
+    :param incube: single variable cube from CMIP5 raw data
+    :param season: string indicating season, read by _getSeasConstr() to get season contraint
+    :param ncfile: full string for output netcdf file
+    :return: single model netcdf file
+    '''
+
+    print ncfile
+    print 'Calculating annual mean for ' + season
+    fdict = utils.split_filename_path(ncfile)
+
+    slicer = _getSeasConstr(season)
+    iris.coord_categorisation.add_year(incube, 'time', name='year')
+    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
+
+    incube = incube.extract(slicer)
+
+    if "pr_" in ncfile:
+        incube.convert_units('kg m-2 day-1')
+
+    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
+        incube.convert_units('Celsius')
+
+    csum = incube.aggregated_by(['year'], iris.analysis.SUM)
+    ccount = incube.aggregated_by(['year'], iris.analysis.COUNT, function=lambda values: values >= lower_threshold)
+    calc = csum / ccount  # mean
+    tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
+
+    calc2d = utils.time_slicer(calc, fdict['scenario'])
+    c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)
+    trend2d = trend(calc, season, ncfile)
+
+    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+
+    iris.save(tseries, ncfile)  # yearly time series
+    iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)
+
+
+def _countSpells(incube, season, ncfile, spell_length=None, lower_threshold=None, upper_threshold=None):
+    """
+    Calculates the number of periods of a spell of length 'spell length' above or equal
+    'lower threshold' or below 'upper threshold'.
+
+    :param incube: single variable cube from CMIP5 raw data
+    :param season: string indicating season, read by _getSeasConstr() to get season contraint
+    :param ncfile: full string for output netcdf file
+    :param spell_length: length
+    :param lower_threshold:
+    :param upper_threshold:
+    :return: single model netcdf file
+    """
+
+    def count_func(data, threshold, axis, spell_length):
+        # print(data.shape)
+        print(axis)
+        if axis < 0:
+            # just cope with negative axis numbers
+            axis += data.ndim
+        # print(axis)
+        # Threshold the data to find the 'significant' points.
+        if lower_threshold:
+            data_hits = data >= threshold
+
+        if upper_threshold:
+            data_hits = data < threshold
+
+        # Make an array with data values "windowed" along the time axis.
+        hit_windows = iris.util.rolling_window(data_hits, window=spell_length,
+                                               axis=axis)  # rolling window along time axis
+
+        # Find the windows "full of True-s" (along the added 'window axis').
+        full_windows = np.all(hit_windows, axis=axis + 1)
+        # Count points fulfilling the condition (along the time axis).
+        spell_point_counts = np.sum(full_windows, axis=axis, dtype=int)
+        return spell_point_counts
+
+    if not spell_length:
+        print "No spell length given, please provide. Stopping calculation"
+        return
+
+    if (upper_threshold and lower_threshold):
+        print "Upper and lower threshold given. Please provide exactly one (upper or lower) threshold. Stopping calculation"
+        return
+
+    if not (upper_threshold or lower_threshold):
+        print "No threshold given. Please provide one (upper or lower) threshold. Stopping calculation"
+        return
+
+    fdict = utils.split_filename_path(ncfile)
+
+    if upper_threshold:
+        threshold = upper_threshold
+    else:
+        threshold = lower_threshold
+
+    print ncfile
+    print "Calculating number of spells equal or longer than " + str(spell_length) + ' days.'
+
+    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
+    iris.coord_categorisation.add_year(incube, 'time', name='year')
+
+    slicer = _getSeasConstr(season)
+    incube = incube.extract(slicer)
+    incube.coord('latitude').guess_bounds()
+    incube.coord('longitude').guess_bounds()
+    if "pr_" in ncfile:
+        incube.convert_units('kg m-2 day-1')
+
+    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
+        incube.convert_units('Celsius')
+
+    # Start spell calculation
+    # Make an aggregator from days count
+    SPELL_COUNT = iris.analysis.Aggregator('spell_count', count_func,
+                                           units_func=lambda units: 1)
+    # Calculate the statistic
+    calc = incube.aggregated_by(['year'], SPELL_COUNT, threshold=threshold,
+                                spell_length=spell_length)
+    calc.units = incube.units
+    tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
+
+    calc2d = utils.time_slicer(calc, fdict['scenario'])
+    c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)
+    trend2d = trend(calc, season, ncfile)
+
+    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+
+    iris.save(tseries, ncfile)  # full time period
+    iris.save(c2d, nc2d)  # sliced time period
+    iris.save(trend2d, nctrend2d)  # values for trend period
+
+
+def _annualnbDayPerc(incube, season, ncfile, upper_threshold=None, lower_threshold=None):
+    '''
+    Calculate percentage of days per year with higher value than threshold.
+    Choose thresholds as needed e.g. 30mm for extreme and 1mm for rainy day.
+
+    :param incube: precipitation cube from CMIP5 raw data
+    :param season: string indicating season, read by _getSeasConstr() to get season contraint
+    :param ncfile: full string for output netcdf file
+    :param upper_threshold: threshold (>=) defining the value to be exceeded (e.g. extreme value or rainy day value
+    :param lower_threshold: threshold (>=) defining the minimum value of valid pixels (eg. 0 or 0.1 or 1)
+    :return: single model netcdf file
+    '''
+    if not upper_threshold:
+        print "No threshold given, please provide upper threshold, stopping calculation"
+        return
+
+    print ncfile
+    print "Calculating percentage of days with variable above " + str(upper_threshold)
+    fdict = utils.split_filename_path(ncfile)
+
+    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
+    iris.coord_categorisation.add_year(incube, 'time', name='year')
+
+    slicer = _getSeasConstr(season)
+    incube = incube.extract(slicer)
+    incube.coord('latitude').guess_bounds()
+    incube.coord('longitude').guess_bounds()
+    if "pr_" in ncfile:
+        incube.convert_units('kg m-2 day-1')
+
+    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
+        incube.convert_units('Celsius')
+
+    bigger = incube.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= upper_threshold)
+    monthcount = incube.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= lower_threshold)
+    bigger.data = bigger.data.astype(float)
+    monthcount.data = monthcount.data.astype(float)
+
+    trend_data = bigger / monthcount * 100
+
+    trend_data.units = incube.units
+    trend2d = trend(trend_data, season, ncfile)
+
+    bigger_tseries = bigger.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
+
+    bigger2d = utils.time_slicer(bigger, fdict['scenario'])
+    bigger_c2d = bigger2d.collapsed('year', iris.analysis.SUM)
+
+    monthcount_tseries = monthcount.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
+
+    monthcount2d = utils.time_slicer(monthcount, fdict['scenario'])
+    monthcount_c2d = monthcount2d.collapsed('year', iris.analysis.SUM)
+
+    tseries = (bigger_tseries / monthcount_tseries) * 100
+    c2d = (bigger_c2d / monthcount_c2d) * 100
+
+    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+    iris.save(tseries, ncfile)
+    iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)
+
+
+def _annualnbDay(incube, season, ncfile, threshold=None):
+    '''
+    Calculate number of days per year with higher value than threshold.
+    Choose threshold as needed e.g. 30mm for extreme and 1mm for rainy day.
+
+    :param incube: cube from CMIP5 raw data
+    :param season: string indicating season, read by _getSeasConstr() to get season contraint
+    :param ncfile: full string for output netcdf file
+    :return: single model netcdf file
+    '''
+    if not threshold:
+        print 'No threshold given, stopping calculation'
+        return
+
+    print ncfile
+    print "Calculating number of days with variable above " + str(threshold)
+    fdict = utils.split_filename_path(ncfile)
+
+    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
+    iris.coord_categorisation.add_year(incube, 'time', name='year')
+
+    slicer = _getSeasConstr(season)
+    incube = incube.extract(slicer)
+    incube.coord('latitude').guess_bounds()
+    incube.coord('longitude').guess_bounds()
+    if "pr_" in ncfile:
+        incube.convert_units('kg m-2 day-1')
+
+    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
+        incube.convert_units('Celsius')
+
+    bigger = incube.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= threshold)
+    bigger.units = incube.units
+    bigger.data = bigger.data.astype(float)
+
+    tseries = bigger.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
+
+    bigger2d = utils.time_slicer(bigger, fdict['scenario'])
+    c2d = bigger2d.collapsed('year', iris.analysis.MEDIAN)
+
+    trend2d = trend(bigger, season, ncfile)
+
+    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+
+    iris.save(tseries, ncfile)
+    iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)
+
+
+def _xDaySumAnnualMax(incube, season, ncfile, nb_days=None):
+    """
+    :param incube: cube from CMIP5 raw data
+    :param season: string indicating season, read by _getSeasConstr() to get season contraint
+    :param ncfile: full string for output netcdf file
+    :param nb_days: number of days over which to sum up the variable
+    :return: single model netcdf file
+    """
+
+    if not nb_days:
+        print 'Number of days for aggregation not given, stopping calculation'
+        return
+
+    print ncfile
+    print "Aggregating variable for " + str(nb_days) + "-day moving windows."
+    fdict = utils.split_filename_path(ncfile)
+
+    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
+    iris.coord_categorisation.add_year(incube, 'time', name='year')
+
+    slicer = _getSeasConstr(season)
+    incube = incube.extract(slicer)
+
+    if "pr_" in ncfile:
+        incube.convert_units('kg m-2 day-1')
+
+    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
+        print('This aggregation makes no sense for temperature. Stopping calculation')
+        return
+
+    calc = incube.rolling_window('time', iris.analysis.SUM, nb_days)
+    calc = calc.aggregated_by(['year'], iris.analysis.MAX)
+
+    tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
+
+    calc2d = utils.time_slicer(calc, fdict['scenario'])
+    c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)
+    trend2d = trend(calc, season, ncfile)
+
+    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+
+    iris.save(tseries, ncfile)  # monthly time series, 12 entries
+    iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)
+
+
+def _xDayMeanAnnualMax(incube, season, ncfile, nb_days=None):
+    """
+    :param incube: cube from CMIP5 raw data
+    :param season: string indicating season, read by _getSeasConstr() to get season contraint
+    :param ncfile: full string for output netcdf file
+    :param nb_days: number of days over which to calculate the mean of the variable
+    :return: single model netcdf file
+    """
+
+    if not nb_days:
+        print 'Number of days for aggregation not given, stopping calculation'
+        return
+
+    print ncfile
+    print "Aggregating variable for " + str(nb_days) + "-day moving windows."
+    fdict = utils.split_filename_path(ncfile)
+
+    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
+    iris.coord_categorisation.add_year(incube, 'time', name='year')
+
+    slicer = _getSeasConstr(season)
+    incube = incube.extract(slicer)
+
+    cube2plot = incube
+
+    if "pr_" in ncfile:
+        cube2plot.convert_units('kg m-2 day-1')
+
+    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
+        print('This aggregation makes no sense for temperature. Stopping calculation')
+        return
+
+    calc = cube2plot.rolling_window('time', iris.analysis.MEAN, nb_days)
+    calc = calc.aggregated_by(['year'], iris.analysis.MAX)
+    tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
+
+    calc2d = utils.time_slicer(calc, fdict['scenario'])
+    c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)
+    trend2d = trend(calc, season, ncfile)
+
+    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+
+    iris.save(tseries, ncfile)  # monthly time series, 12 entries
+    iris.save(c2d, nc2d)
+    iris.save(trend2d, nctrend2d)
+
+
+def annualRainyDaysPerc(incube, season, ncfile):
+    _annualnbDayPerc(incube, season, ncfile, upper_threshold=cnst.RAINYDAY_THRESHOLD, lower_threshold=0)
+
+
+def annualExtremeRain30Perc(incube, season, ncfile):
+    _annualnbDayPerc(incube, season, ncfile, upper_threshold=30, lower_threshold=cnst.RAINYDAY_THRESHOLD)
+
+
+def annualExtremeRain50Perc(incube, season, ncfile):
+    _annualnbDayPerc(incube, season, ncfile, upper_threshold=50, lower_threshold=cnst.RAINYDAY_THRESHOLD)
+
+
+def annualExtremeRain100Perc(incube, season, ncfile):
+    _annualnbDayPerc(incube, season, ncfile, upper_threshold=100, lower_threshold=cnst.RAINYDAY_THRESHOLD)
+
+
+def annualHotDaysPerc(incube, season, ncfile):
+    _annualnbDayPerc(incube, season, ncfile, upper_threshold=cnst.HOTDAYS_THRESHOLD, lower_threshold=-50)
+
+
+def annualRainyDays(incube, season, ncfile):
+    _annualnbDay(incube, season, ncfile, threshold=cnst.RAINYDAY_THRESHOLD)
+
+
+def annualExtremeRain30(incube, season, ncfile):
+    _annualnbDay(incube, season, ncfile, threshold=30)
+
+
+def annualExtremeRain50(incube, season, ncfile):
+    _annualnbDay(incube, season, ncfile, threshold=50)
+
+
+def annualExtremeRain100(incube, season, ncfile):
+    _annualnbDay(incube, season, ncfile, threshold=100)
+
+
+def annualHotDays(incube, season, ncfile):
+    _annualnbDay(incube, season, ncfile, threshold=cnst.HOTDAYS_THRESHOLD)
+
+
+def annualWindDays(incube, season, ncfile):
+    _annualnbDay(incube, season, ncfile, threshold=cnst.STRONGWIND_THRESHOLD)
+
+
+def annualMaxRain5dSum(incube, season, ncfile):
+    _xDaySumAnnualMax(incube, season, ncfile, nb_days=5)
+
+
+def annualMaxRain3dSum(incube, season, ncfile):
+    _xDaySumAnnualMax(incube, season, ncfile, nb_days=3)
+
+
+def annualMaxRain2dSum(incube, season, ncfile):
+    _xDaySumAnnualMax(incube, season, ncfile, nb_days=2)
+
+
+def annualMax5dMean(incube, season, ncfile):
+    _xDayMeanAnnualMax(incube, season, ncfile, nb_days=5)
+
+
+def annualMax3dMean(incube, season, ncfile):
+    _xDayMeanAnnualMax(incube, season, ncfile, nb_days=3)
+
+
+def annualMax2dMean(incube, season, ncfile):
+    _xDayMeanAnnualMax(incube, season, ncfile, nb_days=2)
+
+
+def annualMean(incube, season, ncfile):
+    _annualMeanThresh(incube, season, ncfile, lower_threshold=-999)
+
+
+def annualMeanRainyDay(incube, season, ncfile):
+    _annualMeanThresh(incube, season, ncfile, lower_threshold=cnst.RAINYDAY_THRESHOLD)
+
+
+def wetSpell10(incube, season, ncfile):
+    _countSpells(incube, season, ncfile, spell_length=10, lower_threshold=cnst.RAINYDAY_THRESHOLD)
+
+
+def drySpell6(incube, season, ncfile):
+    _countSpells(incube, season, ncfile, spell_length=6, upper_threshold=cnst.RAINYDAY_THRESHOLD)
+
+
+def monthlyClimatologicalMean(incube, season, ncfile):
+    '''
+    Calculates the climatological monthly means over the time period
+
+    TODO: allow lower threshold to compute mean based on e.g. RAINY days rather than all days
+
+    :param incube: single variable cube from CMIP5 raw data
+    :param season: string indicating season, read by _getSeasConstr() to get season constraint
+    :param ncfile: full string for output netcdf file
+    :return: single model netcdf file
+    '''
+
+    print ncfile
+    print 'Calculating climatological monthly mean'
+    fdict = utils.split_filename_path(ncfile)
+
+    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
+    iris.coord_categorisation.add_year(incube, 'time', name='year')
+
+    #    slicer = _getSeasConstr(season)
+    #    cubein = incube.extract(slicer)
+
+
+    if "pr_" in ncfile:
+        incube.convert_units('kg m-2 day-1')
+
+    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
+        incube.convert_units('Celsius')
+
+    tcalc = incube.aggregated_by(['month_number', 'year'], iris.analysis.MEAN)  # prepare trend calc
+    tcalc.units = incube.units
+    trend2d = trend(tcalc, season, ncfile)
+
+    incube = utils.time_slicer(incube, fdict['scenario'])  # time slicing for 2d and time series
+    calc = incube.aggregated_by('month_number', iris.analysis.MEAN)
+    tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
+    c2d = calc.collapsed('year', iris.analysis.MEDIAN)
+
+    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+
+    # monthly time series, 12 entries
+    iris.save(tseries, ncfile)
+    # this is simply an average of all 12 entries on a map..nothing to do with monthly Clim
+    iris.save(c2d, nc2d)
+    # this gives a single map showing the annual (rather than trend specific months) trend
+    # since the trend function aggregates seperate months
+    iris.save(trend2d, nctrend2d)
+
+
 def annualMax(cubein, season, ncfile):
     '''
     Calculates the annual maximum of a variable.
@@ -181,359 +663,9 @@ def annualTotalRain(incube, season, ncfile):
     iris.save(trend2d, nctrend2d)
 
 
-def _annualMeanThresh(incube, season, ncfile, lower_threshold=None):
-    '''
-    Calculates the annual mean over the time period
-
-    TODO: allow lower threshold to compute mean based on e.g. RAINY days rather than all days
-
-    :param incube: single variable cube from CMIP5 raw data
-    :param season: string indicating season, read by _getSeasConstr() to get season contraint
-    :param ncfile: full string for output netcdf file
-    :return: single model netcdf file
-    '''
-
-    print ncfile
-    print 'Calculating annual mean for ' + season
-    fdict = utils.split_filename_path(ncfile)
-
-    slicer = _getSeasConstr(season)
-    iris.coord_categorisation.add_year(incube, 'time', name='year')
-    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
-
-    incube = incube.extract(slicer)
-
-    if "pr_" in ncfile:
-        incube.convert_units('kg m-2 day-1')
-
-    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        incube.convert_units('Celsius')
-
-    csum = incube.aggregated_by(['year'], iris.analysis.SUM)
-    ccount = incube.aggregated_by(['year'], iris.analysis.COUNT, function=lambda values: values >= lower_threshold)
-    calc = csum/ccount # mean
-    tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
-
-    calc2d = utils.time_slicer(calc, fdict['scenario'])
-    c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)
-    trend2d = trend(calc, season, ncfile)
-
-    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
-    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
-
-    iris.save(tseries, ncfile) # yearly time series
-    iris.save(c2d, nc2d)
-    iris.save(trend2d, nctrend2d)
-
-
-def monthlyClimatologicalMean(incube, season, ncfile):
-    '''
-    Calculates the climatological monthly means over the time period
-
-    TODO: allow lower threshold to compute mean based on e.g. RAINY days rather than all days
-
-    :param incube: single variable cube from CMIP5 raw data
-    :param season: string indicating season, read by _getSeasConstr() to get season constraint
-    :param ncfile: full string for output netcdf file
-    :return: single model netcdf file
-    '''
-
-    print ncfile
-    print 'Calculating climatological monthly mean'
-    fdict = utils.split_filename_path(ncfile)
-
-    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
-    iris.coord_categorisation.add_year(incube, 'time', name='year')
-
-    #    slicer = _getSeasConstr(season)
-    #    cubein = incube.extract(slicer)
-
-
-    if "pr_" in ncfile:
-        incube.convert_units('kg m-2 day-1')
-
-    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        incube.convert_units('Celsius')
-
-    tcalc = incube.aggregated_by(['month_number', 'year'], iris.analysis.MEAN) # prepare trend calc
-    trend2d = trend(tcalc, season, ncfile)
-
-    incube = utils.time_slicer(incube, fdict['scenario'])
-    calc = incube.aggregated_by('month_number', iris.analysis.MEAN) # time slicing for 2d and time series
-    tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
-    c2d = calc.collapsed('year', iris.analysis.MEDIAN)
-
-    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
-    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
-
-    iris.save(tseries, ncfile) # monthly time series, 12 entries
-    iris.save(c2d, nc2d)
-    iris.save(trend2d, nctrend2d)
-
-
-
-def _annualnbDayPerc(incube, season, ncfile, upper_threshold=None, lower_threshold=None):
-    '''
-    Calculate percentage of days per year with higher value than threshold.
-    Choose thresholds as needed e.g. 30mm for extreme and 1mm for rainy day.
-
-    :param incube: precipitation cube from CMIP5 raw data
-    :param season: string indicating season, read by _getSeasConstr() to get season contraint
-    :param ncfile: full string for output netcdf file
-    :param upper_threshold: threshold (>=) defining the value to be exceeded (e.g. extreme value or rainy day value
-    :param lower_threshold: threshold (>=) defining the minimum value of valid pixels (eg. 0 or 0.1 or 1)
-    :return: single model netcdf file
-    '''
-    if not upper_threshold:
-        print "No threshold given, please provide upper threshold, stopping calculation"
-        return
-
-    print ncfile
-    print "Calculating percentage of days with variable above " + str(upper_threshold)
-    fdict = utils.split_filename_path(ncfile)
-
-    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
-    iris.coord_categorisation.add_year(incube, 'time', name='year')
-
-    slicer = _getSeasConstr(season)
-    incube = incube.extract(slicer)
-    incube.coord('latitude').guess_bounds()
-    incube.coord('longitude').guess_bounds()
-    if "pr_" in ncfile:
-        incube.convert_units('kg m-2 day-1')
-
-    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        incube.convert_units('Celsius')
-
-    bigger = incube.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= upper_threshold)
-    monthcount = incube.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= lower_threshold)
-    bigger.data = bigger.data.astype(float)
-    monthcount.data = monthcount.data.astype(float)
-
-    trend_data = bigger/monthcount * 100
-
-    trend_data.units = incube.units
-    trend2d = trend(trend_data, season, ncfile)
-
-    bigger_tseries = bigger.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
-
-    bigger2d = utils.time_slicer(bigger, fdict['scenario'])
-    bigger_c2d = bigger2d.collapsed('year', iris.analysis.SUM)
-
-    monthcount_tseries = monthcount.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
-
-    monthcount2d = utils.time_slicer(monthcount, fdict['scenario'])
-    monthcount_c2d = monthcount2d.collapsed('year', iris.analysis.SUM)
-
-    tseries = (bigger_tseries / monthcount_tseries) * 100
-    c2d = (bigger_c2d / monthcount_c2d) * 100
-
-    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
-    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
-    iris.save(tseries, ncfile)
-    iris.save(c2d, nc2d)
-    iris.save(trend2d, nctrend2d)
-
-
-def _annualnbDay(incube, season, ncfile, threshold=None):
-    '''
-    Calculate number of days per year with higher value than threshold.
-    Choose threshold as needed e.g. 30mm for extreme and 1mm for rainy day.
-
-    :param incube: precipitation cube from CMIP5 raw data
-    :param season: string indicating season, read by _getSeasConstr() to get season contraint
-    :param ncfile: full string for output netcdf file
-    :return: single model netcdf file
-    '''
-    if not threshold:
-        print 'No threshold given, stopping calculation'
-        return
-
-    print ncfile
-    print "Calculating number of days with variable above " + str(threshold)
-    fdict = utils.split_filename_path(ncfile)
-
-    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
-    iris.coord_categorisation.add_year(incube, 'time', name='year')
-
-    slicer = _getSeasConstr(season)
-    incube = incube.extract(slicer)
-    incube.coord('latitude').guess_bounds()
-    incube.coord('longitude').guess_bounds()
-    if "pr_" in ncfile:
-        incube.convert_units('kg m-2 day-1')
-
-    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        incube.convert_units('Celsius')
-
-    bigger = incube.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= threshold)
-    bigger.units = incube.units
-    bigger.data = bigger.data.astype(float)
-
-    tseries = bigger.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
-
-    bigger2d = utils.time_slicer(bigger, fdict['scenario'])
-    c2d = bigger2d.collapsed('year', iris.analysis.MEDIAN)
-
-    trend2d = trend(bigger, season, ncfile)
-
-    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
-    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
-
-    iris.save(tseries, ncfile)
-    iris.save(c2d, nc2d)
-    iris.save(trend2d, nctrend2d)
-
-def _xDaySum_AnnualMax(incube, season, ncfile, nb_days=None):
-
-    if not nb_days:
-        print 'Number of days for aggregation not given, stopping calculation'
-        return
-
-    print ncfile
-    print "Aggregating variable for " + str(nb_days) + "-day moving windows."
-    fdict = utils.split_filename_path(ncfile)
-
-    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
-    iris.coord_categorisation.add_year(incube, 'time', name='year')
-
-    slicer = _getSeasConstr(season)
-    incube = incube.extract(slicer)
-
-    if "pr_" in ncfile:
-        incube.convert_units('kg m-2 day-1')
-
-    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        print('This aggregation makes no sense for temperature. Stopping calculation')
-        return
-
-    calc = incube.rolling_window('time', iris.analysis.SUM, nb_days)
-    calc = calc.aggregated_by(['year'], iris.analysis.MAX)
-
-    tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
-
-    calc2d = utils.time_slicer(calc, fdict['scenario'])
-    c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)
-    trend2d = trend(calc, season, ncfile)
-
-    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
-    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
-
-    iris.save(tseries, ncfile)  # monthly time series, 12 entries
-    iris.save(c2d, nc2d)
-    iris.save(trend2d, nctrend2d)
-
-
-def _xDayMean_AnnualMax(incube, season, ncfile, nb_days=None):
-
-    if not nb_days:
-        print 'Number of days for aggregation not given, stopping calculation'
-        return
-
-    print ncfile
-    print "Aggregating variable for " + str(nb_days) + "-day moving windows."
-    fdict = utils.split_filename_path(ncfile)
-
-    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
-    iris.coord_categorisation.add_year(incube, 'time', name='year')
-
-    slicer = _getSeasConstr(season)
-    incube = incube.extract(slicer)
-
-    cube2plot = incube
-
-    if "pr_" in ncfile:
-        cube2plot.convert_units('kg m-2 day-1')
-
-    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        print('This aggregation makes no sense for temperature. Stopping calculation')
-        return
-
-    calc = cube2plot.rolling_window('time', iris.analysis.MEAN, nb_days)
-    calc = calc.aggregated_by(['year'], iris.analysis.MAX)
-    tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
-
-    calc2d = utils.time_slicer(calc, fdict['scenario'])
-    c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)
-    trend2d = trend(calc, season, ncfile)
-
-    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
-    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
-
-    iris.save(tseries, ncfile)  # monthly time series, 12 entries
-    iris.save(c2d, nc2d)
-    iris.save(trend2d, nctrend2d)
-
-
-def annualRainyDaysPerc(incube, season, ncfile):
-    _annualnbDayPerc(incube, season, ncfile, upper_threshold=cnst.RAINYDAY_THRESHOLD, lower_threshold=0)
-
-
-def annualExtremeRain30Perc(incube, season, ncfile):
-    _annualnbDayPerc(incube, season, ncfile, upper_threshold=30, lower_threshold=cnst.RAINYDAY_THRESHOLD)
-
-
-def annualExtremeRain50Perc(incube, season, ncfile):
-    _annualnbDayPerc(incube, season, ncfile, upper_threshold=50, lower_threshold=cnst.RAINYDAY_THRESHOLD)
-
-
-def annualExtremeRain100Perc(incube, season, ncfile):
-    _annualnbDayPerc(incube, season, ncfile, upper_threshold=100, lower_threshold=cnst.RAINYDAY_THRESHOLD)
-
-
-def annualHotDaysPerc(incube, season, ncfile):
-    _annualnbDayPerc(incube, season, ncfile, upper_threshold=cnst.HOTDAYS_THRESHOLD, lower_threshold=-50)
-
-
-def annualRainyDays(incube, season, ncfile):
-    _annualnbDay(incube, season, ncfile, threshold=cnst.RAINYDAY_THRESHOLD)
-
-
-def annualExtremeRain30(incube, season, ncfile):
-    _annualnbDay(incube, season, ncfile, threshold=30)
-
-
-def annualExtremeRain50(incube, season, ncfile):
-    _annualnbDay(incube, season, ncfile, threshold=50)
-
-
-def annualExtremeRain100(incube, season, ncfile):
-    _annualnbDay(incube, season, ncfile, threshold=100)
-
-
-def annualHotDays(incube, season, ncfile):
-    _annualnbDay(incube, season, ncfile, threshold=cnst.HOTDAYS_THRESHOLD)
-
-def annualWindDays(incube, season, ncfile):
-    _annualnbDay(incube, season, ncfile, threshold=cnst.STRONGWIND_THRESHOLD)
-
-def annualMaxRain_5dSum(incube,season,ncfile):
-    _xDaySum_AnnualMax(incube,season,ncfile, nb_days=5)
-
-def annualMaxRain_3dSum(incube,season,ncfile):
-    _xDaySum_AnnualMax(incube,season,ncfile, nb_days=3)
-
-def annualMaxRain_2dSum(incube,season,ncfile):
-    _xDaySum_AnnualMax(incube,season,ncfile, nb_days=2)
-
-def annualMax_5dMean(incube,season,ncfile):
-    _xDaySum_AnnualMax(incube,season,ncfile, nb_days=5)
-
-def AnnualMax_3dMean(incube,season,ncfile):
-    _xDaySum_AnnualMax(incube,season,ncfile, nb_days=3)
-
-def annualMax_2dMean(incube,season,ncfile):
-    _xDaySum_AnnualMax(incube,season,ncfile, nb_days=2)
-
-def annualMean(incube,season,ncfile):
-    _annualMeanThresh(incube, season, ncfile, lower_threshold=-999)
-
-def annualMeanRainyDay(incube,season,ncfile):
-    _annualMeanThresh(incube, season, ncfile, lower_threshold=cnst.RAINYDAY_THRESHOLD)
-
 def SPIxMonthly(incube, season, ncfile):
     """
-    Calculate SPI for given period up to one year.
+    Calculate SPI for given months up to one year.
     The SPI is the anomaly with respect to the chosen scenario baseline period.
     period - climatological_mean / climatological_std
 
@@ -552,9 +684,9 @@ def SPIxMonthly(incube, season, ncfile):
 
     incube = incube.extract(slicer)
 
-
-    c_monthly = incube.aggregated_by(['year'], iris.analysis.MEAN)
-    c_monthly.convert_units('kg m-2 day-1')
+    incube.convert_units('kg m-2 day-1')
+    c_monthly = utils.time_slicer(incube, fdict['scenario'])  # shorten time period
+    c_monthly = c_monthly.aggregated_by(['year'], iris.analysis.MEAN)
 
     # This is the monthly climatology (mean and std deviation)
     std = c_monthly.collapsed('year', iris.analysis.STD_DEV)
@@ -574,54 +706,67 @@ def SPIxMonthly(incube, season, ncfile):
 
     spi = (c_monthly - clim_mean_cube) / clim_std_cube
 
-    pdb.set_trace()
+    tseries = spi.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
+    c2d = spi.collapsed('year', iris.analysis.MEDIAN)
 
-    iris.save(spi, ncfile)  #SPI is 3d cube at the moment. Not sure what we want to plot!
+    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+
+    iris.save(tseries, ncfile)
+    iris.save(c2d, nc2d)
 
 
-# def SPIbiannual(incube, season, ncfile):
-#     """
-#     Calculate SPI for given period up to one year.
-#     The SPI is the anomaly with respect to the chosen scenario baseline period.
-#     period - climatological_mean / climatological_std
-#
-#     :param incube: precipitation cube from CMIP5 raw data
-#     :param season: string indicating season, read by _getSeasConstr() to get season contraint
-#     :param ncfile: full string for output netcdf file
-#     :return: single model netcdf file
-#     """
-#
-#     print 'Calculating SPI for ' + str(season)
-#
-#     iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
-#     iris.coord_categorisation.add_year(incube, 'time', name='year')
-#     slicer = _getSeasConstr(season)
-#
-#     incube = incube.extract(slicer)
-#
-#     c_monthly = incube.aggregated_by(['year'], iris.analysis.MEAN)
-#     c_monthly.convert_units('kg m-2 day-1')
-#
-#     # This is the monthly climatology (mean and std deviation)
-#     std = c_monthly.collapsed('year', iris.analysis.STD_DEV)
-#     mean = c_monthly.collapsed('year', iris.analysis.MEAN)
-#
-#     # We need to change the shape of the monthly climatologies to match the shape of the timeseries (in the cube c_monthly)
-#     mean = mean.data
-#     std = std.data
-#
-#     clim_mean_data = np.repeat(mean.reshape(1, mean.shape[0], mean.shape[1]), c_monthly.shape[0],
-#                                axis=0)  # np.tile(mean.data, (c_monthly.shape[0] / mean.shape[0], 1, 1))
-#     clim_std_data = np.repeat(std.reshape(1, std.shape[0], std.shape[1]), c_monthly.shape[0],
-#                               axis=0)  # np.tile(std.data, (c_monthly.shape[0] / std.shape[0], 1, 1))
-#
-#     clim_mean_cube = c_monthly.copy(clim_mean_data)
-#     clim_std_cube = c_monthly.copy(clim_std_data)
-#
-#     spi = (c_monthly - clim_mean_cube) / clim_std_cube
-#
-#     iris.save(spi, ncfile)
+def SPIbiannual(incube, season, ncfile):
+    """
+    Calculate biannual SPI with a rolling window for given months.
+    The SPI is the anomaly with respect to the chosen scenario baseline period.
+    period - climatological_mean / climatological_std
 
+    :param incube: precipitation cube from CMIP5 raw data
+    :param season: string indicating season, read by _getSeasConstr() to get season contraint
+    :param ncfile: full string for output netcdf file
+    :return: single model netcdf file
+    """
+
+    print 'Calculating biannual SPI for ' + str(season)
+    fdict = utils.split_filename_path(ncfile)
+
+    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
+    iris.coord_categorisation.add_year(incube, 'time', name='year')
+    slicer = _getSeasConstr(season)
+
+    incube = incube.extract(slicer)
+
+    incube.convert_units('kg m-2 day-1')
+    c_monthly = utils.time_slicer(incube, fdict['scenario'])  # shorten time period
+    c_monthly = c_monthly.aggregated_by(['year'], iris.analysis.MEAN)
+
+    # This is the monthly climatology (mean and std deviation)
+    std = c_monthly.collapsed('year', iris.analysis.STD_DEV)
+    mean = c_monthly.collapsed('year', iris.analysis.MEAN)
+
+    c_biannual = c_monthly.rolling_window(['year'], iris.analysis.MEAN, 2)
+
+    # We need to change the shape of the monthly climatologies to match the shape of the timeseries (in the cube c_monthly)
+    mean = mean.data
+    std = std.data
+
+    clim_mean_data = np.repeat(mean.reshape(1, mean.shape[0], mean.shape[1]), c_biannual.shape[0],
+                               axis=0)  # np.tile(mean.data, (c_monthly.shape[0] / mean.shape[0], 1, 1))
+    clim_std_data = np.repeat(std.reshape(1, std.shape[0], std.shape[1]), c_biannual.shape[0],
+                              axis=0)  # np.tile(std.data, (c_monthly.shape[0] / std.shape[0], 1, 1))
+
+    clim_mean_cube = c_biannual.copy(clim_mean_data)
+    clim_std_cube = c_biannual.copy(clim_std_data)
+
+    spi = (c_biannual - clim_mean_cube) / clim_std_cube
+
+    tseries = spi.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
+    c2d = spi.collapsed('year', iris.analysis.MEDIAN)
+
+    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+
+    iris.save(tseries, ncfile)
+    iris.save(c2d, nc2d)
 
 
 def onsetMarteau(incube, season, ncfile):
@@ -711,97 +856,6 @@ def onsetMarteau(incube, season, ncfile):
     iris.save(tseries, ncfile)
     iris.save(c2d, nc2d)
     iris.save(trend2d, nctrend2d)
-
-
-def _countSpells(incube, season, ncfile, spell_length=None, lower_threshold=None, upper_threshold=None):
-    '''
-    Calculates the number of periods of a spell of length 'spell length' above or equal
-    'lower threshold' or below 'upper threshold'.
-    '''
-    def count_func(data, threshold, axis, spell_length):
-        #print(data.shape)
-        print(axis)
-        if axis < 0:
-            # just cope with negative axis numbers
-            axis += data.ndim
-        #print(axis)
-        # Threshold the data to find the 'significant' points.
-        if lower_threshold:
-            data_hits = data >= threshold
-
-        if upper_threshold:
-            data_hits = data < threshold
-
-        # Make an array with data values "windowed" along the time axis.
-        hit_windows = iris.util.rolling_window(data_hits, window=spell_length, axis=axis) # rolling window along time axis
-
-        # Find the windows "full of True-s" (along the added 'window axis').
-        full_windows = np.all(hit_windows, axis=axis+1)
-        # Count points fulfilling the condition (along the time axis).
-        spell_point_counts = np.sum(full_windows, axis=axis, dtype=int)
-        return spell_point_counts
-
-    if not spell_length:
-        print "No spell length given, please provide. Stopping calculation"
-        return
-
-    if (upper_threshold and lower_threshold):
-        print "Upper and lower threshold given. Please provide exactly one (upper or lower) threshold. Stopping calculation"
-        return
-
-    if not (upper_threshold or lower_threshold):
-        print "No threshold given. Please provide one (upper or lower) threshold. Stopping calculation"
-        return
-
-    fdict = utils.split_filename_path(ncfile)
-
-    if upper_threshold:
-        threshold = upper_threshold
-    else:
-        threshold = lower_threshold
-
-    print ncfile
-    print "Calculating number of spells equal or longer than " + str(spell_length) +' days.'
-
-    iris.coord_categorisation.add_month_number(incube, 'time', name='month_number')
-    iris.coord_categorisation.add_year(incube, 'time', name='year')
-
-    slicer = _getSeasConstr(season)
-    incube = incube.extract(slicer)
-    incube.coord('latitude').guess_bounds()
-    incube.coord('longitude').guess_bounds()
-    if "pr_" in ncfile:
-        incube.convert_units('kg m-2 day-1')
-
-    if ("tas_" in ncfile) or ('tasmax_' in ncfile) or ('tasmin_' in ncfile):
-        incube.convert_units('Celsius')
-
-    #Start spell calculation
-    # Make an aggregator from days count
-    SPELL_COUNT = iris.analysis.Aggregator('spell_count', count_func,
-                                     units_func=lambda units: 1)
-    # Calculate the statistic
-    calc = incube.aggregated_by(['year'], SPELL_COUNT, threshold=threshold,
-                                spell_length=spell_length)
-    calc.units = incube.units
-    tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
-
-    calc2d = utils.time_slicer(calc, fdict['scenario'])
-    c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)
-    trend2d = trend(calc, season, ncfile)
-
-    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
-    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
-
-    iris.save(tseries, ncfile)  #full time period
-    iris.save(c2d, nc2d)        #sliced time period
-    iris.save(trend2d, nctrend2d) #values for trend period
-
-def wetSpell10(incube, season, ncfile):
-    _countSpells(incube, season, ncfile, spell_length=10, lower_threshold=cnst.RAINYDAY_THRESHOLD)
-
-def drySpell6(incube, season, ncfile):
-    _countSpells(incube, season, ncfile, spell_length=6, upper_threshold=cnst.RAINYDAY_THRESHOLD)
 
 
 def trend(cubein, season, ncfile):
@@ -896,6 +950,3 @@ def trend(cubein, season, ncfile):
                     slope.data[y, x] = reg[0]
 
     return (slope)
-
-#    ncfile_trend = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
-#    iris.save(slope, ncfile)

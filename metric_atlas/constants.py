@@ -28,7 +28,7 @@ VARNAMES = {'pr' : 'daily precipitation',
             }
 
 FUT_TREND = [2010, 2060]
-FUTURE = [2040, 2069]
+FUTURE = [2040, 2059]
 HIST = [1950, 2000]
 
 HOTDAYS_THRESHOLD = 40
@@ -42,24 +42,24 @@ METRIC_AGGS = {
             'annualMean' : ['tseries', '2d', 'trend'],
             'annualMeanRainyDay' : ['tseries', '2d', 'trend'],
             'monthlyClimatologicalMean' : ['tseries', '2d', 'trend'],
-            'annualHotDaysPerc' : ['tseries', '2d'],
-            'annualRainyDays' : ['tseries', '2d'],
+            'annualHotDaysPerc' : ['tseries', '2d', 'trend'],
+            'annualRainyDays' : ['tseries', '2d', 'trend'],
             'annualRainyDaysPerc' : ['tseries', '2d'],
             'annualHotDays' : ['tseries', '2d', 'trend'],
             'annualExtremeRain30' : ['tseries', '2d', 'trend'],
             'annualExtremeRain50' : ['tseries', '2d', 'trend'],
             'annualExtremeRain100' : ['tseries', '2d', 'trend'],
-            'wetSpell10': ['tseries', '2d'],
-            'drySpell6': ['tseries', '2d'],
-            'annualMaxRain_5dSum': ['tseries', '2d'],
-            'annualMaxRain_3dSum' : ['tseries', '2d'],
-            'annualMaxRain_2dSum' : ['tseries', '2d'],
-            'annualMaxRain_5dMean': ['tseries', '2d'],
-            'annualMaxRain_3dMean': ['tseries', '2d'],
-            'annualMaxRain_2dMean': ['tseries', '2d'],
+            'wetSpell10': ['tseries', '2d', 'trend'],
+            'drySpell6': ['tseries', '2d', 'trend'],
+            'annualMaxRain5dSum': ['tseries', '2d', 'trend'],
+            'annualMaxRain3dSum' : ['tseries', '2d', 'trend'],
+            'annualMaxRain2dSum' : ['tseries', '2d', 'trend'],
+            'annualMax5dMean': ['tseries', '2d', 'trend'],
+            'annualMax3dMean': ['tseries', '2d', 'trend'],
+            'annualMax2dMean': ['tseries', '2d', 'trend'],
             'SPIxMonthly' : ['tseries', '2d'],
+            'SPIbiannual' : ['tseries', '2d'],
             'onsetMarteau' : ['tseries', '2d', 'trend'],
-            'cdd' : ['tseries', '2d']
         }
 
 
@@ -72,14 +72,31 @@ OVERWRITE = 'No' # 'Yes'
 # metric: exact name as appears in calc.py as a character string
 # variable: list of climate variable(s) to send to the calc function
 # season: list of seasons to run the metric-variable combination for
+# METRICS_TORUN = [
+#             ['annualMax', ['pr','tasmax'], ['jas']],
+#             ['annualMin', ['tasmin'], ['jas', 'ann']],
+#             ['annualTotalRain', ['pr'], ['jas', 'ann']],
+#             ['annualMean', ['tas', 'rsds'], ['jas','ann']],
+#             ['annualHotDaysPerc', ['tasmax'], ['jas']],
+#             ['annualHotDays', ['tasmax'], ['jas']],
+#             ['onsetMarteau', ['pr'], ['mjjas']]
+
 METRICS_TORUN = [
-            ['annualMax', ['pr','tasmax'], ['jas']],
-            ['annualMin', ['tasmin'], ['jas', 'ann']],
-            ['annualTotalRain', ['pr'], ['jas', 'ann']],
-            ['annualMean', ['tas', 'rsds'], ['jas','ann']],
-            ['annualHotDaysPerc', ['tasmax'], ['jas']],
-            ['annualHotDays', ['tasmax'], ['jas']],
-            ['onsetMarteau', ['pr'], ['mjjas']]
-    
-    ]            
+    ['monthlyClimatologicalMean', ['pr'], ['jas']],
+    ['SPIbiannual', ['pr'], ['ann']],
+    ['SPIxMonthly', ['pr'], ['jjas']],
+    ['onsetMarteau', ['pr'], ['jjas']],
+    ['annualMax5dMean', ['pr'], ['jas']],
+    ['annualMaxRain5dSum', ['pr'], ['jas']],
+    ['drySpell6', ['pr'], ['jas']],
+    ['wetSpell10', ['pr'], ['jas']],
+    ['annualExtremeRain30', ['pr'], ['jas']],
+    ['annualHotDays', ['tasmax'], ['jas']],
+    ['annualRainyDays', ['pr'], ['ann']],
+    ['annualRainyDaysPerc', ['pr'], ['an']],
+    ['annualHotDaysPerc', ['tasmax'], ['jjas']],
+    ['annualMeanRainyDay', ['pr'], ['jjas']],
+    ['annualTotalRain', ['pr'], ['jas']],
+    ['annualMax', ['pr', 'tasmax'], ['jjas']],
+]
 
