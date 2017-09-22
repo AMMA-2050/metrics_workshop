@@ -93,7 +93,7 @@ METRICS_TORUN = [
     ['annualExtremeRain30', ['pr'], ['jas']],
     ['annualHotDays', ['tasmax'], ['jas']],
     ['annualRainyDays', ['pr'], ['ann']],
-    ['annualRainyDaysPerc', ['pr'], ['an']],
+    ['annualRainyDaysPerc', ['pr'], ['ann']],
     ['annualHotDaysPerc', ['tasmax'], ['jjas']],
     ['annualMeanRainyDay', ['pr'], ['jjas']],
     ['annualTotalRain', ['pr'], ['jas']],
