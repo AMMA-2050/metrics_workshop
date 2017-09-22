@@ -30,7 +30,7 @@ VARNAMES = {'pr' : 'daily precipitation',
             }
 
 FUT_TREND = [2010, 2060]
-FUTURE = [2040, 2069]
+FUTURE = [2040, 2059]
 HIST = [1950, 2000]
 
 HOTDAYS_THRESHOLD = 40
@@ -44,8 +44,8 @@ METRIC_AGGS = {
             'annualMean' : ['tseries', '2d', 'trend'],
             'annualMeanRainyDay' : ['tseries', '2d', 'trend'],
             'monthlyClimatologicalMean' : ['tseries', '2d', 'trend'],
-            'annualHotDaysPerc' : ['tseries', '2d'],
-            'annualRainyDays' : ['tseries', '2d'],
+            'annualHotDaysPerc' : ['tseries', '2d', 'trend'],
+            'annualRainyDays' : ['tseries', '2d', 'trend'],
             'annualRainyDaysPerc' : ['tseries', '2d'],
             'annualHotDays' : ['tseries', '2d', 'trend'],
             'annualExtremeRain30' : ['tseries', '2d', 'trend'],
@@ -61,10 +61,9 @@ METRIC_AGGS = {
             'annualMaxRain3dMean': ['tseries', '2d'],
             'annualMaxRain2dMean': ['tseries', '2d'],
             'SPIxMonthly' : ['tseries', '2d'],
+            'SPIbiannual' : ['tseries', '2d'],
             'onsetMarteau' : ['tseries', '2d', 'trend'],
-            'cdd' : ['tseries', '2d']
         }
-
 
 OVERWRITE = 'No' # 'Yes'
 
@@ -75,6 +74,15 @@ OVERWRITE = 'No' # 'Yes'
 # metric: exact name as appears in calc.py as a character string
 # variable: list of climate variable(s) to send to the calc function
 # season: list of seasons to run the metric-variable combination for
+# METRICS_TORUN = [
+#             ['annualMax', ['pr','tasmax'], ['jas']],
+#             ['annualMin', ['tasmin'], ['jas', 'ann']],
+#             ['annualTotalRain', ['pr'], ['jas', 'ann']],
+#             ['annualMean', ['tas', 'rsds'], ['jas','ann']],
+#             ['annualHotDaysPerc', ['tasmax'], ['jas']],
+#             ['annualHotDays', ['tasmax'], ['jas']],
+#             ['onsetMarteau', ['pr'], ['mjjas']]
+
 METRICS_TORUN = [
             ['annualMax', ['rsds', 'pr','tasmax'], ['jas']], # , 'rsds'
             ['annualMin', ['tasmin'], ['jas']],
@@ -94,8 +102,25 @@ METRICS_TORUN = [
             ['annualMaxRain3dSum', ['pr'], ['jas']],
             ['annualMaxRain2dSum', ['pr'], ['jas']],
             ['SPIxMonthly', ['pr'], ['jas']],
+            ['SPIbiannual', ['pr'], ['ann']],
             ['onsetMarteau', ['pr'], ['mjjas']]
     ]
+    #['monthlyClimatologicalMean', ['pr'], ['jas']],
+    #['SPIbiannual', ['pr'], ['ann']],
+    #['SPIxMonthly', ['pr'], ['jjas']],
+    #['onsetMarteau', ['pr'], ['jjas']],
+    #['annualMax5dMean', ['pr'], ['jas']],
+    #['annualMaxRain5dSum', ['pr'], ['jas']],
+    #['drySpell6', ['pr'], ['jas']],
+    #['wetSpell10', ['pr'], ['jas']],
+    #['annualExtremeRain30', ['pr'], ['jas']],
+    #['annualHotDays', ['tasmax'], ['jas']],
+    #['annualRainyDays', ['pr'], ['ann']],
+    #['annualRainyDaysPerc', ['pr'], ['ann']],
+    #['annualHotDaysPerc', ['tasmax'], ['jjas']],
+    #['annualMeanRainyDay', ['pr'], ['jjas']],
+    #['annualTotalRain', ['pr'], ['jas']],
+    #['annualMax', ['pr', 'tasmax'], ['jjas']],
 
 # Do not include:
 #            ['annualHotDaysPerc', ['tasmax'], ['jas']],
