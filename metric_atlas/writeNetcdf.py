@@ -94,16 +94,19 @@ def big_cube(file_searcher, aggregation):
     overwrite = cnst.OVERWRITE # 'Yes'
 
     ofile = str(file_searcher) + '_allModels_' + aggregation + '.nc'
-    
+
+  #  ofile = ofile.replace('all_metric_data', 'test_data')
+
     if aggregation not in cnst.AGGREGATION:
         sys.exit('Data aggregation does not exist, choose either trend, tseries or 2d')
 
     if not os.path.isfile(ofile) or overwrite == 'Yes':
+
         list_of_files = glob.glob(file_searcher + '*_singleModel_' + aggregation + '.nc')
 
         model_names = [f.split('/')[-1].split('_')[-3].split('.')[0] for f in list_of_files]
         cubelist = iris.cube.CubeList([])
-
+        problem_list=[]
         for file in list_of_files:
     #        print file
             fi = list_of_files.index(file)
@@ -119,18 +122,30 @@ def big_cube(file_searcher, aggregation):
             else:
                 newcube = template.copy()
                 newcube.add_aux_coord(mod_coord, data_dims=None)
-                newcube.data = cube.data
+                try:
+                    newcube.data = cube.data
+                except ValueError:
+                    print('Makes problems: '+ file)
+                    problem_list.append(file)
+                    continue
                 cubelist.append(newcube)
 
     #    print cubelist
-    #    pdb.set_trace()
+
+        if len(cubelist) < 20:
+            'Where have my models gone (<20!)? Stopping'
+            pdb.set_trace()
         if not cubelist:
             print "No cubes found"
         else:
             equalise_attributes(cubelist)
             bigcube = cubelist.merge_cube()
             iris.save(bigcube, ofile)
+
             print 'Saved: ' + ofile
+            print 'Problem list:'
+            print problem_list
+    print problem_list
 
 
 def run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite,):
