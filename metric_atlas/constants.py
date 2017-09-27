@@ -84,7 +84,7 @@ OVERWRITE = 'No' # 'Yes'
 #             ['onsetMarteau', ['pr'], ['mjjas']]
 
 METRICS_TORUN = [
-            ['annualMax', ['rsds', 'pr','tasmax'], ['jas']], # , 'rsds'
+            ['annualMax', ['pr','tasmax', 'rsds'], ['jas']], # , 'rsds'
             ['annualMin', ['tasmin'], ['jas']],
             ['annualTotalRain', ['pr'], ['jas']],
             ['annualMean', ['tas', 'rsds'], ['jas']], # , 'rsds'
@@ -95,7 +95,6 @@ METRICS_TORUN = [
             ['annualExtremeRain30', ['pr'], ['jas']],
             ['annualExtremeRain50', ['pr'], ['jas']],
             ['annualExtremeRain100', ['pr'], ['jas']],
-            ['annualStrongWindDays', ['wind'], ['jas']],
             ['wetSpell10', ['pr'], ['jas']],
             ['drySpell6', ['pr'], ['jas']],
             ['annualMaxRain5dSum', ['pr'], ['jas']],
@@ -103,7 +102,8 @@ METRICS_TORUN = [
             ['annualMaxRain2dSum', ['pr'], ['jas']],
             ['SPIxMonthly', ['pr'], ['jas']],
             ['SPIbiannual', ['pr'], ['ann']],
-            ['onsetMarteau', ['pr'], ['mjjas']]
+            ['onsetMarteau', ['pr'], ['mjjas']],
+            ['annualStrongWindDays', ['wind'], ['jas']]
     ]
     #['monthlyClimatologicalMean', ['pr'], ['jas']],
     #['SPIbiannual', ['pr'], ['ann']],
@@ -128,3 +128,4 @@ METRICS_TORUN = [
 #            ['annualMaxRain5dMean', ['pr'], ['jas']],
 #            ['annualMaxRain3dMean', ['pr'], ['jas']],
 #            ['annualMaxRain2dMean', ['pr'], ['jas']],
+
