@@ -137,6 +137,9 @@ def plot():
         allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
         singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
 
+        print '#######################################'
+        print 'Finished plotting'
+        print '#######################################'
 
 def main():
     #saves()

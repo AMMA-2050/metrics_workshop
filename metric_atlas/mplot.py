@@ -57,12 +57,20 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
     :param anomaly: boolean, switch for anomaly calculation
     :return: plot
     """
+
+    fname = incubes + '_2d.nc'
+    fdict = utils.split_filename_path(fname)
+
+    if fdict['aggregation'] not in cnst.METRIC_AGGS[fdict['metric']]:
+        return
+
     ano = glob.glob(incubes + '_2d.nc')
+
     if len(ano) != 1:
-        sys.exit('Found too many files, need one file')
+        sys.exit('Found none or too many files, need one file')
     ano = ano[0]
 
-    fdict = utils.split_filename_path(ano)
+
     scen = fdict['scenario']
     metric = fdict['metric']
     variable = fdict['variable']
@@ -86,19 +94,29 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         data_perc = data_perc.collapsed('model_name', iris.analysis.PERCENTILE, percent=[10, 90])
         data = data.collapsed('model_name', iris.analysis.PERCENTILE, percent=[10, 90])
 
+        if np.max(data.data)-np.min(data.data) > np.max(data.data):
+            levels = (utils.datalevels_ano(np.append(data[0].data, data[1].data)),
+                      utils.datalevels_ano(np.append(data[0].data, data[1].data)))
+            cmap = 'RdBu_r' if 'tas' in variable else 'RdBu'
+        else:
+            levels = (utils.datalevels(np.append(data[0].data, data[1].data)),
+                      utils.datalevels(np.append(data[0].data, data[1].data)))
+            cmap = 'Reds' if 'tas' in variable else 'Blues'
+
+
         plot_dic1 = {'data': data,
                      'ftag': scen + 'Anomaly',
                      'cblabel': 'anomaly',
-                     'levels': (utils.datalevels(np.append(data[0].data, data[1].data)), utils.datalevels(np.append(data[0].data, data[1].data))),
-                     'cmap': 'RdBu_r' if 'tas' in variable else 'RdBu'
+                     'levels': levels, #(utils.datalevels_ano(np.append(data[0].data, data[1].data)), utils.datalevels_ano(np.append(data[0].data, data[1].data))),
+                     'cmap': cmap #'RdBu_r' if 'tas' in variable else 'RdBu'
                      }
         
         if not 'tas' in variable:
             plot_dic2 = {'data': data_perc,
                          'ftag': scen + 'PercentageAnomaly',
                          'cblabel': 'percentageAnomaly',
-                         'levels': (utils.datalevels(np.append(data[0].data, data[1].data)), utils.datalevels(np.append(data[0].data, data[1].data))),
-                         'cmap': 'RdBu_r' if 'tas' in variable else 'RdBu'
+                         'levels': levels, #(utils.datalevels_ano(np.append(data[0].data, data[1].data)), utils.datalevels_ano(np.append(data[0].data, data[1].data))),
+                         'cmap': cmap #'RdBu_r' if 'tas' in variable else 'RdBu'
                          }
     
             toplot = [plot_dic1, plot_dic2]
@@ -158,7 +176,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         except:
             # TODO : Fix bug here for annualMeanRainyDay / JAS / rcp85 / anomaly
             # Seems that there's an error in picking up the contour levels. They come out as [ 0.  0.  0.  0.  0.  0.  0.  0.  0.  0.]
-#            pdb.set_trace()
+            pdb.set_trace()
             continue
         ax2.coastlines()
         ax2.set_title('10th Percentile')
@@ -177,7 +195,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
 
         #plt.tight_layout()
         #f.suptitle('Long figure title')
-        f.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['cblabel']))
+        f.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['cblabel']), fontsize=10)
         f.subplots_adjust(left=0.05)
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_mapPerc_' + p['ftag'] + '.png')
@@ -194,7 +212,14 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
        :param anomaly: boolean, switch for anomaly calculation
        :return: plot
        """
-    ano_list = glob.glob(incubes + '_tseries.nc')
+
+    fname = incubes + '_tseries.nc'
+    fdict = utils.split_filename_path(fname)
+
+    if fdict['aggregation'] not in cnst.METRIC_AGGS[fdict['metric']]:
+        return
+
+    ano_list = glob.glob(fname)
     ano_list = utils.order(ano_list)
 
     ldata = []
@@ -266,23 +291,32 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
 
     for p in toplot:
 
-        f = plt.figure(figsize=(9,7))
+        f = plt.figure(figsize=(8,7))
 
         #do_jitter(p['data'], f.gca())
+
         try:
-            bp = plt.boxplot(p['data'], labels=p['xlabel'], sym='', patch_artist=True, notch=False)
-        except:
+            bp = plt.boxplot(p['data'], labels=p['xlabel'], sym='', patch_artist=True, notch=False, zorder=9)
+        except ValueError:
+            print('Boxplot data has a problem, please check. Cannot continue')
             pdb.set_trace()
-        plt.title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag'])) # (region[1])
+        plt.title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']), fontsize=10) # (region[1])
         plt.xlabel('Scenario')
         plt.ylabel(p['ylabel'])
 
-        for median, box in zip(bp['medians'], bp['boxes']):
+        for median, box, lab in zip(bp['medians'], bp['boxes'], p['xlabel']):
             box.set(facecolor='none')
             median.set(linewidth=0) #median.set(color='k', linewidth=2)
 
+
         for id, d in enumerate(p['data']):
-            plt.scatter([id + 1] * len(d), d, marker='_', color='darkgreen')
+            try:
+                plt.scatter([id + 1] * len(d), d, marker='_', color='firebrick', s=60, zorder=9)
+            except:
+                pdb.set_trace()
+
+        if np.max(d) - np.min(d) > np.max(d):
+            plt.hlines(0, 0, len(d), linestyle='dashed', color='grey')
 
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_allModelBoxplot_' + p[
@@ -302,8 +336,15 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
        :param anomaly: boolean, switch for anomaly calculation
        :return: plot
        """
+
+    fname = incubes + '_tseries.nc'
+    fdict = utils.split_filename_path(fname)
+
+    if fdict['aggregation'] not in cnst.METRIC_AGGS[fdict['metric']]:
+        return
+
     # This creates a list of '*allModels_tseries.nc' files, one element for each scenario
-    ano_list = glob.glob(incubes + '_tseries.nc')
+    ano_list = glob.glob(fname)
     ano_list = utils.order(ano_list) 
     
     ldata = []
@@ -381,8 +422,8 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
         if len(p['data']) < 4:
             xp = len(p['data'])
             yp = 1
-            xx = 9
-            yy = 9
+            xx = 8
+            yy = 7
         else:
             xp = 2
             yp = 2
@@ -408,7 +449,7 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
             #plt.title(p['xlabel'][id] + ': ' + fdict['metric'] + ' ' + vname)
 
         plt.tight_layout(h_pad=0.2, rect=(0,0,1,0.92))
-        plt.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']))
+        plt.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']), fontsize=10)
 
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_allModelHisto_' + p[
@@ -426,7 +467,15 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
    :param anomaly: boolean, switch for anomaly calculation
    :return: plot
    """
-    ano = glob.glob(incubes + '_tseries.nc')
+
+    fname = incubes + '_tseries.nc'
+    fdict = utils.split_filename_path(fname)
+
+    if fdict['aggregation'] not in cnst.METRIC_AGGS[fdict['metric']]:
+        return
+
+
+    ano = glob.glob(fname)
     if len(ano) != 1:
         print incubes
         sys.exit('Found too many files, need one file')
@@ -499,7 +548,7 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
 
         ax.set_xlabel(p['ylabel'])
         ax.set_ylabel('Number of models')
-        ax.set_title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']))
+        ax.set_title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']), fontsize=10)
         #ax.set_title(region[1] + ': ' + scen)
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_nbModelHistogram_' + p[
@@ -516,7 +565,14 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
       :param anomaly: boolean, switch for anomaly calculation
       :return: plot
       """
-    ano_list = glob.glob(incubes + '_tseries.nc')
+
+    fname = incubes + '_tseries.nc'
+    fdict = utils.split_filename_path(fname)
+
+    if fdict['aggregation'] not in cnst.METRIC_AGGS[fdict['metric']]:
+        return
+
+    ano_list = glob.glob(fname)
     ano_list = utils.order(ano_list)
 
     ldata = []
@@ -602,12 +658,12 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
             xp = len(p['data'])
             yp = 1
             xx = 8
-            yy = 9
+            yy = 6
         else:
             xp = 2
             yp = 2
-            xx = 13
-            yy = 8
+            xx = 10
+            yy = 5
 
         f = plt.figure(figsize=(xx, yy))
 
@@ -622,7 +678,7 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
             ax.set_xlabel(p['ylabel']) #  + ': ' + fdict['metric']
             ax.set_ylabel('Number of models')
             #ax.set_title(scen[id])
-            ax.set_title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']))
+            ax.set_title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']), fontsize=10)
 
         plt.tight_layout()
 
@@ -642,7 +698,14 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
    :param anomaly: boolean, switch for anomaly calculation
    :return: plot
    """
-    ano = glob.glob(incubes + '_tseries.nc')
+
+    fname = incubes + '_tseries.nc'
+    fdict = utils.split_filename_path(fname)
+
+    if fdict['aggregation'] not in cnst.METRIC_AGGS[fdict['metric']]:
+        return
+
+    ano = glob.glob(fname)
     if len(ano) != 1:
         sys.exit('Found too many files, need one file')
     ano = ano[0]
@@ -706,18 +769,24 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
 
     for p in toplot:
 
-        cm = plt.get_cmap('seismic')
+        cms = 'seismic' if 'tas' in variable else 'seismic_r'
+        cm = plt.get_cmap(cms)
 
-        f = plt.figure(figsize=(9,9))
+        f = plt.figure(figsize=(7,5))
+
+        if np.max(p['data'])-np.min(p['data']) > np.max(p['data']):
+            plt.hlines(0, 0, len(p['data']), linestyle='dashed', color='grey')
+
         for i in range(0, len(p['data'])):
             plt.scatter(i, p['data'][i], c=p['data'][i], vmin=p['minmax'][0], vmax=p['minmax'][1], cmap=cm,
-                        edgecolors='k')
+                        edgecolors='k', s=40, zorder=10)
 
         plt.ylabel(p['ylabel'])
         plt.xlabel("Model Rank")
         #plt.title(region[1] + ': ' + scen)
-        plt.title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']))
+        plt.title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']), fontsize=10)
         plt.tick_params(axis='x', which='both', bottom='off', top='off')
+
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_allModelRank_' + p['ftag'] + '.png')
 
@@ -758,13 +827,13 @@ def lineplot_scenarios(incubes, outpath, region):
 
         ax.plot(time[0], 0, color=co, label=ta)
         for nb in range(cube.shape[0]):
-            ax.plot(time, cube[nb, :], color=co, alpha=0.5, lw=0.75)
+                ax.plot(time, cube[nb, :], color=co, alpha=0.5, lw=0.75)
 
     bottom, top = ax.get_ylim()
     plt.vlines(2005, bottom, top, linestyle='--', linewidth=1.5, zorder=10)
     plt.ylabel(lblr.getYlab(metric, variable, anom=""))
     #plt.title(region[1])
-    plt.title(lblr.getTitle(metric, variable, season, scenarios, bc, region[1], anom=''))
+    plt.title(lblr.getTitle(metric, variable, season, scenarios, bc, region[1], anom=''), fontsize=10)
     plt.legend()
     plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                 fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_lineplot_allscen_' + '.png')
