@@ -1,12 +1,14 @@
 import os
 from glob import glob
-from operator import itemgetter
+#from operator import itemgetter
 import subprocess
 import constants as cnst
 import labeller as lblr
 import itertools
 import utils
-import pdb
+import shutil
+import scipy.stats as ss
+#import pdb
 
 '''
 This script loops through all images created by the atlas plotting script, 
@@ -70,7 +72,7 @@ def monthLookUp(abrv):
 def getMetricNiceName(name, var):
     
     if name in ['annualMax', 'annualMin', 'annualMean', 'monthlyClimatologicalMean']:
-        oname = lblr.METRICLONGNAME[name] + cnst.VARNAMES[var].title()
+        oname = lblr.METRICLONGNAME[name] + ' ' + cnst.VARNAMES[var].title()
     else:
         oname = lblr.METRICLONGNAME[name]
         
@@ -95,9 +97,9 @@ def getNicePlotName(plot_name):
 
 def getNicePlotType(plot_type):
     nice_plottype_name ={
-            'rcp26PercentageAnomaly' : '% Anomaly by Scenario', 
-            'rcp5PercentageAnomaly' : '% Anomaly by Scenario', 
-            'rcp85PercentageAnomaly' : '% Anomaly by Scenario', 
+            'rcp26PercentageAnomaly' : '\% Anomaly by Scenario', 
+            'rcp45PercentageAnomaly' : '\% Anomaly by Scenario', 
+            'rcp85PercentageAnomaly' : '\% Anomaly by Scenario', 
             'rcp26Anomaly' : 'Absolute Anomaly by Scenario', 
             'rcp45Anomaly' : 'Absolute Anomaly by Scenario', 
             'rcp85Anomaly' : 'Absolute Anomaly by Scenario', 
@@ -116,65 +118,110 @@ def getNicePlotType(plot_type):
         return(plot_type)
 
 
-def getFullCaption(metric, bc, seas, plotnm):
+def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
     
-    start = {
-            'allModelRank' : 'This scatterplot shows ', 
-            'mapPerc' : 'These maps show ',
-            'nbModelHistogram' : 'Histograms showing ', 
-            'MultiNbModelHistogram' : 'Histograms showing ', 
-            'allModelBoxplot' : 'Boxplots showing', 
-            'lineplot' : 'Timeseries plots showing ', 
-            'allModelHisto' : 'Histograms showing '
-    }
+    # Plotnames: ['allModelRank', 'mapPerc', 'nbModelHistogram', 'MultiNbModelHistogram', 'allModelBoxplot', 'lineplot', 'allModelHisto']
+    # Plottypes: ['rcp85PercentageAnomaly', 'rcp85Anomaly', 'rcp85', 'scenarios', 'historical', 'percentageAnomaly', 'anomaly', 'allscen']
     
-    metric_desc = {
-        'annualMax' : 'Annual Maximum',
-        'annualMin' : 'Annual Minimum',
-        'annualTotalRain' : 'Total Annual Rainfall',
-        'annualMean' : 'Annual Mean',
-        'annualMeanRainyDay' : 'Mean Daily Rainfall on Rainy Days',
-        'monthlyClimatologicalMean' : 'Monthly Climatological Mean',
-        'annualHotDaysPerc' : 'Percentage of Hot Days (Daily Max Temp >'+str(cnst.HOTDAYS_THRESHOLD)+lblr.DC+' per Year',
-        'annualRainyDays' : 'Number of Rainy Days (>'+str(cnst.RAINYDAY_THRESHOLD)+'mm/day) per Year',
-        'annualRainyDaysPerc' : 'Percentage of Days that are Rainy (>'+str(cnst.RAINYDAY_THRESHOLD)+'mm/day) per Year',
-        'annualHotDays' : 'Number of Days per Year with a Daily Maximum Temperature exceeding '+str(cnst.HOTDAYS_THRESHOLD)+lblr.DC+' per Year',
-        #            'annualExtremeRain30' : 'Number of Days per Year when Rainfall Exceeds 30mm/day',
-        #            'annualExtremeRain50' : 'Number of Days per Year when Rainfall Exceeds 50mm/day',
-        #            'annualExtremeRain100' : 'Number of Days per Year when Rainfall Exceeds 100mm/day',
-        'annualStrongWindDays' : 'Number of Days per Year when Daily Mean Wind Speed Exceeds '+str(cnst.STRONGWIND_THRESHOLD),
-        'wetSpell10': 'Number of Periods with a Wet Spell Longer Than 10 Days',
-        'drySpell6': 'Number of Periods with a Dry Spell Longer Than 6 Days',
-        'annualMaxRain5dSum': 'Annual Maximum Rainfall Total in a 5-day Period',
-        'annualMaxRain3dSum' : 'Annual Maximum Rainfall Total in a 3-day Period',
-        'annualMaxRain2dSum' : 'Annual Maximum Rainfall Total in a 2-day Period',
-        'annualMaxRain5dMean': 'Annual Maximum Rainfall in a 5-day Period (Mean Daily Rate)',
-        'annualMaxRain3dMean': 'Annual Maximum Rainfall in a 3-day Period (Mean Daily Rate)',
-        'annualMaxRain2dMean': 'Annual Maximum Rainfall in a 2-day Period (Mean Daily Rate)',
-        'cdd' : 'Consecutive Dry Days',
-        'onsetMarteau' : 'the date of monsoon onset as defined by Marteau et al. (2009) for the season '+monthLookUp(seas)+' in the 2050s (2040 to 2069). ',
-        'SPIxmonthly'  : 'the Standardised Precipitation Index for the season '+monthLookUp(seas)+' in the 2050s (2040 to 2069). ',
-        'SPIbiannual' : 'the bi-annual Standardised Precipitation Index for the season '+monthLookUp(seas)+' in the 2050s (2040 to 2069). ',
-        'Fitzpatrick_onset' : 'the date of monsoon onset as defined by Fitzpatrick et al. (2016) for the season '+monthLookUp(seas)+' in the 2050s (2040 to 2069). ',
-        #'annualMax'    : 'annual maximum precipitation',
-        'annualExtremeRain30' : 'the number of days when rainfall exceeds 30mm/day for the season '+monthLookUp(seas)+' in the 2050s ('+str(cnst.FUTURE[0])+' to '+str(cnst.FUTURE[0])+'). ',
-        'annualExtremeRain50' : 'the number of days when rainfall exceeds 50mm/day for the season '+monthLookUp(seas)+' in the 2050s ('+str(cnst.FUTURE[0])+' to '+str(cnst.FUTURE[0])+'). ',
-        'annualExtremeRain100' : 'the number of days when rainfall exceeds 100mm/day for the season '+monthLookUp(seas)+' in the 2050s ('+str(cnst.FUTURE[0])+' to '+str(cnst.FUTURE[0])+'). ',
-        'total_rain'   : 'Total amount of precipitation for the season '+monthLookUp(seas)+' in the 2050s (2040 to 2069). '
-    }
+    caption_template = {
+            'allModelRank' : 'This scatterplot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point shows an individual model averaged over xxx_region_xxx, and ranked according to the magnitude of the value on the y-axis. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.',
+            'mapPerc' : 'These maps show the range of ensemble spread in the xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. The top map shows the 90th percentile (upper limit) and the bottom map shows the 10th percentile (lower limit) for the xxx_region_xxx region of interest. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.',
+            'nbModelHistogram' : 'This histogram shows the number of models that agree on xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows the number of models that agree on the range of values shown on the x-axis for the xxx_region_xxx region of interest. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
+            'MultiNbModelHistogram' : 'This/These histogram(s) shows the number of models that agree on xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows the number of models that agree on the range of values shown on the x-axis for the xxx_region_xxx region of interest. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
+            'allModelBoxplot' : 'This boxplot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point (horizontal green line) shows an individual model averaged over the xxx_region_xxx region of interest, with the solid black line representing the 25th to 75th percentile range, and the dotted line the 10th to 90th percentile range. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
+            'lineplot' : 'This timeseries plot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each line represents an individual model averaged over the xxx_region_xxx of interest for each year in the timeseries. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
+            'allModelHisto' : 'This histogram shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows an individual model averaged over the xxx_region_xxx region of interest. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.'
+            }
     
-    statistic_desc = {
-            'allModelRank' : 'The scatterplot shows each ensemble member ordered according to xxx.', 
-            'mapPerc' : 'The 90th (a) and 10th (b) percentile changes from the CMIP5 ensemble are shown for rcp scenarios compared to the historical period (1950-2000).',
-            'nbModelHistogram' : 'The histograms show how many models agree on the same magnitude of the variable shown.', 
-            'MultiNbModelHistogram' : 'The histograms show how many models agree on the same magnitude of the variable shown.', 
-            'allModelBoxplot' : 'The boxes show the interquartile range (black lines) across the CMIP5 ensemble, dotted lines the 10th to 90th percentile range, and small green lines show each model.', 
-            'lineplot' : 'Each line represents a different CMIP5 ensemble model.', 
-            'allModelHisto' : 'The histograms show xxx for each CMIP5 ensemble member.'            
-    }
+    myCaption = caption_template[plotnm]
     
-    mycaption = start[plotnm] + metric_desc[metric] + statistic_desc[plotnm]
-    return(mycaption)
+    # Now do some find and replacing to fill in the gaps in the caption 
+    # Add plottype short
+    # ['rcp85PercentageAnomaly', 'rcp85Anomaly', 'rcp85', 'scenarios', 'historical', 'percentageAnomaly', 'anomaly', 'allscen']
+    pt_short = {
+            'rcp26PercentageAnomaly' : 'the percentage change in', 
+            'rcp45PercentageAnomaly' : 'the percentage change in', 
+            'rcp85PercentageAnomaly' : 'the percentage change in', 
+            'rcp26Anomaly' : 'the absolute change in', 
+            'rcp45Anomaly' : 'the absolute change in', 
+            'rcp85Anomaly' : 'the absolute change in', 
+            'rcp26' : 'the future (RCP2.6) distribution of', 
+            'rcp45' : 'the future (RCP4.5) distribution of', 
+            'rcp85' : 'the future (RCP8.5) distribution of', 
+            'scenarios' : 'all available future scenarios of', 
+            'historical' : 'the historical distribution of', 
+            'percentageAnomaly' : 'the percentage change (all available scenarios) in',  # not sure about the 'all available scenarios' bit
+            'anomaly' : 'the absolute anomaly (all available scenarios) of', 
+            'allscen' : 'all available scenarios of'
+            }
+    try:
+        pt_short_txt = pt_short[plottype]
+    except:
+        pt_short_txt = ''
+    myCaption = myCaption.replace('xxx_pt_short_xxx', pt_short_txt)
+    
+    # Fix metric name peculiarities
+    if metric in ['annualMax', 'annualMin', 'annualMean', 'monthlyClimatologicalMean']:
+        oname = lblr.METRICLONGNAME[metric] + ' ' + cnst.VARNAMES[var].title()
+    else:
+        oname = lblr.METRICLONGNAME[metric]
+
+    myCaption = myCaption.replace('xxx_metric_xxx', oname.lower())
+    
+    # Add period start and end years
+    if plottype == 'historical':
+        periodstart = str(cnst.HIST[0])
+        periodend = str(cnst.HIST[1])
+    else:
+        periodstart = str(cnst.FUTURE[0])
+        periodend = str(cnst.FUTURE[1])
+        
+    myCaption = myCaption.replace('xxx_periodstart_xxx', periodstart)
+    myCaption = myCaption.replace('xxx_periodend_xxx', periodend)
+    
+    # 'With regard to' Only for future periods ...
+    if plottype == 'historical':
+        wrt_txt = ''
+    else:
+        wrt_txt = ' (compared to a baseline period of '+str(cnst.HIST[0])+' - ' +str(cnst.HIST[1])+') '
+    myCaption = myCaption.replace('xxx_wrt_xxx', wrt_txt)
+    
+    # Add nice season name
+    if seas == 'ann':
+        myCaption = myCaption.replace('xxx_seasinfo_xxx', '')
+    else:
+        myCaption = myCaption.replace('xxx_seasinfo_xxx', ' for the '+monthLookUp(seas)+' season')
+    
+    # Add region nice name
+    myCaption = myCaption.replace('xxx_region_xxx', region[1])
+    
+    # Add plot type information
+    pt_long_desc ={
+            'rcp26PercentageAnomaly' : 'the percentage future anomaly for the RCP2.6 scenario for', 
+            'rcp45PercentageAnomaly' : 'the percentage anomaly for the RCP4.5 scenario for', 
+            'rcp85PercentageAnomaly' : 'the percentage anomaly for the RCP4.5 scenario for', 
+            'rcp26Anomaly' : 'the absolute anomaly for the RCP2.6 scenario for', 
+            'rcp45Anomaly' : 'the absolute anomaly for the RCP4.5 scenario for', 
+            'rcp85Anomaly' : 'the absolute anomaly for the RCP8.5 scenario for', 
+            'rcp26' : 'future RCP2.6 scenario distribution for', 
+            'rcp45' : 'future RCP4.5 scenario distribution for', 
+            'rcp85' : 'future RCP8.5 scenario distribution for', 
+            'scenarios' : 'all available scenarios for', 
+            'historical' : 'the historical distribution for', 
+            'percentageAnomaly' : 'the percentage anomaly for all available scenarios for',  # not sure about the 'all available scenarios' bit
+            'anomaly' : 'the absolute anomaly for all available scenarios', 
+            'allscen' : 'all available scenarios'
+            }
+    try:
+        pt_long_txt = pt_long_desc[plottype]
+    except:
+        pt_long_txt = plottype
+    myCaption = myCaption.replace('xxx_pt_long_xxx', pt_long_txt)
+    
+    # Repeat the metric name again at the end
+    myCaption = myCaption.replace('xxx_title_end_xxx', oname.lower())
+    
+    return(myCaption)
     
 
 def getShortCaption(metric, bc, seas, plotnm):
@@ -208,11 +255,21 @@ def getShortCaption(metric, bc, seas, plotnm):
 
 def runAtlas():
     version = cnst.VERSION
-    texdir = cnst.METRIC_ATLASDIR # os.getcwd()  
-    imgdir = cnst.METRIC_PLOTDIR # texdir + '/images/'
+    texdir = cnst.METRIC_ATLASDIR 
+    imgdir = cnst.METRIC_PLOTDIR 
+    coverpage = 'AMMA2050_atlas_coverpage_v0.2.2.pdf'
     
-    if not os.path.isdir(texdir):
+    if os.path.isdir(texdir):
+        shutil.rmtree(texdir, ignore_errors=True)
+        
+    try:
         os.makedirs(texdir)
+    except:
+        print texdir + ' could not be created, so using the existing directory'
+        
+    # Copy the coverpage and intro section from the scripts folder into the atlas output folder
+    shutil.copyfile(os.getcwd() + os.sep + '1introduction.tex', texdir + os.sep + '1_introduction.tex')
+    shutil.copyfile(os.getcwd() + os.sep + coverpage, texdir + os.sep + coverpage)
     
     plot_sections = []
 #    last_plot_name = []
@@ -243,59 +300,67 @@ def runAtlas():
         
             for seas, region, bc_res in itertools.product(season, cnst.REGIONS_LIST, cnst.BC_RES):
                 reg = region[0]
-                imgfiles = sorted(glob(imgdir + os.sep + bc_res + os.sep + metric + os.sep + metric + '_' + var + '_' + bc_res + seas +'_'+reg+ '*.png'))
-                
+                imgfiles = sorted(glob(imgdir + os.sep + bc_res + os.sep + metric + os.sep + metric + '_' + var + '_' + bc_res + '_' + seas +'_'+reg+ '*.png'))
                 imgdata = [utils.split_imgname(imgfile) for imgfile in imgfiles]
                 
                 plotnames = list(set([id['plotname'] for id in imgdata]))
                 plottypes = list(set([id['plottype'] for id in imgdata]))
                 
+                print imgfiles
+                print plotnames
+                print plottypes
                 
+                # Plotnames: ['allModelRank', 'mapPerc', 'nbModelHistogram', 'MultiNbModelHistogram', 'allModelBoxplot', 'lineplot', 'allModelHisto']
+                # Plottypes: ['rcp85PercentageAnomaly', 'rcp85Anomaly', 'rcp85', 'scenarios', 'historical', 'percentageAnomaly', 'anomaly', 'allscen']
+
                 # Loop through all plotnames associated with this metric-var combination
                 for pn in plotnames:
+                    print pn
                     
                     # Make sub section
                     # Create a subsection for this plot name
 #                    if last_plot_name != pn or last_metric != metric:
                     fmetric.write('\subsection{'+getNicePlotName(pn)+'}\r\n')
                     fmetric.write('\r\n')
-
                     
-                    for pt in plottypes:
-                        
-                        # Create a subsection for this plot name
-#                        if last_plot_type != pt or last_metric != metric:
-                        fmetric.write('\subsubsection{'+getNicePlotType(pt)+'}\r\n')
-                        fmetric.write('\r\n')
-                        
-                        # Now, get all filename associated with this metric-var-(seas/reg/bc_res)-plotname-plottype
-                        pdb.set_trace()
-                        
-                        # Make Sub-sub section
-                        # NB: plottype also contains the scenario information
+                    # Order plot types correctly
+                    plottypes_ordered = ['historical', 'rcp26', 'rcp45', 'rcp85', 'rcp26Anomaly', 'rcp45Anomaly', 'rcp85Anomaly', 'anomaly', 'rcp26PercentageAnomaly', 'rcp45PercentageAnomaly', 'rcp85PercentageAnomaly', 'percentageAnomaly', 'scenarios',  'allscen']
+                    ptoi = [plottypes_ordered.index(pt) for pt in plottypes]
+                    pt_i = [int(oi) for oi in ss.rankdata(ptoi)]
+                    plottypes_neworder = [y for x,y in sorted(zip(pt_i,plottypes))]
+                    
+                    for pt in plottypes_neworder:
+                        print pt
                         this_file = imgdir + os.sep + bc_res + os.sep + metric + os.sep + '_'.join([metric, var, bc_res, seas, reg, pn, pt]) + ".png"
+                        if os.path.isfile(this_file):
+                            # Create a subsection for this plot name
+#                            fmetric.write('\subsubsection{'+getNicePlotType(pt)+'}\r\n')
+#                            fmetric.write('\r\n')
                             
-                        # Write the image into the tex file for this section
-                        fmetric.write('\\begin{figure}[!htb]\r\n')
-                        fmetric.write('\\begin{center}\r\n')
-                        fmetric.write('\\includegraphics[width=\\textwidth]{'+this_file+'}\r\n')
-                        fmetric.write('\\end{center}\r\n')
-                        
-#                        if last_plot_name == pn:
-#                            fmetric.write('\\caption{'+getShortCaption(metric, bc_res, seas, pt)+'}\r\n')
-#                        else:
-#                            fmetric.write('\\caption{'+getFullCaption(metric, bc_res, seas, pt)+'}\r\n')
-                        fmetric.write('\\caption{'+getFullCaption(metric, bc_res, seas, pt)+'}\r\n')
+                            # Write the image into the tex file for this section
+                            fmetric.write('\\begin{figure}[!htb]\r\n')
+                            fmetric.write('\\begin{center}\r\n')
+                            fmetric.write('\\includegraphics[width=\\textwidth]{'+this_file+'}\r\n')
+                            fmetric.write('\\end{center}\r\n')
+                            
+    #                        if last_plot_name == pn:
+    #                            fmetric.write('\\caption{'+getShortCaption(metric, bc_res, seas, pt)+'}\r\n')
+    #                        else:
+    #                            fmetric.write('\\caption{'+getFullCaption(metric, bc_res, seas, pt)+'}\r\n')
+                            fmetric.write('\\caption{'+getFullCaption(metric, var, region, bc_res, seas, pn, pt)+'}\r\n')
+    
+                            fmetric.write('\\label{fig:'+os.path.basename(this_file).rstrip(".png")+'}\r\n')
+                            fmetric.write('\\end{figure}\r\n')
+                            fmetric.write('\r\n')
+                    
+                    # New page 
+                    fmetric.write('\clearpage\r\n')
+                    fmetric.write('\r\n')
 
-                        fmetric.write('\\label{fig:'+os.path.basename(this_file).rstrip(".png")+'}\r\n')
-                        fmetric.write('\\end{figure}\r\n')
-                        fmetric.write('\r\n')
-
-            #
             fmetric.close()
             plot_sections.append(texdir + "/" + str(section_counter) + "_" + metric + "_" + var)
             
-            print(section_counter)
+#            print(section_counter)
             section_counter += 1
             
     # At the end, write the section names into atlas.tex
@@ -306,15 +371,22 @@ def runAtlas():
             # print(line.encode("utf-8"))
             if line.strip() == '%InsertHere':
                 for pltsec in plot_sections:
-                    print('\include{'+pltsec+'}')
-                    fout.write('\include{'+pltsec+'}\r\n')
+#                    print('\input{'+pltsec+'}')
+                    fout.write('\input{'+pltsec+'}\r\n')
                 # fout.write('%InsertHere\r\n')
+            elif 'coverpage' in line.strip():
+                fout.write(line.strip().replace('coverpage', texdir + os.sep + 'AMMA2050_atlas_coverpage_v0.2.2.pdf'))
+            elif '1introduction' in line.strip():
+                fout.write(line.strip().replace('1introduction', texdir + os.sep + '1_introduction'))
             else:
                 fout.write(line+'\r\n')
 
     # Compile TWICE in latex
-    subprocess.call(["pdflatex", texdir + "/" + "atlas_"+version+".tex"])
-    subprocess.call(["pdflatex", texdir + "/" + "atlas_"+version+".tex"])
+    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + "/" + "atlas_"+version+".tex"])
+    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + "/" + "atlas_"+version+".tex"])
     
-    print('File successfully created: ' + texdir + "/atlas_" +version+ ".pdf")
+    if os.path.isfile(texdir + "/atlas_" +version+ ".pdf"):
+        print('File successfully created: ' + texdir + "/atlas_" +version+ ".pdf")
+    else:
+        print('File NOT created: ' + texdir + "/atlas_" +version+ ".pdf")
     
