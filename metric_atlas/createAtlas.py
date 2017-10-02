@@ -261,11 +261,11 @@ def isExcluded(metric, var, bc_res, seas, reg, pn, pt):
     
     for exc in cnst.PLOTS_TOEXCLUDE:
         if exc[0] == metric:
-            if var in exc[1]:
-                if seas in exc[2]:
-                    if reg in exc[3]:
-                        if pn in exc[4]:
-                            if pt in exc[5]:
+            if var in exc[1] or exc[1] == 'all':
+                if seas in exc[2] or exc[2] == 'all':
+                    if reg in exc[3] or exc[3] == 'all':
+                        if pn in exc[4] or exc[4] == 'all':
+                            if pt in exc[5] or exc[5] == 'all':
                                 return True
     
     # If it doesn't get to the end of the tree, then we return false
