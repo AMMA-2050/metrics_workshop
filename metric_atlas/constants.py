@@ -84,7 +84,6 @@ OVERWRITE = 'No' # 'Yes'
 # TODO @Conni: The one thing I haven't figured out yet is how to do 'all scenarios' for certain plots (following Dave's request). Maybe we should say we can't do that for this version?
 
 METRICS_TORUN = [
-            ['pet', ['multivars'], ['jas']],
             ['annualMax', ['pr','tasmax', 'rsds'], ['jas']], # , 'rsds'
             ['annualMin', ['tasmin'], ['jas']],
             ['annualTotalRain', ['pr'], ['jas']],
@@ -103,7 +102,8 @@ METRICS_TORUN = [
             ['annualMaxRain2dSum', ['pr'], ['jas']],
             ['SPIxMonthly', ['pr'], ['jas']],
             ['SPIbiannual', ['pr'], ['ann']],
-            ['onsetMarteau', ['pr'], ['mjjas']]
+            ['onsetMarteau', ['pr'], ['mjjas']],
+            ['pet', ['multivars'], ['jas']]
     ]
 
 # NB: Currently excluding the following (but may add in later):
