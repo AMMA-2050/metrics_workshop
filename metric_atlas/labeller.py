@@ -31,7 +31,8 @@ METRICLONGNAME = {
             'SPIxMonthly' : 'Standardised Precipitation Index',
             'SPIbiannual' : 'Standardised Precipitation Index (bi-annual)',
             'onsetMarteau' : 'Local Agronomic Monsoon Onset Date (Marteau)',
-            'cdd' : 'Consecutive Dry Days'
+            'cdd' : 'Consecutive Dry Days',
+            'pet' : 'Potential Evapotranspiration'
     }
 
 
@@ -119,7 +120,8 @@ def getYlab(m, v, anom=None):
             'SPIxMonthly' : 'Standardised Precipitation Index',
             'SPIbiannual' : 'Standardised Precipitation Index (bi-annual)',
             'onsetMarteau' : 'Julian Day',
-            'cdd' : 'Consecutive Dry Days'
+            'cdd' : 'Consecutive Dry Days',
+            'pet' : 'PET (mm day$^{-1}$)'
             }
     
     try:

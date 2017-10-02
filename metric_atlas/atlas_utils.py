@@ -206,6 +206,8 @@ def anomalies(hist, future, percentage=False):
         smll_past = hist.extract(mdlextract)
 
         try:
+            # TODO @Conni: I get the following error here when plotting at line 211
+            # iris.exceptions.NotYetImplementedError: Cannot use 'subtract' with differing units (K & W m-2)
             differences = smll_future - smll_past  # if this fails a model is missing for a scenario
         except TypeError:
             continue

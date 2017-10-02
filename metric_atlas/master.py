@@ -12,7 +12,7 @@ import mplot
 import itertools
 import createAtlas as ca
 import constants as cnst
-import utils
+import atlas_utils
 import pdb
 from multiprocessing import Pool
 
@@ -84,7 +84,7 @@ def saves():
     bc_and_resolution = cnst.BC_RES  # mdlgrid does not work cause models are not on the same grid!
     region = cnst.REGIONS_LIST
 
-    utils.create_outdirs(outpath, bc_and_resolution)
+    atlas_utils.create_outdirs(outpath, bc_and_resolution)
     
     # Metric-specific options are set in constants.py
     for row in cnst.METRICS_TORUN:
@@ -121,7 +121,7 @@ def plot():
     region = cnst.REGIONS_LIST #[cnst.REGIONS['WA'], cnst.REGIONS['BF']]
     #####
     
-    utils.create_outdirs(outpath, bc_and_resolution, metrics=inpath)
+    atlas_utils.create_outdirs(outpath, bc_and_resolution, metrics=inpath)
 
     # Metric-specific options are set in constants.py
     for row in cnst.METRICS_TORUN:
@@ -142,8 +142,8 @@ def plot():
         print '#######################################'
 
 def main():
-    #saves()
-    #plot()
+    saves()
+    plot()
     ca.runAtlas()
 
 

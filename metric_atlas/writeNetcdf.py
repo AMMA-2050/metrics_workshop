@@ -10,7 +10,7 @@ Input: strings defining the input netcdf files
 Output: netcdf files for single models, big model cube and anomalies 
 """
 
-import utils
+import atlas_utils
 import iris
 import itertools
 import os
@@ -51,7 +51,10 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
         xmax = box[1]
         ymin = box[2]
         ymax = box[3]
-
+        
+        if metric == 'pet' and var == 'multivars':
+            var = 'rsds'
+            
         files_good, modelID = load_file_names(inpath, var, sc, bc)
 
         if files_good == []:
@@ -71,12 +74,22 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
             for agg in cnst.METRIC_AGGS[metric]:
                 print agg
                 
-                nc_file = file_searcher + '_' + str(nme) + '_singleModel_'+agg+'.nc'
+                if metric == 'pet' and var == 'multivars':
+                    # This is a different case because PET needs multiple variables, rather than one
+                    # NB: We use rsds, because generally, less models have this variable as opposed to tasmin or tasmax
+                    tasmin = atlas_utils.load_data(file.replace(var, 'tasmin'), xmin, xmax, ymin, ymax)
+                    tasmax = atlas_utils.load_data(file.replace(var, 'tasmax'), xmin, xmax, ymin, ymax)
+                    rsds = atlas_utils.load_data(file.replace(var, 'rsds'), xmin, xmax, ymin, ymax)
+                    cubeout = iris.cube.CubeList([tasmin, tasmax, rsds])
+                    file_searcher = file_searcher.replace('rsds', 'multivars')
+                    print cubeout
+
+                nc_file = file_searcher + '_' + str(nme) + '_singleModel_'+agg+'.nc'                
                 
                 if not os.path.isfile(nc_file) or (overwrite == 'Yes'):
                     print 'nc_file: ' + nc_file
-                    #pdb.set_trace()
-                    cubeout = utils.load_data(file, xmin, xmax, ymin, ymax)
+                    if not 'cubeout' in locals():
+                        cubeout = atlas_utils.load_data(file, xmin, xmax, ymin, ymax)
                     calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
                 
         for agg in cnst.METRIC_AGGS[metric]:
@@ -133,8 +146,8 @@ def big_cube(file_searcher, aggregation):
     #    print cubelist
 
         if len(cubelist) < 20:
-            'Where have my models gone (<20!)? Stopping'
-            pdb.set_trace()
+            print 'Cubelist length: ' + str(len(cubelist))
+            print 'Where have my models gone (<20!)? Stopping'
         if not cubelist:
             print "No cubes found"
         else:
@@ -145,7 +158,7 @@ def big_cube(file_searcher, aggregation):
             print 'Saved: ' + ofile
             print 'Problem list:'
             print problem_list
-    print problem_list
+#    print problem_list
 
 
 def run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite,):
