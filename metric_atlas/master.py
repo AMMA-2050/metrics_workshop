@@ -142,8 +142,8 @@ def plot():
         print '#######################################'
 
 def main():
-    saves()
-    plot()
+#    saves()
+#    plot()
     ca.runAtlas()
 
 
