@@ -8,7 +8,7 @@ METRIC_PLOTDIR = DATADIR + '/save_files/metric_plots'
 METRIC_ATLASDIR = DATADIR + '/save_files/metric_atlas'
 BC_RES = ['BC_0.5x0.5'] #['0.5x0.5', 'BC_0.5x0.5', 'BC_mdlgrid', 'mdlgrid']
 
-SCENARIO = ['historical', 'rcp85'] # ['historical', 'rcp85'] #['historical', 'rcp26', 'rcp45', 'rcp85']
+SCENARIO = ['historical', 'rcp26', 'rcp45', 'rcp85'] # ['historical', 'rcp85'] #['historical', 'rcp26', 'rcp45', 'rcp85']
 
 REGIONS = {'WA' : ['WA', 'West Africa', [-18, 25, 4, 25]],   # lon1, lon2, lat1, lat2
            'BF' : ['BF','Burkina Faso',[-6, 2.8, 9 ,15.5]],
@@ -26,7 +26,8 @@ VARNAMES = {'pr' : 'daily precipitation',
             'tasmin' : 'daily minimum temperature',
             'tasmax' : 'daily maximum temperature',
             'rsds' : 'surface downwelling shortwave radiation',
-            'wind' : 'near surface wind speed'
+            'wind' : 'near surface wind speed',
+            'multivars' : 'multiple input variables'
             }
 
 FUT_TREND = [2010, 2060]
@@ -35,7 +36,7 @@ HIST = [1950, 2000]
 
 HOTDAYS_THRESHOLD = 40
 RAINYDAY_THRESHOLD = 1
-STRONGWIND_THRESHOLD = 70
+STRONGWIND_THRESHOLD = 30 # Values in 1 sample file have a historical max of 7 to 9, so this value is still far too high
 
 METRIC_AGGS = {
             'annualMax' : ['tseries', '2d', 'trend'],
@@ -63,6 +64,7 @@ METRIC_AGGS = {
             'SPIxMonthly' : ['tseries', '2d'],
             'SPIbiannual' : ['tseries', '2d'],
             'onsetMarteau' : ['tseries', '2d', 'trend'],
+            'pet' : ['tseries', '2d', 'trend']
         }
 
 OVERWRITE = 'No' # 'Yes'
@@ -74,16 +76,15 @@ OVERWRITE = 'No' # 'Yes'
 # metric: exact name as appears in calc.py as a character string
 # variable: list of climate variable(s) to send to the calc function
 # season: list of seasons to run the metric-variable combination for
-# METRICS_TORUN = [
-#             ['annualMax', ['pr','tasmax'], ['jas']],
-#             ['annualMin', ['tasmin'], ['jas', 'ann']],
-#             ['annualTotalRain', ['pr'], ['jas', 'ann']],
-#             ['annualMean', ['tas', 'rsds'], ['jas','ann']],
-#             ['annualHotDaysPerc', ['tasmax'], ['jas']],
-#             ['annualHotDays', ['tasmax'], ['jas']],
-#             ['onsetMarteau', ['pr'], ['mjjas']]
+
+# TODO @Conni: I ran the following metrics for all scenarios, and you will need to run the plotting script also for these scenarios:
+#            ['annualMax', ['pr','tasmax', 'rsds'], ['jas']], # , 'rsds'
+#            ['annualTotalRain', ['pr'], ['jas']]
+# TODO @Conni: When running the whole atlas, you'll need to have METRICS_TORUN looking like below.
+# TODO @Conni: The one thing I haven't figured out yet is how to do 'all scenarios' for certain plots (following Dave's request). Maybe we should say we can't do that for this version?
 
 METRICS_TORUN = [
+            ['pet', ['multivars'], ['jas']],
             ['annualMax', ['pr','tasmax', 'rsds'], ['jas']], # , 'rsds'
             ['annualMin', ['tasmin'], ['jas']],
             ['annualTotalRain', ['pr'], ['jas']],
@@ -102,30 +103,25 @@ METRICS_TORUN = [
             ['annualMaxRain2dSum', ['pr'], ['jas']],
             ['SPIxMonthly', ['pr'], ['jas']],
             ['SPIbiannual', ['pr'], ['ann']],
-            ['onsetMarteau', ['pr'], ['mjjas']],
-            ['annualStrongWindDays', ['wind'], ['jas']]
+            ['onsetMarteau', ['pr'], ['mjjas']]
     ]
-    #['monthlyClimatologicalMean', ['pr'], ['jas']],
-    #['SPIbiannual', ['pr'], ['ann']],
-    #['SPIxMonthly', ['pr'], ['jjas']],
-    #['onsetMarteau', ['pr'], ['jjas']],
-    #['annualMax5dMean', ['pr'], ['jas']],
-    #['annualMaxRain5dSum', ['pr'], ['jas']],
-    #['drySpell6', ['pr'], ['jas']],
-    #['wetSpell10', ['pr'], ['jas']],
-    #['annualExtremeRain30', ['pr'], ['jas']],
-    #['annualHotDays', ['tasmax'], ['jas']],
-    #['annualRainyDays', ['pr'], ['ann']],
-    #['annualRainyDaysPerc', ['pr'], ['ann']],
-    #['annualHotDaysPerc', ['tasmax'], ['jjas']],
-    #['annualMeanRainyDay', ['pr'], ['jjas']],
-    #['annualTotalRain', ['pr'], ['jas']],
-    #['annualMax', ['pr', 'tasmax'], ['jjas']],
 
-# Do not include:
+# NB: Currently excluding the following (but may add in later):
+#            ['annualStrongWindDays', ['wind'], ['jas']]
 #            ['annualHotDaysPerc', ['tasmax'], ['jas']],
 #            ['annualRainyDaysPerc', ['pr'], ['jas']],
 #            ['annualMaxRain5dMean', ['pr'], ['jas']],
 #            ['annualMaxRain3dMean', ['pr'], ['jas']],
 #            ['annualMaxRain2dMean', ['pr'], ['jas']],
 
+# Plotnames: ['allModelRank', 'mapPerc', 'nbModelHistogram', 'MultiNbModelHistogram', 'allModelBoxplot', 'lineplot', 'allModelHisto']
+# Plottypes: ['rcp26PercentageAnomaly', 'rcp26Anomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45Anomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85Anomaly', 'rcp85', 'scenarios', 'historical', 'percentageAnomaly', 'anomaly', 'allscen']
+
+# TODO @Conni: Add in more exceptions below
+PLOTS_TOEXCLUDE = [
+        #[metric, var, seas, reg, pn, pt]
+        ['annualMax', ['pr', 'rsds'], ['all'], ['all'], ['all'], ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85', 'scenarios', 'percentageAnomaly', 'anomaly', 'allscen']],
+        ['annualMax', ['tas'], ['all'], ['all'], ['all'], ['rcp26PercentageAnomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85', 'scenarios', 'percentageAnomaly', 'anomaly', 'allscen']],
+        
+        
+        ]

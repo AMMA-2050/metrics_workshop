@@ -21,7 +21,7 @@ import constants as cnst
 import labeller as lblr
 import sys
 import glob
-import utils
+import atlas_utils
 import cartopy
 import cartopy.crs as ccrs
 from cartopy.mpl.gridliner import LONGITUDE_FORMATTER, LATITUDE_FORMATTER
@@ -59,7 +59,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
     """
 
     fname = incubes + '_2d.nc'
-    fdict = utils.split_filename_path(fname)
+    fdict = atlas_utils.split_filename_path(fname)
 
     if fdict['aggregation'] not in cnst.METRIC_AGGS[fdict['metric']]:
         return
@@ -88,26 +88,26 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         ano_hist = ano.replace(fdict['scenario'], 'historical')
         hist = iris.load_cube(ano_hist)
 
-        data = utils.anomalies(hist, cube, percentage=False)
-        data_perc = utils.anomalies(hist, cube, percentage=True)
+        data = atlas_utils.anomalies(hist, cube, percentage=False)
+        data_perc = atlas_utils.anomalies(hist, cube, percentage=True)
 
         data_perc = data_perc.collapsed('model_name', iris.analysis.PERCENTILE, percent=[10, 90])
         data = data.collapsed('model_name', iris.analysis.PERCENTILE, percent=[10, 90])
 
         if np.max(data.data)-np.min(data.data) > np.max(data.data):
-            levels = (utils.datalevels_ano(np.append(data[0].data, data[1].data)),
-                      utils.datalevels_ano(np.append(data[0].data, data[1].data)))
+            levels = (atlas_utils.datalevels_ano(np.append(data[0].data, data[1].data)),
+                      atlas_utils.datalevels_ano(np.append(data[0].data, data[1].data)))
             cmap = 'RdBu_r' if 'tas' in variable else 'RdBu'
         else:
-            levels = (utils.datalevels(np.append(data[0].data, data[1].data)),
-                      utils.datalevels(np.append(data[0].data, data[1].data)))
+            levels = (atlas_utils.datalevels(np.append(data[0].data, data[1].data)),
+                      atlas_utils.datalevels(np.append(data[0].data, data[1].data)))
             cmap = 'Reds' if 'tas' in variable else 'Blues'
 
 
         plot_dic1 = {'data': data,
                      'ftag': scen + 'Anomaly',
                      'cblabel': 'anomaly',
-                     'levels': levels, #(utils.datalevels_ano(np.append(data[0].data, data[1].data)), utils.datalevels_ano(np.append(data[0].data, data[1].data))),
+                     'levels': levels, #(atlas_utils.datalevels_ano(np.append(data[0].data, data[1].data)), atlas_utils.datalevels_ano(np.append(data[0].data, data[1].data))),
                      'cmap': cmap #'RdBu_r' if 'tas' in variable else 'RdBu'
                      }
         
@@ -115,7 +115,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
             plot_dic2 = {'data': data_perc,
                          'ftag': scen + 'PercentageAnomaly',
                          'cblabel': 'percentageAnomaly',
-                         'levels': levels, #(utils.datalevels_ano(np.append(data[0].data, data[1].data)), utils.datalevels_ano(np.append(data[0].data, data[1].data))),
+                         'levels': levels, #(atlas_utils.datalevels_ano(np.append(data[0].data, data[1].data)), atlas_utils.datalevels_ano(np.append(data[0].data, data[1].data))),
                          'cmap': cmap #'RdBu_r' if 'tas' in variable else 'RdBu'
                          }
     
@@ -131,7 +131,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         plot_dic1 = {'data': data,
                      'ftag': scen,
                      'cblabel': '',
-                     'levels': (utils.datalevels(np.append(data[0].data, data[1].data)), utils.datalevels(np.append(data[0].data, data[1].data))),
+                     'levels': (atlas_utils.datalevels(np.append(data[0].data, data[1].data)), atlas_utils.datalevels(np.append(data[0].data, data[1].data))),
                      'cmap': 'viridis'
                      }
 
@@ -214,20 +214,20 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
        """
 
     fname = incubes + '_tseries.nc'
-    fdict = utils.split_filename_path(fname)
+    fdict = atlas_utils.split_filename_path(fname)
 
     if fdict['aggregation'] not in cnst.METRIC_AGGS[fdict['metric']]:
         return
 
     ano_list = glob.glob(fname)
-    ano_list = utils.order(ano_list)
+    ano_list = atlas_utils.order(ano_list)
 
     ldata = []
     scen = []
     perc = []
     for ano in ano_list:
 
-        fdict = utils.split_filename_path(ano)
+        fdict = atlas_utils.split_filename_path(ano)
         metric = fdict['metric']
         variable = fdict['variable']
         season = fdict['season']
@@ -237,20 +237,20 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
         if (anomaly == True) & (fdict['scenario'] == 'historical'):
             continue
 
-        vname = cnst.VARNAMES[fdict['variable']]
+#        vname = cnst.VARNAMES[fdict['variable']]
         cube = iris.load_cube(ano)
-        cube = utils.time_slicer(cube, fdict['scenario'])
+        cube = atlas_utils.time_slicer(cube, fdict['scenario'])
         cube = cube.collapsed('year', iris.analysis.MEAN)
 
         if anomaly:
             ano_hist = ano.replace(fdict['scenario'], 'historical')
             hist = iris.load_cube(ano_hist)
-            hist = utils.time_slicer(hist, 'historical')
+            hist = atlas_utils.time_slicer(hist, 'historical')
 
             hist = hist.collapsed('year', iris.analysis.MEAN)
 
-            data = utils.anomalies(hist, cube, percentage=False)
-            data_perc = utils.anomalies(hist, cube, percentage=True)
+            data = atlas_utils.anomalies(hist, cube, percentage=False)
+            data_perc = atlas_utils.anomalies(hist, cube, percentage=True)
 
             an = 'anomaly'
             ylabel = lblr.getYlab(metric, variable, anom='absolute')
@@ -273,7 +273,7 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
         ldata.append(dat)
 
         scen.append(fdict['scenario'])
-
+    
     plot_dic1 = {'data': ldata,
                  'xlabel': scen,
                  'ftag': an,
@@ -338,14 +338,14 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
        """
 
     fname = incubes + '_tseries.nc'
-    fdict = utils.split_filename_path(fname)
+    fdict = atlas_utils.split_filename_path(fname)
 
     if fdict['aggregation'] not in cnst.METRIC_AGGS[fdict['metric']]:
         return
 
     # This creates a list of '*allModels_tseries.nc' files, one element for each scenario
     ano_list = glob.glob(fname)
-    ano_list = utils.order(ano_list) 
+    ano_list = atlas_utils.order(ano_list) 
     
     ldata = []
     scen = []
@@ -353,7 +353,7 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
     lmodels = []
     for ano in ano_list:
 
-        fdict = utils.split_filename_path(ano)
+        fdict = atlas_utils.split_filename_path(ano)
         scenario = fdict['scenario']
         metric = fdict['metric']
         variable = fdict['variable']
@@ -365,18 +365,18 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
 
         #vname = cnst.VARNAMES[fdict['variable']]
         cube = iris.load_cube(ano)
-        cube = utils.time_slicer(cube, fdict['scenario'])
+        cube = atlas_utils.time_slicer(cube, fdict['scenario'])
         cube = cube.collapsed('year', iris.analysis.MEAN)
         lmodels.append(np.ndarray.tolist(cube.coord('model_name').points))
 
         if anomaly:
             ano_hist = ano.replace(fdict['scenario'], 'historical')
             hist = iris.load_cube(ano_hist)
-            hist = utils.time_slicer(hist, 'historical')
+            hist = atlas_utils.time_slicer(hist, 'historical')
             hist = hist.collapsed('year', iris.analysis.MEAN)
 
-            data = utils.anomalies(hist, cube, percentage=False)
-            data_perc = utils.anomalies(hist, cube, percentage=True)
+            data = atlas_utils.anomalies(hist, cube, percentage=False)
+            data_perc = atlas_utils.anomalies(hist, cube, percentage=True)
 
             an = 'anomaly'
 #            ylabel = ' anomaly'
@@ -469,7 +469,7 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
    """
 
     fname = incubes + '_tseries.nc'
-    fdict = utils.split_filename_path(fname)
+    fdict = atlas_utils.split_filename_path(fname)
 
     if fdict['aggregation'] not in cnst.METRIC_AGGS[fdict['metric']]:
         return
@@ -481,7 +481,7 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
         sys.exit('Found too many files, need one file')
     ano = ano[0]
 
-    fdict = utils.split_filename_path(ano)
+    fdict = atlas_utils.split_filename_path(ano)
     scen = fdict['scenario']
     metric = fdict['metric']
     variable = fdict['variable']
@@ -493,17 +493,17 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
 
     vname = cnst.VARNAMES[fdict['variable']]
     cube = iris.load_cube(ano)
-    cube = utils.time_slicer(cube, fdict['scenario'])
+    cube = atlas_utils.time_slicer(cube, fdict['scenario'])
     cube = cube.collapsed('year', iris.analysis.MEAN)
 
     if anomaly:
         ano_hist = ano.replace(fdict['scenario'], 'historical')
         hist = iris.load_cube(ano_hist)
-        hist = utils.time_slicer(hist, 'historical')
+        hist = atlas_utils.time_slicer(hist, 'historical')
         hist = hist.collapsed('year', iris.analysis.MEAN)
 
-        data = utils.anomalies(hist, cube, percentage=False)
-        data_perc = utils.anomalies(hist, cube, percentage=True)
+        data = atlas_utils.anomalies(hist, cube, percentage=False)
+        data_perc = atlas_utils.anomalies(hist, cube, percentage=True)
 
         data = data.data
         data_perc = data_perc.data
@@ -567,13 +567,13 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
       """
 
     fname = incubes + '_tseries.nc'
-    fdict = utils.split_filename_path(fname)
+    fdict = atlas_utils.split_filename_path(fname)
 
     if fdict['aggregation'] not in cnst.METRIC_AGGS[fdict['metric']]:
         return
 
     ano_list = glob.glob(fname)
-    ano_list = utils.order(ano_list)
+    ano_list = atlas_utils.order(ano_list)
 
     ldata = []
     scen = []
@@ -581,7 +581,7 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
 
     for ano in ano_list:
 
-        fdict = utils.split_filename_path(ano)
+        fdict = atlas_utils.split_filename_path(ano)
         scenario = fdict['scenario']
         metric = fdict['metric']
         variable = fdict['variable']
@@ -593,18 +593,18 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
 
         vname = cnst.VARNAMES[fdict['variable']]
         cube = iris.load_cube(ano)
-        cube = utils.time_slicer(cube, fdict['scenario'])
+        cube = atlas_utils.time_slicer(cube, fdict['scenario'])
 
         cube = cube.collapsed('year', iris.analysis.MEAN)
 
         if anomaly:
             ano_hist = ano.replace(fdict['scenario'], 'historical')
             hist = iris.load_cube(ano_hist)
-            hist = utils.time_slicer(hist, 'historical')
+            hist = atlas_utils.time_slicer(hist, 'historical')
             hist = hist.collapsed('year', iris.analysis.MEAN)
 
-            data = utils.anomalies(hist, cube, percentage=False)
-            data_perc = utils.anomalies(hist, cube, percentage=True)
+            data = atlas_utils.anomalies(hist, cube, percentage=False)
+            data_perc = atlas_utils.anomalies(hist, cube, percentage=True)
 
             data = data.data
             data_perc = data_perc.data
@@ -651,42 +651,44 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
                          }
 
             toplot = [plot_dic1, plot_dic2]
-
-    for p in toplot:
-
-        if len(p['data']) < 4:
-            xp = len(p['data'])
-            yp = 1
-            xx = 8
-            yy = 6
-        else:
-            xp = 2
-            yp = 2
-            xx = 10
-            yy = 5
-
-        f = plt.figure(figsize=(xx, yy))
-
-        for id in range(len(p['data'])):
-            ax = f.add_subplot(xp, yp, id + 1)
-
-            bin = p['data'][id][1]
-            ax.bar(bin[0:-1] + ((bin[1::] - bin[0:-1]) / 2), p['data'][id][0], edgecolor='black',
-                   width=(bin[1::] - bin[0:-1]),
-                   align='edge', color='darkseagreen')
-
-            ax.set_xlabel(p['ylabel']) #  + ': ' + fdict['metric']
-            ax.set_ylabel('Number of models')
-            #ax.set_title(scen[id])
-            ax.set_title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']), fontsize=10)
-
-        plt.tight_layout()
-
-        plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
-                    fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_MultiNbModelHistogram_' + p[
-                        'ftag'] + '.png')
-
-        plt.close(f)
+    
+    if 'toplot' in locals():
+        # This will only fail if both the historical and future are zero
+        for p in toplot:
+    
+            if len(p['data']) < 4:
+                xp = len(p['data'])
+                yp = 1
+                xx = 8
+                yy = 6
+            else:
+                xp = 2
+                yp = 2
+                xx = 10
+                yy = 5
+    
+            f = plt.figure(figsize=(xx, yy))
+    
+            for id in range(len(p['data'])):
+                ax = f.add_subplot(xp, yp, id + 1)
+    
+                bin = p['data'][id][1]
+                ax.bar(bin[0:-1] + ((bin[1::] - bin[0:-1]) / 2), p['data'][id][0], edgecolor='black',
+                       width=(bin[1::] - bin[0:-1]),
+                       align='edge', color='darkseagreen')
+    
+                ax.set_xlabel(p['ylabel']) #  + ': ' + fdict['metric']
+                ax.set_ylabel('Number of models')
+                #ax.set_title(scen[id])
+                ax.set_title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']), fontsize=10)
+    
+            plt.tight_layout()
+    
+            plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
+                        fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_MultiNbModelHistogram_' + p[
+                            'ftag'] + '.png')
+    
+            plt.close(f)
 
 
 def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
@@ -700,7 +702,7 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
    """
 
     fname = incubes + '_tseries.nc'
-    fdict = utils.split_filename_path(fname)
+    fdict = atlas_utils.split_filename_path(fname)
 
     if fdict['aggregation'] not in cnst.METRIC_AGGS[fdict['metric']]:
         return
@@ -710,7 +712,7 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
         sys.exit('Found too many files, need one file')
     ano = ano[0]
 
-    fdict = utils.split_filename_path(ano)
+    fdict = atlas_utils.split_filename_path(ano)
     scen = fdict['scenario']
     metric = fdict['metric']
     variable = fdict['variable']
@@ -722,17 +724,17 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
 
     vname = cnst.VARNAMES[fdict['variable']]
     cube = iris.load_cube(ano)
-    cube = utils.time_slicer(cube, fdict['scenario'])
+    cube = atlas_utils.time_slicer(cube, fdict['scenario'])
     cube = cube.collapsed('year', iris.analysis.MEAN)
 
     if anomaly:
         ano_hist = ano.replace(fdict['scenario'], 'historical')
         hist = iris.load_cube(ano_hist)
-        hist = utils.time_slicer(hist, 'historical')
+        hist = atlas_utils.time_slicer(hist, 'historical')
         hist = hist.collapsed('year', iris.analysis.MEAN)
 
-        data = utils.anomalies(hist, cube, percentage=False)
-        data_perc = utils.anomalies(hist, cube, percentage=True)
+        data = atlas_utils.anomalies(hist, cube, percentage=False)
+        data_perc = atlas_utils.anomalies(hist, cube, percentage=True)
 
         data = np.ndarray.tolist(data.data)
         data.sort()
@@ -742,13 +744,13 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
         plot_dic1 = {'data': data,
                      'ftag': scen + 'Anomaly',
                      'ylabel': lblr.getYlab(metric, variable, anom="anomaly"), #vname + ' anomaly: ' + fdict['metric'],
-                     'minmax': utils.data_minmax(data)}
+                     'minmax': atlas_utils.data_minmax(data)}
         
         if not 'tas' in variable:
             plot_dic2 = {'data': data_perc,
                          'ftag': scen + 'PercentageAnomaly',
                          'ylabel': lblr.getYlab(metric, variable, anom="percentageAnomaly"), #vname + ' anomaly percentage: ' + fdict['metric'],
-                         'minmax': utils.data_minmax(data_perc)
+                         'minmax': atlas_utils.data_minmax(data_perc)
                          }    
             toplot = [plot_dic1, plot_dic2]
         else:
@@ -762,7 +764,7 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
         plot_dic1 = {'data': cube,
                      'ftag': scen,
                      'ylabel': lblr.getYlab(metric, variable, anom=""),
-                     'minmax': utils.data_minmax(cube)
+                     'minmax': atlas_utils.data_minmax(cube)
                      }
 
         toplot = [plot_dic1]
@@ -802,7 +804,7 @@ def lineplot_scenarios(incubes, outpath, region):
    :return: plot
    """
     ano_list = glob.glob(incubes + '_tseries.nc')
-    ano_list = utils.order(ano_list)[::-1]
+    ano_list = atlas_utils.order(ano_list)[::-1]
 
     f = plt.figure(figsize=(8, 5), dpi=300)
     ax = f.add_subplot(111)
@@ -813,7 +815,7 @@ def lineplot_scenarios(incubes, outpath, region):
 
     for ano, co, ta in zip(ano_list, colors, tag):
 
-        fdict = utils.split_filename_path(ano)
+        fdict = atlas_utils.split_filename_path(ano)
         scen = fdict['scenario']
         metric = fdict['metric']
         variable = fdict['variable']

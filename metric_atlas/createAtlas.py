@@ -5,7 +5,7 @@ import subprocess
 import constants as cnst
 import labeller as lblr
 import itertools
-import utils
+import atlas_utils
 import shutil
 import scipy.stats as ss
 #import pdb
@@ -46,7 +46,8 @@ def getIntroText(metric):
             'SPIxMonthly' : 'The Standardised Precipitation Index (SPI) is a metric which was developed primarily for defining and monitoring drought. It allows a user to determine the rarity of drought at a given time scale of interest. It can also be used to determine periods of anomalously wet events.',
             'SPIbiannual' : 'The Standardised Precipitation Index (SPI) is a metric which was developed primarily for defining and monitoring drought. It allows a user to determine the rarity of drought at a given time scale of interest. It can also be used to determine periods of anomalously wet events. In this case, a 2-year rolling window is used.',
             'onsetMarteau' : 'Local Agronomic Monsoon Onset Date (Marteau) is defined as the first rainy day (precipitation greater than 1 mm) of two consecutive rainy days (with total precipitation greater than 20 mm) and no 7-day dry spell with less than 5 mm of rainfall during the subsequent 20 days',
-            'cdd' : 'Consecutive Dry Days'
+            'cdd' : 'Consecutive Dry Days',
+            'pet' : 'Potential Evapo-Transpiration'
             }
     
     return(intro_text[metric])
@@ -128,7 +129,7 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
             'mapPerc' : 'These maps show the range of ensemble spread in the xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. The top map shows the 90th percentile (upper limit) and the bottom map shows the 10th percentile (lower limit) for the xxx_region_xxx region of interest. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.',
             'nbModelHistogram' : 'This histogram shows the number of models that agree on xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows the number of models that agree on the range of values shown on the x-axis for the xxx_region_xxx region of interest. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
             'MultiNbModelHistogram' : 'This/These histogram(s) shows the number of models that agree on xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows the number of models that agree on the range of values shown on the x-axis for the xxx_region_xxx region of interest. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
-            'allModelBoxplot' : 'This boxplot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point (horizontal green line) shows an individual model averaged over the xxx_region_xxx region of interest, with the solid black line representing the 25th to 75th percentile range, and the dotted line the 10th to 90th percentile range. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
+            'allModelBoxplot' : 'This boxplot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point (horizontal green line) shows an individual model averaged over the xxx_region_xxx region of interest, with the solid blue box representing the 25th to 75th percentile range, and the dotted line the 10th to 90th percentile range. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
             'lineplot' : 'This timeseries plot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each line represents an individual model averaged over the xxx_region_xxx of interest for each year in the timeseries. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
             'allModelHisto' : 'This histogram shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows an individual model averaged over the xxx_region_xxx region of interest. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.'
             }
@@ -148,7 +149,7 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
             'rcp26' : 'the future (RCP2.6) distribution of', 
             'rcp45' : 'the future (RCP4.5) distribution of', 
             'rcp85' : 'the future (RCP8.5) distribution of', 
-            'scenarios' : 'all available future scenarios of', 
+            'scenarios' : 'historical model spread (for the '+str(cnst.HIST[0])+' - '+str(cnst.HIST[1])+' period) compared to all available future scenarios of', 
             'historical' : 'the historical distribution of', 
             'percentageAnomaly' : 'the percentage change (all available scenarios) in',  # not sure about the 'all available scenarios' bit
             'anomaly' : 'the absolute anomaly (all available scenarios) of', 
@@ -252,6 +253,23 @@ def getShortCaption(metric, bc, seas, plotnm):
 #                 # fout.write(line+"\r\n")
 #                 print(line)
 
+def isExcluded(metric, var, bc_res, seas, reg, pn, pt):
+    # Checks if the plot that is about to be written to the atlas has been flagged to be excluded
+    # NB: nothing to do for bc_res at the moment 
+    
+    # TODO @Conni: Put in a few loops here to check that this current set of variables does not exist in the cnst.PLOTS_TOEXCLUDE matrix. I've written something here, which should work, but probably needs testing / debugging.
+    
+    for exc in cnst.PLOTS_TOEXCLUDE:
+        if exc[0] == metric:
+            if var in exc[1]:
+                if seas in exc[2]:
+                    if reg in exc[3]:
+                        if pn in exc[4]:
+                            if pt in exc[5]:
+                                return True
+    
+    # If it doesn't get to the end of the tree, then we return false
+    return False
 
 def runAtlas():
     version = cnst.VERSION
@@ -301,7 +319,7 @@ def runAtlas():
             for seas, region, bc_res in itertools.product(season, cnst.REGIONS_LIST, cnst.BC_RES):
                 reg = region[0]
                 imgfiles = sorted(glob(imgdir + os.sep + bc_res + os.sep + metric + os.sep + metric + '_' + var + '_' + bc_res + '_' + seas +'_'+reg+ '*.png'))
-                imgdata = [utils.split_imgname(imgfile) for imgfile in imgfiles]
+                imgdata = [atlas_utils.split_imgname(imgfile) for imgfile in imgfiles]
                 
                 plotnames = list(set([id['plotname'] for id in imgdata]))
                 plottypes = list(set([id['plottype'] for id in imgdata]))
@@ -324,7 +342,7 @@ def runAtlas():
                     fmetric.write('\r\n')
                     
                     # Order plot types correctly
-                    plottypes_ordered = ['historical', 'rcp26', 'rcp45', 'rcp85', 'rcp26Anomaly', 'rcp45Anomaly', 'rcp85Anomaly', 'anomaly', 'rcp26PercentageAnomaly', 'rcp45PercentageAnomaly', 'rcp85PercentageAnomaly', 'percentageAnomaly', 'scenarios',  'allscen']
+                    plottypes_ordered = ['historical', 'rcp26', 'rcp45', 'rcp85', 'scenarios', 'allscen', 'rcp26Anomaly', 'rcp45Anomaly', 'rcp85Anomaly', 'anomaly', 'rcp26PercentageAnomaly', 'rcp45PercentageAnomaly', 'rcp85PercentageAnomaly', 'percentageAnomaly']
                     ptoi = [plottypes_ordered.index(pt) for pt in plottypes]
                     pt_i = [int(oi) for oi in ss.rankdata(ptoi)]
                     plottypes_neworder = [y for x,y in sorted(zip(pt_i,plottypes))]
@@ -332,7 +350,7 @@ def runAtlas():
                     for pt in plottypes_neworder:
                         print pt
                         this_file = imgdir + os.sep + bc_res + os.sep + metric + os.sep + '_'.join([metric, var, bc_res, seas, reg, pn, pt]) + ".png"
-                        if os.path.isfile(this_file):
+                        if os.path.isfile(this_file) and not isExcluded(metric, var, bc_res, seas, reg, pn, pt):
                             # Create a subsection for this plot name
 #                            fmetric.write('\subsubsection{'+getNicePlotType(pt)+'}\r\n')
 #                            fmetric.write('\r\n')
