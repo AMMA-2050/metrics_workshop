@@ -2,13 +2,13 @@
 Contains global constants for the CMIP5 atlas
 """
 VERSION = 'v0.2.2'
-DATADIR = '/project/FCFA/CMIP5/bias_corrected/WA_data' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
+DATADIR = '/users/global/cornkle/CMIP/CMIP5_Africa' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
 METRIC_DATADIR = DATADIR + '/save_files/metric_data'
 METRIC_PLOTDIR = DATADIR + '/save_files/metric_plots'
 METRIC_ATLASDIR = DATADIR + '/save_files/metric_atlas'
 BC_RES = ['BC_0.5x0.5'] #['0.5x0.5', 'BC_0.5x0.5', 'BC_mdlgrid', 'mdlgrid']
 
-SCENARIO = ['historical', 'rcp85'] # ['historical', 'rcp85'] #['historical', 'rcp26', 'rcp45', 'rcp85']
+SCENARIO = ['historical', 'rcp26', 'rcp45', 'rcp85'] #['historical', 'rcp85'] # ['historical', 'rcp85'] #
 
 REGIONS = {'WA' : ['WA', 'West Africa', [-18, 25, 4, 25]],   # lon1, lon2, lat1, lat2
            'BF' : ['BF','Burkina Faso',[-6, 2.8, 9 ,15.5]],
@@ -77,19 +77,13 @@ OVERWRITE = 'No' # 'Yes'
 # variable: list of climate variable(s) to send to the calc function
 # season: list of seasons to run the metric-variable combination for
 
-# TODO @Conni: I ran the following metrics for all scenarios, and you will need to run the plotting script also for these scenarios:
-#            ['annualMax', ['pr','tasmax', 'rsds'], ['jas']], # , 'rsds'
-#            ['annualTotalRain', ['pr'], ['jas']]
-# TODO @Conni: When running the whole atlas, you'll need to have METRICS_TORUN looking like below.
-# TODO @Conni: The one thing I haven't figured out yet is how to do 'all scenarios' for certain plots (following Dave's request). Maybe we should say we can't do that for this version?
-
 METRICS_TORUN = [
-            ['annualMax', ['pr','tasmax', 'rsds'], ['jas']], # , 'rsds'
+            ['annualMax', ['pr','tasmax', 'rsds'], ['jas']],#, # , 'rsds'
             ['annualMin', ['tasmin'], ['jas']],
             ['annualTotalRain', ['pr'], ['jas']],
             ['annualMean', ['tas', 'rsds'], ['jas']], # , 'rsds'
             ['annualMeanRainyDay', ['pr'], ['jas']],
-            ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['jas']], # 'rsds', 
+            ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['jas']], # 'rsds',
             ['annualRainyDays', ['pr'], ['jas']],
             ['annualHotDays', ['tasmax'], ['jas']],
             ['annualExtremeRain30', ['pr'], ['jas']],
@@ -117,11 +111,62 @@ METRICS_TORUN = [
 # Plotnames: ['allModelRank', 'mapPerc', 'nbModelHistogram', 'MultiNbModelHistogram', 'allModelBoxplot', 'lineplot', 'allModelHisto']
 # Plottypes: ['rcp26PercentageAnomaly', 'rcp26Anomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45Anomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85Anomaly', 'rcp85', 'scenarios', 'historical', 'percentageAnomaly', 'anomaly', 'allscen']
 
-# TODO @Conni: Add in more exceptions below
+
 PLOTS_TOEXCLUDE = [
         #[metric, var, seas, reg, pn, pt]
-        ['annualMax', ['pr', 'rsds'], ['all'], ['all'], ['all'], ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85', 'scenarios', 'percentageAnomaly', 'anomaly', 'allscen']],
-        ['annualMax', ['tas'], ['all'], ['all'], ['all'], ['rcp26PercentageAnomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85', 'scenarios', 'percentageAnomaly', 'anomaly', 'allscen']],
-        
-        
-        ]
+    ['annualMax', ['pr', 'rsds'], ['all'], ['all'], ['all'],
+     ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85', 'anomaly']],
+
+    ['annualTotalRain', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85',  'anomaly']],
+
+    ['annualMean', ['rsds'], ['all'], ['all'], ['all'],
+     ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85',  'anomaly']],
+
+    ['annualMeanRainyDay', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85',  'anomaly']],
+
+    ['monthlyClimatologicalMean', ['pr','rsds', 'wind'], ['all'], ['all'], ['all'],
+     ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85', 'anomaly']],
+
+    ['annualRainyDays', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26PercentageAnomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85', 'percentageAnomaly']],
+
+    ['annualExtremeRain30', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26PercentageAnomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85', 'percentageAnomaly']],
+
+    ['annualExtremeRain50', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26PercentageAnomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85', 'percentageAnomaly']],
+
+    ['annualExtremeRain100', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26PercentageAnomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85', 'percentageAnomaly']],
+
+    ['wetSpell10', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26PercentageAnomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85', 'percentageAnomaly']],
+
+    ['drySpell6', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26PercentageAnomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85', 'percentageAnomaly']],
+
+    ['annualMaxRain5dSum', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85',  'anomaly']],
+
+    ['annualMaxRain3dSum', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85',  'anomaly']],
+
+    ['annualMaxRain2dSum', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85',  'anomaly']],
+
+    ['SPIxMonthly', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26PercentageAnomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85', 'percentageAnomaly']],
+
+    ['SPIbiannual', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26PercentageAnomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85', 'percentageAnomaly']],
+
+    ['onsetMarteau', ['pr'], ['all'], ['all'], ['all'],
+     ['rcp26PercentageAnomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85', 'percentageAnomaly']],
+
+    ['pet', ['multivars'], ['all'], ['all'], ['all'],
+     ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85',  'anomaly']],
+]
+
+SINGLE_SCEN_PLOT = ['historical','rcp85'] #  run plot only for certain scenarios - reduces plot number'

@@ -8,7 +8,7 @@ import itertools
 import atlas_utils
 import shutil
 import scipy.stats as ss
-#import pdb
+import pdb
 
 '''
 This script loops through all images created by the atlas plotting script, 
@@ -28,13 +28,13 @@ def getIntroText(metric):
             'annualMean' : 'This shows the mean daily value for each variable, for the period shown.',
             'annualMeanRainyDay' : 'This shows the mean rainfall on the days that it rained with the period shown.',
             'monthlyClimatologicalMean' : 'This shows the climatology for each variable for each month within the period shown.',
-            'annualRainyDays' : 'This shows the number of days per in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm/day.',
-            'annualRainyDaysPerc' : 'This shows the percentage of days in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm/day.',
+            'annualRainyDays' : 'This shows the number of days per in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.',
+            'annualRainyDaysPerc' : 'This shows the percentage of days in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.',
             'annualHotDays' : 'This shows the number of days in the period shown with a Daily Maximum Temperature exceeding '+str(cnst.HOTDAYS_THRESHOLD)+lblr.DC+'.',
-            'annualExtremeRain30' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 30mm/day',
-            'annualExtremeRain50' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 50mm/day',
-            'annualExtremeRain100' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 100mm/day',
-            'annualStrongWindDays' : 'This shows the number of days in the period shown when daily mean wind speed exceeds a threshold of '+str(cnst.STRONGWIND_THRESHOLD)+'m/s',
+            'annualExtremeRain30' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 30mm day$^{-1}$',
+            'annualExtremeRain50' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 50mm day$^{-1}$',
+            'annualExtremeRain100' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 100mm day$^{-1}$',
+            'annualStrongWindDays' : 'This shows the number of days in the period shown when daily mean wind speed exceeds a threshold of '+str(cnst.STRONGWIND_THRESHOLD)+'m s$^{-1}$',
             'wetSpell10': 'This shows the number of periods with a wet spell longer than 10 days for the season shown.',
             'drySpell6': 'This shows the number of periods with a dry spell longer than 6 days for the season shown.',
             'annualMaxRain5dSum': 'Annual Maximum Rainfall Total in a 5-day Period',
@@ -43,8 +43,8 @@ def getIntroText(metric):
             'annualMaxRain5dMean': 'Annual Maximum Rainfall in a 5-day Period (Mean Daily Rate)',
             'annualMaxRain3dMean': 'Annual Maximum Rainfall in a 3-day Period (Mean Daily Rate)',
             'annualMaxRain2dMean': 'Annual Maximum Rainfall in a 2-day Period (Mean Daily Rate)',
-            'SPIxMonthly' : 'The Standardised Precipitation Index (SPI) is a metric which was developed primarily for defining and monitoring drought. It allows a user to determine the rarity of drought at a given time scale of interest. It can also be used to determine periods of anomalously wet events.',
-            'SPIbiannual' : 'The Standardised Precipitation Index (SPI) is a metric which was developed primarily for defining and monitoring drought. It allows a user to determine the rarity of drought at a given time scale of interest. It can also be used to determine periods of anomalously wet events. In this case, a 2-year rolling window is used.',
+            'SPIxMonthly' : 'The Standardised Precipitation Index (SPI) shown here is defined as the annual anomaly relative to the baseline period devided by the standard deviation of that baseline period', #'The Standardised Precipitation Index (SPI) is a metric which was developed primarily for defining and monitoring drought. It allows a user to determine the rarity of drought at a given time scale of interest. It can also be used to determine periods of anomalously wet events.',
+            'SPIbiannual' : 'The Standardised Precipitation Index (SPI) shown here is defined as the anomaly relative to the baseline period devided by the standard deviation of that baseline period. In this case, a 2-year rolling window is used to compute the anomaly.',
             'onsetMarteau' : 'Local Agronomic Monsoon Onset Date (Marteau) is defined as the first rainy day (precipitation greater than 1 mm) of two consecutive rainy days (with total precipitation greater than 20 mm) and no 7-day dry spell with less than 5 mm of rainfall during the subsequent 20 days',
             'cdd' : 'Consecutive Dry Days',
             'pet' : 'Potential Evapo-Transpiration'
@@ -88,7 +88,8 @@ def getNicePlotName(plot_name):
             'MultiNbModelHistogram' : '\'Number of model\' histograms for all scenarios', 
             'allModelBoxplot' : 'Boxplots', 
             'lineplot' : 'Spaghetti timeseries', 
-            'allModelHisto' : '\'All Model\' histograms'
+            'allModelHisto' : '\'All Model\' histograms',
+            'allModelMonthClim' : 'Monthly climatological mean'
     }
     try:
         return(nice_plot_name[plot_name])
@@ -98,19 +99,19 @@ def getNicePlotName(plot_name):
 
 def getNicePlotType(plot_type):
     nice_plottype_name ={
-            'rcp26PercentageAnomaly' : '\% Anomaly by Scenario', 
-            'rcp45PercentageAnomaly' : '\% Anomaly by Scenario', 
-            'rcp85PercentageAnomaly' : '\% Anomaly by Scenario', 
-            'rcp26Anomaly' : 'Absolute Anomaly by Scenario', 
-            'rcp45Anomaly' : 'Absolute Anomaly by Scenario', 
-            'rcp85Anomaly' : 'Absolute Anomaly by Scenario', 
+            'rcp26PercentageAnomaly' : '\% Change by Scenario',
+            'rcp45PercentageAnomaly' : '\% Change by Scenario',
+            'rcp85PercentageAnomaly' : '\% Change by Scenario',
+            'rcp26Anomaly' : 'Absolute Change by Scenario',
+            'rcp45Anomaly' : 'Absolute Change by Scenario',
+            'rcp85Anomaly' : 'Absolute Change by Scenario',
             'rcp26' : 'Each Scenario', 
             'rcp45' : 'Each Scenario', 
             'rcp85' : 'Each Scenario', 
             'scenarios' : 'All scenarios', 
             'historical' : 'Each Scenario', 
-            'percentageAnomaly' : 'Percentage Anomaly', 
-            'anomaly' : 'Absolute Anomaly', 
+            'percentageAnomaly' : 'Percentage Change',
+            'anomaly' : 'Absolute Change',
             'allscen' : 'All scenarios for 1950-2100'
             }
     try:
@@ -125,14 +126,15 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
     # Plottypes: ['rcp85PercentageAnomaly', 'rcp85Anomaly', 'rcp85', 'scenarios', 'historical', 'percentageAnomaly', 'anomaly', 'allscen']
     
     caption_template = {
-            'allModelRank' : 'This scatterplot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point shows an individual model averaged over xxx_region_xxx, and ranked according to the magnitude of the value on the y-axis. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.',
-            'mapPerc' : 'These maps show the range of ensemble spread in the xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. The top map shows the 90th percentile (upper limit) and the bottom map shows the 10th percentile (lower limit) for the xxx_region_xxx region of interest. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.',
-            'nbModelHistogram' : 'This histogram shows the number of models that agree on xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows the number of models that agree on the range of values shown on the x-axis for the xxx_region_xxx region of interest. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
-            'MultiNbModelHistogram' : 'This/These histogram(s) shows the number of models that agree on xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows the number of models that agree on the range of values shown on the x-axis for the xxx_region_xxx region of interest. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
-            'allModelBoxplot' : 'This boxplot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point (horizontal green line) shows an individual model averaged over the xxx_region_xxx region of interest, with the solid blue box representing the 25th to 75th percentile range, and the dotted line the 10th to 90th percentile range. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
+            'allModelRank' : 'This scatterplot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point shows an individual model averaged over xxx_region_xxx, and ranked according to the magnitude of the value on the y-axis. This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
+            'mapPerc' : 'These maps show the range of ensemble spread in the xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. The top map shows the 90th percentile (upper limit) and the bottom map shows the 10th percentile (lower limit) for the xxx_region_xxx region. This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
+            'nbModelHistogram' : 'This histogram shows the number of models that agree on xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows the number of models that agree on the range of values shown on the x-axis for the xxx_region_xxx region. This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
+            'MultiNbModelHistogram' : 'These histograms shows the number of models that agree on xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows the number of models that agree on the range of values shown on the x-axis for the xxx_region_xxx region . This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
+            'allModelBoxplot' : 'This boxplot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point (horizontal red line) shows an individual model averaged over the xxx_region_xxx region, with the solid box representing the 25th to 75th percentile range, and the dotted line the 10th to 90th percentile range. This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
             'lineplot' : 'This timeseries plot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each line represents an individual model averaged over the xxx_region_xxx of interest for each year in the timeseries. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
-            'allModelHisto' : 'This histogram shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows an individual model averaged over the xxx_region_xxx region of interest. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.'
-            }
+            'allModelHisto' : 'This histogram shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows an individual model averaged over the xxx_region_xxx region. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.' ,
+            'allModelMonthClim': 'This boxplot of the monthly climatology shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point (horizontal red line) shows an individual model averaged over the xxx_region_xxx region, with the solid box representing the 25th to 75th percentile range, and the dotted line the 10th to 90th percentile range. This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
+    }
     
     myCaption = caption_template[plotnm]
     
@@ -152,8 +154,8 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
             'scenarios' : 'historical model spread (for the '+str(cnst.HIST[0])+' - '+str(cnst.HIST[1])+' period) compared to all available future scenarios of', 
             'historical' : 'the historical distribution of', 
             'percentageAnomaly' : 'the percentage change (all available scenarios) in',  # not sure about the 'all available scenarios' bit
-            'anomaly' : 'the absolute anomaly (all available scenarios) of', 
-            'allscen' : 'all available scenarios of'
+            'anomaly' : 'the absolute change (all available scenarios) of',
+            'allscen' : 'all available scenarios of',
             }
     try:
         pt_short_txt = pt_short[plottype]
@@ -198,19 +200,19 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
     
     # Add plot type information
     pt_long_desc ={
-            'rcp26PercentageAnomaly' : 'the percentage future anomaly for the RCP2.6 scenario for', 
-            'rcp45PercentageAnomaly' : 'the percentage anomaly for the RCP4.5 scenario for', 
-            'rcp85PercentageAnomaly' : 'the percentage anomaly for the RCP4.5 scenario for', 
-            'rcp26Anomaly' : 'the absolute anomaly for the RCP2.6 scenario for', 
-            'rcp45Anomaly' : 'the absolute anomaly for the RCP4.5 scenario for', 
-            'rcp85Anomaly' : 'the absolute anomaly for the RCP8.5 scenario for', 
-            'rcp26' : 'future RCP2.6 scenario distribution for', 
-            'rcp45' : 'future RCP4.5 scenario distribution for', 
-            'rcp85' : 'future RCP8.5 scenario distribution for', 
-            'scenarios' : 'all available scenarios for', 
-            'historical' : 'the historical distribution for', 
-            'percentageAnomaly' : 'the percentage anomaly for all available scenarios for',  # not sure about the 'all available scenarios' bit
-            'anomaly' : 'the absolute anomaly for all available scenarios', 
+            'rcp26PercentageAnomaly' : 'the percentage change for the RCP2.6 scenario',
+            'rcp45PercentageAnomaly' : 'the percentage change for the RCP4.5 scenario',
+            'rcp85PercentageAnomaly' : 'the percentage change for the RCP8.5 scenario',
+            'rcp26Anomaly' : 'the absolute change for the RCP2.6 scenario',
+            'rcp45Anomaly' : 'the absolute change for the RCP4.5 scenario',
+            'rcp85Anomaly' : 'the absolute change for the RCP8.5 scenario',
+            'rcp26' : 'future RCP2.6 scenario distribution',
+            'rcp45' : 'future RCP4.5 scenario distribution',
+            'rcp85' : 'future RCP8.5 scenario distribution',
+            'scenarios' : 'all available scenarios',
+            'historical' : 'the historical distribution',
+            'percentageAnomaly' : 'the percentage change for all available scenarios',  # not sure about the 'all available scenarios' bit
+            'anomaly' : 'the absolute change for all available scenarios',
             'allscen' : 'all available scenarios'
             }
     try:
@@ -227,7 +229,7 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
 
 def getShortCaption(metric, bc, seas, plotnm):
     
-    mycaption = 'As above, but for ' + monthLookUp(seas) + ' in the 2050s (2040-2069) compared to historical (1950-2000). The bias corrected dataset used was ' + bc.replace("_", "\_") + '.'
+    mycaption = 'As above, but for ' + monthLookUp(seas) + ' in the 2050s ('+str(cnst.FUTURE[0])+'-'+str(cnst.FUTURE[1])+') compared to historical ('+str(cnst.HIST[0])+'-'+str(cnst.HIST[1])+'). The bias corrected dataset used was ' + bc.replace("_", "\_") + '.'
     return(mycaption)
 
 # def writeTex(ofile):
@@ -256,16 +258,16 @@ def getShortCaption(metric, bc, seas, plotnm):
 def isExcluded(metric, var, bc_res, seas, reg, pn, pt):
     # Checks if the plot that is about to be written to the atlas has been flagged to be excluded
     # NB: nothing to do for bc_res at the moment 
-    
-    # TODO @Conni: Put in a few loops here to check that this current set of variables does not exist in the cnst.PLOTS_TOEXCLUDE matrix. I've written something here, which should work, but probably needs testing / debugging.
-    
+
     for exc in cnst.PLOTS_TOEXCLUDE:
+
         if exc[0] == metric:
-            if var in exc[1] or exc[1] == 'all':
-                if seas in exc[2] or exc[2] == 'all':
-                    if reg in exc[3] or exc[3] == 'all':
-                        if pn in exc[4] or exc[4] == 'all':
-                            if pt in exc[5] or exc[5] == 'all':
+
+            if (var in exc[1]) or ('all' in exc[1]):
+                if (seas in exc[2]) or ('all' in exc[2]):
+                    if (reg in exc[3]) or ('all' in exc[3]):
+                        if (pn in exc[4]) or ('all' in exc[4]):
+                            if (pt in exc[5]) or ('all' in exc[5]):
                                 return True
     
     # If it doesn't get to the end of the tree, then we return false
@@ -284,11 +286,16 @@ def runAtlas():
         os.makedirs(texdir)
     except:
         print texdir + ' could not be created, so using the existing directory'
-        
+
+    ##TODO: somehow change the file path mess here
     # Copy the coverpage and intro section from the scripts folder into the atlas output folder
-    shutil.copyfile(os.getcwd() + os.sep + '1introduction.tex', texdir + os.sep + '1_introduction.tex')
-    shutil.copyfile(os.getcwd() + os.sep + coverpage, texdir + os.sep + coverpage)
-    
+   # shutil.copyfile(os.getcwd() + os.sep + '1introduction.tex', texdir + os.sep + '1_introduction.tex')
+    shutil.copyfile('/users/global/cornkle/data/pythonWorkspace/metrics_workshop/metric_atlas' + os.sep + '1introduction.tex', texdir + os.sep + '1_introduction.tex')
+   # shutil.copyfile(os.getcwd() + os.sep + coverpage, texdir + os.sep + coverpage)
+    shutil.copyfile('/users/global/cornkle/data/pythonWorkspace/metrics_workshop/metric_atlas' + os.sep + coverpage, texdir + os.sep + coverpage)
+    shutil.copyfile(
+        '/users/global/cornkle/data/pythonWorkspace/metrics_workshop/metric_atlas' + os.sep + 'atlas_template.tex',   texdir + os.sep + 'atlas_template.tex')
+
     plot_sections = []
 #    last_plot_name = []
 #    last_metric = []
@@ -351,6 +358,7 @@ def runAtlas():
                         print pt
                         this_file = imgdir + os.sep + bc_res + os.sep + metric + os.sep + '_'.join([metric, var, bc_res, seas, reg, pn, pt]) + ".png"
                         if os.path.isfile(this_file) and not isExcluded(metric, var, bc_res, seas, reg, pn, pt):
+
                             # Create a subsection for this plot name
 #                            fmetric.write('\subsubsection{'+getNicePlotType(pt)+'}\r\n')
 #                            fmetric.write('\r\n')
@@ -384,7 +392,8 @@ def runAtlas():
     # At the end, write the section names into atlas.tex
     # writeTex("atlas_"+version+".tex")
     # print(plot_sections)
-    with open("atlas_template.tex", "r") as fin, open(texdir + "/atlas_"+version+".tex","w") as fout:
+
+    with open(texdir + "/atlas_template.tex", "r") as fin, open(texdir + "/atlas_"+version+".tex","w") as fout:
         for line in fin:
             # print(line.encode("utf-8"))
             if line.strip() == '%InsertHere':
@@ -402,7 +411,7 @@ def runAtlas():
     # Compile TWICE in latex
     subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + "/" + "atlas_"+version+".tex"])
     subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + "/" + "atlas_"+version+".tex"])
-    
+   # pdb.set_trace()
     if os.path.isfile(texdir + "/atlas_" +version+ ".pdf"):
         print('File successfully created: ' + texdir + "/atlas_" +version+ ".pdf")
     else:
