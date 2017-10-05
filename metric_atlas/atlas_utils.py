@@ -198,6 +198,10 @@ def anomalies(hist, future, percentage=False):
     cubelist = iris.cube.CubeList([])
     mdls = hist.coord('model_name').points
 
+    if hist.long_name != future.long_name:
+        print 'Two different variables as input. Big big problem!'
+        pdb.set_trace()
+
     for mdl in mdls:
 
         mdlextract = iris.Constraint(model_name=lambda cell: cell == mdl)
@@ -206,11 +210,11 @@ def anomalies(hist, future, percentage=False):
         smll_past = hist.extract(mdlextract)
 
         try:
-            # TODO @Conni: I get the following error here when plotting at line 211
-            # iris.exceptions.NotYetImplementedError: Cannot use 'subtract' with differing units (K & W m-2)
             differences = smll_future - smll_past  # if this fails a model is missing for a scenario
         except TypeError:
             continue
+        except iris.exceptions.NotYetImplementedError:
+            pdb.set_trace()
 
         if percentage:
             differences = 100 * ((smll_future - smll_past) / smll_past)

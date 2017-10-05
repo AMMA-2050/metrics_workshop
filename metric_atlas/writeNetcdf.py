@@ -57,6 +57,8 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
             
         files_good, modelID = load_file_names(inpath, var, sc, bc)
 
+        #pdb.set_trace()
+
         if files_good == []:
             print inpath, sc, bc, seas, var
             sys.exit('No files found. Check your input directory!!!')
@@ -66,8 +68,10 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
         calc_to_call = getattr(calc, metric) # calls the metric calc function from calc.py
         file_searcher = out + os.sep + str(metric) + '_' +str(var) + '_' + str(bc) + \
                         '_' + str(sc) + '_' + str(seas) +'_' + str(reg[0])
-#        pdb.set_trace()
+
         for file, nme in zip(files_good, modelID):
+
+            cubeout=None
             
             # Check if we have any missing files for all aggregation types, if so, run the metric calculation again
             # Note: the calc functions run for 2 or 3 aggregation methods
@@ -88,12 +92,15 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
                 
                 if not os.path.isfile(nc_file) or (overwrite == 'Yes'):
                     print 'nc_file: ' + nc_file
-                    if not 'cubeout' in locals():
+                    print 'Load file: '+ file
+
+                    if not cubeout:
+                        print 'newcube'
                         cubeout = atlas_utils.load_data(file, xmin, xmax, ymin, ymax)
+
                     calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
-                
         for agg in cnst.METRIC_AGGS[metric]:
-#            pdb.set_trace()
+
             big_cube(file_searcher, agg)
                 
             

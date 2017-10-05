@@ -23,22 +23,31 @@ def allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, seas
     ###
     # Plots that need all scenarios at once
     ###
+
+
+
     for bc, var, seas, reg in itertools.product(bc_and_resolution, variable, season, region):
-        print 'All scenarios: '+var
+        print 'All scenarios: ' + var
         ### DOES NOT CHANGE
         cube_path = inpath + os.sep + bc + os.sep + str(metric) + '_' + str(var) + '_' + \
                     str(bc) + '_*_' + str(seas) + '_' + str(reg[0]) + '_allModels'
         out = outpath + os.sep + bc + os.sep + metric
 
         #### CHOICE OF PLOTS BELOW HERE
-        mplot.boxplot_scenarios(cube_path, out, reg, anomaly=False)
-        mplot.lineplot_scenarios(cube_path, out, reg)
-        mplot.barplot_scenarios(cube_path, out, reg, anomaly=False)
-        
+
+
+        if metric == 'monthlyClimatologicalMean':
+            return
 
         mplot.boxplot_scenarios(cube_path, out, reg, anomaly=True)
-        mplot.barplot_scenarios(cube_path, out, reg, anomaly=True)
-        mplot.nbModels_histogram_scenarios(cube_path, out, reg, anomaly=True)
+
+        #   mplot.barplot_scenarios(cube_path, out, reg, anomaly=True)
+        #   mplot.boxplot_scenarios(cube_path, out, reg, anomaly=False)
+        #   mplot.lineplot_scenarios(cube_path, out, reg)
+        #   mplot.barplot_scenarios(cube_path, out, reg, anomaly=False)
+        #   mplot.nbModels_histogram_scenarios(cube_path, out, reg, anomaly=False)
+        #   mplot.nbModels_histogram_scenarios(cube_path, out, reg, anomaly=True)
+
 
 
 def singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric):
@@ -47,8 +56,9 @@ def singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, se
     ###
     for bc, var, scen, seas, reg in itertools.product(bc_and_resolution, variable, cnst.SCENARIO, season, region):
         print 'Single scenario: '+var
-        # if (scen == 'rcp26'):  # we leave rcp26 out for now - less plots!
-        #     continue
+
+        if (scen not in cnst.SINGLE_SCEN_PLOT):
+            continue
 
         ### DOES NOT CHANGE
         cube_path = inpath + os.sep + bc + os.sep + str(metric) + '_' + str(var) + '_' + \
@@ -56,17 +66,17 @@ def singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, se
         out = outpath + os.sep + bc + os.sep + metric
         #
         ### CHOICE OF PLOTS BELOW HERE
-        # mplot.nbModels_histogram(cube_path, out, reg, anomaly=False)
-        # mplot.nbModels_histogram(cube_path, out, reg, anomaly=True)
+        if metric == 'monthlyClimatologicalMean':
+            mplot.boxplotMonthlyClim(cube_path, out, reg, anomaly=True)
+        else:
+         #   mplot.nbModels_histogram_single(cube_path, out, reg, anomaly=False)
+            mplot.nbModels_histogram_single(cube_path, out, reg, anomaly=True)
 
-        mplot.nbModels_histogram_single(cube_path, out, reg, anomaly=False)
-        mplot.nbModels_histogram_single(cube_path, out, reg, anomaly=True)
+         #   mplot.modelRank_scatter_single(cube_path, out, reg, anomaly=False)
+            mplot.modelRank_scatter_single(cube_path, out, reg, anomaly=True)
 
-        mplot.modelRank_scatter_single(cube_path, out, reg, anomaly=False)
-        mplot.modelRank_scatter_single(cube_path, out, reg, anomaly=True)
-
-        mplot.map_percentile_single(cube_path, out, reg, anomaly=False)
-        mplot.map_percentile_single(cube_path, out, reg, anomaly=True)
+        #    mplot.map_percentile_single(cube_path, out, reg, anomaly=False)
+            mplot.map_percentile_single(cube_path, out, reg, anomaly=True)
 
 
 def saves():

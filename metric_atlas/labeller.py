@@ -12,14 +12,14 @@ METRICLONGNAME = {
             'annualMean' : 'Annual Mean',
             'annualMeanRainyDay' : 'Mean Daily Rainfall on Rainy Days',
             'monthlyClimatologicalMean' : 'Monthly Climatological Mean',
-            'annualHotDaysPerc' : 'Percentage of Hot Days (Daily Max Temp >'+str(cnst.HOTDAYS_THRESHOLD)+DC+' per Year',
-            'annualRainyDays' : 'Number of Rainy Days (>'+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$) per Year',
-            'annualRainyDaysPerc' : 'Percentage of Days that are Rainy (>'+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$) per Year',
-            'annualHotDays' : 'Number of Days per Year with a Daily Maximum Temperature > '+str(cnst.HOTDAYS_THRESHOLD)+DC,
-            'annualExtremeRain30' : 'Number of Days per Year with Rainfall > 30mm day$^{-1}$',
-            'annualExtremeRain50' : 'Number of Days per Year with Rainfall > 50mm day$^{-1}$',
-            'annualExtremeRain100' : 'Number of Days per Year with Rainfall > 100mm day$^{-1}$',
-            'annualStrongWindDays' : 'Number of Days per Year with Daily Mean Wind Speed > '+str(cnst.STRONGWIND_THRESHOLD),
+            'annualHotDaysPerc' : 'Percentage of Hot Days (Max Temp $>$'+str(cnst.HOTDAYS_THRESHOLD)+DC+' per Year',
+            'annualRainyDays' : 'Number of Rainy Days ($>$'+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$) per Year',
+            'annualRainyDaysPerc' : 'Percentage of Days that are Rainy ($>$'+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$) per Year',
+            'annualHotDays' : 'Number of Days per Year with a Maximum Temperature $>$ '+str(cnst.HOTDAYS_THRESHOLD)+DC,
+            'annualExtremeRain30' : 'Number of Days per Year with Rainfall $>$ 30mm day$^{-1}$',
+            'annualExtremeRain50' : 'Number of Days per Year with Rainfall $>$ 50mm day$^{-1}$',
+            'annualExtremeRain100' : 'Number of Days per Year with Rainfall $>$ 100mm day$^{-1}$',
+            'annualStrongWindDays' : 'Number of Days per Year with Mean Wind Speed > '+str(cnst.STRONGWIND_THRESHOLD),
             'wetSpell10': 'Number of Periods with a Wet Spell Longer Than 10 Days',
             'drySpell6': 'Number of Periods with a Dry Spell Longer Than 6 Days',
             'annualMaxRain5dSum': 'Annual Maximum Rainfall Total in a 5-day Period',
@@ -46,7 +46,7 @@ def getTitle(m, v, seas, scen, bc, r, anom=None):
         scen = scen + '; '
     
     if anom in ['percentage', 'percentageAnomaly']:
-        atxt = '% Change in '
+        atxt = '% change in '
     elif anom in ['absolute', 'anomaly']:
         atxt = 'Change in '
     elif anom in ['scenarios']:
@@ -86,15 +86,15 @@ def getYlab(m, v, anom=None):
     ylabLUT_metvar = {
             'annualMax_pr' : 'Precipitation (mm/day)',
             'annualMax_tasmax' : 'Daily Max Temperature ('+DC+')',
-            'annualMax_rsds' : 'SW Incoming Radiation (W m$^-2$)',
+            'annualMax_rsds' : 'SW Incoming Radiation (W m$^{-2}$)',
             'annualMin_tasmin' : 'Daily Min Temperature ('+DC+')',
             'annualMean_tas' : 'Daily Mean Temperature ('+DC+')',
-            'annualMean_rsds' : 'SW Incoming Radiation (W m$^-2$)',
-            'monthlyClimatologicalMean_pr' : 'Precipitation (mm/day)',
+            'annualMean_rsds' : 'SW Incoming Radiation (W m$^{-2}$)',
+            'monthlyClimatologicalMean_pr' : 'Precipitation (mm day$^{-1}$)',
             'monthlyClimatologicalMean_tasmin' : 'Daily Min Temperature ('+DC+')',
             'monthlyClimatologicalMean_tas' : 'Daily Mean Temperature ('+DC+')',
             'monthlyClimatologicalMean_tasmax' : 'Daily Max Temperature ('+DC+')',
-            'monthlyClimatologicalMean_rsds' : 'SW Incoming Radiation (W m$^-2$)',
+            'monthlyClimatologicalMean_rsds' : 'SW Incoming Radiation (W m$^{-2}$)',
             'monthlyClimatologicalMean_wind' : 'Wind Speed (ms^{-1})'
             }
     
@@ -117,8 +117,8 @@ def getYlab(m, v, anom=None):
             'annualMaxRain_5dMean': '5-day Mean Precipitation Rate (mm day$^{-1}$)',
             'annualMaxRain_3dMean': '3-day Mean Precipitation Rate (mm day$^{-1}$)',
             'annualMaxRain_2dMean': '2-day Mean Precipitation Rate (mm day$^{-1}$)',
-            'SPIxMonthly' : 'Standardised Precipitation Index',
-            'SPIbiannual' : 'Standardised Precipitation Index (bi-annual)',
+            'SPIxMonthly' : 'SPI',
+            'SPIbiannual' : 'SPI (bi-annual)',
             'onsetMarteau' : 'Julian Day',
             'cdd' : 'Consecutive Dry Days',
             'pet' : 'PET (mm day$^{-1}$)'
@@ -133,9 +133,9 @@ def getYlab(m, v, anom=None):
         ylab = cnst.VARNAMES[v] + ': ' + m
     
     if anom in ['percentage', 'percentageAnomaly']:
-        ylab = '% Change in ' + ylab
+        ylab = '% change'#in ' + ylab
     if anom in ['absolute', 'anomaly']:
-        ylab = 'Change in ' + ylab
+        ylab = 'Absolute change'# in ' + ylab
     
     return(ylab)
 
@@ -150,7 +150,7 @@ def getFigSize(region, plottype):
     thisLUT = {'map_BF': (7,7),
                'map_SG': (6,8),
                'map_WA': (8,6),
-               'nbModelHistogram': (7,5)
+               'nbModelHistogram': (8.5,6)
             }
     
     try:
