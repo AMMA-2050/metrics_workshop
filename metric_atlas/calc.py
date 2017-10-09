@@ -96,7 +96,9 @@ def _annualMeanThresh(incube, season, ncfile, lower_threshold=None):
 
     csum = incube.aggregated_by(['year'], iris.analysis.SUM)
     ccount = incube.aggregated_by(['year'], iris.analysis.COUNT, function=lambda values: values >= lower_threshold)
-    calc = csum / ccount  # mean
+    calc = csum / ccount #incube.aggregated_by(['year'], iris.analysis.MEAN) #csum / ccount  # mean
+    calc.units = incube.units
+    calc.long_name = incube.long_name
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
 
     calc2d = atlas_utils.time_slicer(calc, fdict['scenario'])
@@ -497,7 +499,7 @@ def annualMax2dMean(incube, season, ncfile):
 
 
 def annualMean(incube, season, ncfile):
-    _annualMeanThresh(incube, season, ncfile, lower_threshold=-999)
+    _annualMeanThresh(incube, season, ncfile, lower_threshold=-50)
 
 
 def annualMeanRainyDay(incube, season, ncfile):

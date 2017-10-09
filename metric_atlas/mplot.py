@@ -304,7 +304,7 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
         #do_jitter(p['data'], f.gca())
 
         try:
-            bp = plt.boxplot(p['data'], labels=p['xlabel'], sym='', patch_artist=True, notch=False, zorder=9)
+            bp = plt.boxplot(p['data'], labels=p['xlabel'], sym='', patch_artist=True, notch=False, zorder=9, whis=[10,90])
         except ValueError:
             print('Boxplot data has a problem, please check. Cannot continue')
             pdb.set_trace()
@@ -417,7 +417,7 @@ def boxplotMonthlyClim(incubes, outpath, region, anomaly=False):
         # do_jitter(p['data'], f.gca())
         data = np.transpose(p['data'])
         try:
-            bp = plt.boxplot(p['data'],  sym='', patch_artist=True, notch=False, zorder=9)
+            bp = plt.boxplot(p['data'],  sym='', patch_artist=True, notch=False, zorder=9, whis=[10,90])
         except ValueError:
             print('Boxplot data has a problem, please check. Cannot continue')
             pdb.set_trace()

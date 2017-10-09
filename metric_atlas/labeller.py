@@ -6,34 +6,36 @@ import constants as cnst
 DC = '$^\circ$C'
 
 METRICLONGNAME = {
-            'annualMax' : 'Annual Maximum',
-            'annualMin' : 'Annual Minimum',
-            'annualTotalRain' : 'Total Annual Rainfall',
-            'annualMean' : 'Annual Mean',
+            'annualMax' : 'Maximum',
+            'annualMin' : 'Minimum',
+            'annualTotalRain' : 'Total Rainfall',
+            'annualMean' : 'Average',
             'annualMeanRainyDay' : 'Mean Daily Rainfall on Rainy Days',
             'monthlyClimatologicalMean' : 'Monthly Climatological Mean',
-            'annualHotDaysPerc' : 'Percentage of Hot Days (Max Temp $>$'+str(cnst.HOTDAYS_THRESHOLD)+DC+' per Year',
-            'annualRainyDays' : 'Number of Rainy Days ($>$'+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$) per Year',
-            'annualRainyDaysPerc' : 'Percentage of Days that are Rainy ($>$'+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$) per Year',
-            'annualHotDays' : 'Number of Days per Year with a Maximum Temperature $>$ '+str(cnst.HOTDAYS_THRESHOLD)+DC,
-            'annualExtremeRain30' : 'Number of Days per Year with Rainfall $>$ 30mm day$^{-1}$',
-            'annualExtremeRain50' : 'Number of Days per Year with Rainfall $>$ 50mm day$^{-1}$',
-            'annualExtremeRain100' : 'Number of Days per Year with Rainfall $>$ 100mm day$^{-1}$',
-            'annualStrongWindDays' : 'Number of Days per Year with Mean Wind Speed > '+str(cnst.STRONGWIND_THRESHOLD),
+            'annualHotDaysPerc' : 'Percentage of Hot Days (Max Temp $>$'+str(cnst.HOTDAYS_THRESHOLD)+DC,
+            'annualRainyDays' : 'Number of Rainy Days ($>$'+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$)',
+            'annualRainyDaysPerc' : 'Percentage of Days that are Rainy ($>$'+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$)',
+            'annualHotDays' : 'Number of Days with a Maximum Temperature $>$ '+str(cnst.HOTDAYS_THRESHOLD)+DC,
+            'annualExtremeRain30' : 'Number of Days with Rainfall $>$ 30mm day$^{-1}$',
+            'annualExtremeRain50' : 'Number of Days with Rainfall $>$ 50mm day$^{-1}$',
+            'annualExtremeRain100' : 'Number of Days with Rainfall $>$ 100mm day$^{-1}$',
+            'annualStrongWindDays' : 'Number of Days with Mean Wind Speed > '+str(cnst.STRONGWIND_THRESHOLD),
             'wetSpell10': 'Number of Periods with a Wet Spell Longer Than 10 Days',
             'drySpell6': 'Number of Periods with a Dry Spell Longer Than 6 Days',
-            'annualMaxRain5dSum': 'Annual Maximum Rainfall Total in a 5-day Period',
-            'annualMaxRain3dSum' : 'Annual Maximum Rainfall Total in a 3-day Period',
-            'annualMaxRain2dSum' : 'Annual Maximum Rainfall Total in a 2-day Period',
-            'annualMaxRain5dMean': 'Annual Maximum Rainfall in a 5-day Period (Mean Daily Rate)',
-            'annualMaxRain3dMean': 'Annual Maximum Rainfall in a 3-day Period (Mean Daily Rate)',
-            'annualMaxRain2dMean': 'Annual Maximum Rainfall in a 2-day Period (Mean Daily Rate)',
+            'annualMaxRain5dSum': 'Maximum Rainfall Total in a 5-day Period',
+            'annualMaxRain3dSum' : 'Maximum Rainfall Total in a 3-day Period',
+            'annualMaxRain2dSum' : 'Maximum Rainfall Total in a 2-day Period',
+            'annualMaxRain5dMean': 'Maximum Rainfall in a 5-day Period (Mean Daily Rate)',
+            'annualMaxRain3dMean': 'Maximum Rainfall in a 3-day Period (Mean Daily Rate)',
+            'annualMaxRain2dMean': 'Maximum Rainfall in a 2-day Period (Mean Daily Rate)',
             'SPIxMonthly' : 'Standardised Precipitation Index',
             'SPIbiannual' : 'Standardised Precipitation Index (bi-annual)',
             'onsetMarteau' : 'Local Agronomic Monsoon Onset Date (Marteau)',
             'cdd' : 'Consecutive Dry Days',
             'pet' : 'Potential Evapotranspiration'
     }
+
+MONTHS = [  'jan', 'feb', 'mar', 'apr','may', 'jun', 'jul', 'aug', 'sep','oct', 'nov','dec']
 
 
 def getTitle(m, v, seas, scen, bc, r, anom=None):
