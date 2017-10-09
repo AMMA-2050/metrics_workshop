@@ -78,27 +78,27 @@ OVERWRITE = 'No' # 'Yes'
 # season: list of seasons to run the metric-variable combination for
 
 METRICS_TORUN = [
-            ['annualMax', ['pr','tasmax', 'rsds'], ['jas']],#, # , 'rsds'
-            ['annualMin', ['tasmin'], ['jas']],
-            ['annualTotalRain', ['pr'], ['jas']],
-            ['annualMean', ['tas', 'rsds'], ['jas']], # , 'rsds'
-            ['annualMeanRainyDay', ['pr'], ['jas']],
-            ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['jas']], # 'rsds',
-            ['annualRainyDays', ['pr'], ['jas']],
-            ['annualHotDays', ['tasmax'], ['jas']],
-            ['annualExtremeRain30', ['pr'], ['jas']],
-            ['annualExtremeRain50', ['pr'], ['jas']],
-            ['annualExtremeRain100', ['pr'], ['jas']],
-            ['wetSpell10', ['pr'], ['jas']],
-            ['drySpell6', ['pr'], ['jas']],
-            ['annualMaxRain5dSum', ['pr'], ['jas']],
-            ['annualMaxRain3dSum', ['pr'], ['jas']],
-            ['annualMaxRain2dSum', ['pr'], ['jas']],
-            ['SPIxMonthly', ['pr'], ['jas']],
-            ['SPIbiannual', ['pr'], ['ann']],
-            ['onsetMarteau', ['pr'], ['mjjas']],
-            ['pet', ['multivars'], ['jas']]
-    ]
+    ['annualMax', ['pr', 'tasmax', 'rsds'], ['jas']],  # , # , 'rsds'
+    ['annualMin', ['tasmin'], ['jas']],
+    ['annualTotalRain', ['pr'], ['jas']],
+    ['annualMean', ['tas', 'rsds'], ['jas']],  # , 'rsds'
+    ['annualMeanRainyDay', ['pr'], ['jas']],
+    ['monthlyClimatologicalMean',['pr', 'tasmin','tas',  'tasmax', 'rsds', 'wind'] , ['jas']],  # 'rsds','tas', ['pr', 'tasmin','tas',  'tasmax', 'rsds', 'wind']
+    ['annualRainyDays', ['pr'], ['jas']],
+    ['annualHotDays', ['tasmax'], ['jas']],
+    ['annualExtremeRain30', ['pr'], ['jas']],
+    ['annualExtremeRain50', ['pr'], ['jas']],
+    ['annualExtremeRain100', ['pr'], ['jas']],
+    ['wetSpell10', ['pr'], ['jas']],
+    ['drySpell6', ['pr'], ['jas']],
+    ['annualMaxRain5dSum', ['pr'], ['jas']],
+    ['annualMaxRain3dSum', ['pr'], ['jas']],
+    ['annualMaxRain2dSum', ['pr'], ['jas']],
+    ['SPIxMonthly', ['pr'], ['jas']],
+    ['SPIbiannual', ['pr'], ['ann']],
+    ['onsetMarteau', ['pr'], ['mjjas']],
+    ['pet', ['multivars'], ['jas']]
+     ]
 
 # NB: Currently excluding the following (but may add in later):
 #            ['annualStrongWindDays', ['wind'], ['jas']]

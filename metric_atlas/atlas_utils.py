@@ -200,7 +200,12 @@ def anomalies(hist, future, percentage=False):
 
     if hist.long_name != future.long_name:
         print 'Two different variables as input. Big big problem!'
-        pdb.set_trace()
+        if (hist.long_name | future.long_name) == None:
+            print 'Could be a minor problem, ignored'
+            print hist.long_name
+            print future.long_name
+        else:
+            pdb.set_trace()
 
     for mdl in mdls:
 

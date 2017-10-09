@@ -29,10 +29,9 @@ def load_file_names(inpath, variable, scenario, bc_and_resolution):
     Returns the path to CMIP5 files and model names
     """
 
-    filepath = inpath + '/' + str(bc_and_resolution) + '/*/' + str(scenario) + '/' + str(variable) + '*.nc'
+    filepath = inpath + '/' + str(bc_and_resolution) + '/*/' + str(scenario) + '/' + str(variable) + '_*.nc'
 #    print filepath
     files_good = glob.glob(filepath)
-
     modelID = [f.split(os.sep)[-3] for f in files_good]
 
     return (files_good, modelID)
