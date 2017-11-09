@@ -278,6 +278,22 @@ def datalevels(data):
     """
     return np.linspace(int(np.percentile(data,10)), int(np.percentile(data, 90)), 10)
 
+def binlevels(data):
+    """
+    Given a data array with positive values, returns a list of 10 plotting levels with top and bottom corresponding to
+    the 10th and 90th percentile values. Makes sure that color bar is not distorted by single high values determining
+    the colorbar edges.
+    :param data: data array with positive values only
+    :return: list of 10 data levels
+    """
+    li = np.max([np.abs(data.min()), np.abs(data.max())])
+    upper = np.linspace(0,li,7)
+    lower = np.linspace(li*-1, 0, 7)
+
+    comb = np.concatenate([lower, upper[1::]])
+
+    return comb
+
 
 def data_minmax(datalist):
     """

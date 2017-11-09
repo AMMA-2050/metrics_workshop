@@ -26,20 +26,19 @@ def allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, seas
 
 
 
-    for bc, var, seas, reg in itertools.product(bc_and_resolution, variable, season, region):
+    for bc, var, seas in itertools.product(bc_and_resolution, variable, season):
         print 'All scenarios: ' + var
         ### DOES NOT CHANGE
         cube_path = inpath + os.sep + bc + os.sep + str(metric) + '_' + str(var) + '_' + \
-                    str(bc) + '_*_' + str(seas) + '_' + str(reg[0]) + '_allModels'
+                    str(bc) + '_*_' + str(seas) + '_' + str(region[0]) + '_allModels'
         out = outpath + os.sep + bc + os.sep + metric
 
         #### CHOICE OF PLOTS BELOW HERE
 
-
         if metric == 'monthlyClimatologicalMean':
             return
 
-        mplot.boxplot_scenarios(cube_path, out, reg, anomaly=True)
+        mplot.boxplot_scenarios(cube_path, out, region, anomaly=True)
 
         #   mplot.barplot_scenarios(cube_path, out, reg, anomaly=True)
         #   mplot.boxplot_scenarios(cube_path, out, reg, anomaly=False)
@@ -54,7 +53,8 @@ def singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, se
     ###
     # Plots that need a single scenario
     ###
-    for bc, var, scen, seas, reg in itertools.product(bc_and_resolution, variable, cnst.SCENARIO, season, region):
+
+    for bc, var, scen, seas in itertools.product(bc_and_resolution, variable, cnst.SCENARIO, season):
         print 'Single scenario: '+var
 
         if (scen not in cnst.SINGLE_SCEN_PLOT):
@@ -62,21 +62,21 @@ def singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, se
 
         ### DOES NOT CHANGE
         cube_path = inpath + os.sep + bc + os.sep + str(metric) + '_' + str(var) + '_' + \
-                    str(bc) + '_' + scen + '_' + str(seas) + '_' + str(reg[0]) + '_allModels'
+                    str(bc) + '_' + scen + '_' + str(seas) + '_' + str(region[0]) + '_allModels'
         out = outpath + os.sep + bc + os.sep + metric
         #
         ### CHOICE OF PLOTS BELOW HERE
         if metric == 'monthlyClimatologicalMean':
-            mplot.boxplotMonthlyClim(cube_path, out, reg, anomaly=True)
+            mplot.boxplotMonthlyClim(cube_path, out, region, anomaly=True)
         else:
          #   mplot.nbModels_histogram_single(cube_path, out, reg, anomaly=False)
-            mplot.nbModels_histogram_single(cube_path, out, reg, anomaly=True)
+            mplot.nbModels_histogram_single(cube_path, out, region, anomaly=True)
 
          #   mplot.modelRank_scatter_single(cube_path, out, reg, anomaly=False)
-            mplot.modelRank_scatter_single(cube_path, out, reg, anomaly=True)
+            mplot.modelRank_scatter_single(cube_path, out, region, anomaly=True)
 
         #    mplot.map_percentile_single(cube_path, out, reg, anomaly=False)
-            mplot.map_percentile_single(cube_path, out, reg, anomaly=True)
+            mplot.map_percentile_single(cube_path, out, region, anomaly=True)
 
 
 def saves():
@@ -92,7 +92,7 @@ def saves():
     inpath = cnst.DATADIR
     outpath = cnst.METRIC_DATADIR
     bc_and_resolution = cnst.BC_RES  # mdlgrid does not work cause models are not on the same grid!
-    region = cnst.REGIONS_LIST
+    region = cnst.ATLAS_REGION
 
     atlas_utils.create_outdirs(outpath, bc_and_resolution)
     
@@ -112,6 +112,37 @@ def saves():
     print 'All Netcdf files written, ready to plot!'
 
 
+def wfdei_saves():
+    """
+    Function to create all netcdf files that are needed for later plotting. All scenarios!
+    :return: Netcdf files for single models (_singleModel.nc), multi-model cube (_allModels.nc) and anomalies per model
+     in a multi-model cube in absolute values (_anomalies.nc) and in percentage change (_anomaliesPerc.nc).
+    """
+
+    ###
+    # CHOOSE OPTIONS RELATED TO ALL METRICS
+    ###
+    outpath = cnst.METRIC_DATADIR
+    bc_and_resolution = ['WFDEI']  # mdlgrid does not work cause models are not on the same grid!
+    region = cnst.ATLAS_REGION
+
+    atlas_utils.create_outdirs(outpath, bc_and_resolution)
+
+    # Metric-specific options are set in constants.py
+    for row in cnst.METRICS_TORUN:
+        metric = row[0]
+        variable = row[1]
+        season = row[2]
+        print '#######################################'
+        print 'Saving data for: '
+        print metric, variable, season
+        print '#######################################'
+
+        wNetcdf.wfdei(variable, outpath, season, metric, region, cnst.OVERWRITE)
+
+    print 'All Netcdf files written, ready to plot!'
+
+
 
 def plot():
 
@@ -125,10 +156,9 @@ def plot():
     ###
     inpath = cnst.METRIC_DATADIR
     outpath = cnst.METRIC_PLOTDIR
-    #inpath = '/users/global/cornkle/CMIP/CMIP5_Africa/save_files'
-    #outpath = inpath + os.sep + 'plots'
-    bc_and_resolution = cnst.BC_RES #['BC_0.5x0.5']
-    region = cnst.REGIONS_LIST #[cnst.REGIONS['WA'], cnst.REGIONS['BF']]
+
+    bc_and_resolution = cnst.BC_RES
+    region = cnst.ATLAS_REGION
     #####
     
     atlas_utils.create_outdirs(outpath, bc_and_resolution, metrics=inpath)
@@ -153,6 +183,7 @@ def plot():
 
 def main():
 #    saves()
+#    wfdei_saves()
 #    plot()
     ca.runAtlas()
 

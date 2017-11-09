@@ -88,10 +88,10 @@ def _annualMeanThresh(incube, season, ncfile, lower_threshold=None):
     
     incube = incube.extract(slicer)
 
-    if "_pr_" in ncfile:
+    if "pr_" in ncfile:
         incube.convert_units('kg m-2 day-1')
 
-    if ("_tas_" in ncfile) or ('_tasmax_' in ncfile) or ('_tasmin_' in ncfile):
+    if ("tas_" in ncfile) or ("tasmax_" in ncfile) or ("tasmin_" in ncfile):
         incube.convert_units('Celsius')
 
     csum = incube.aggregated_by(['year'], iris.analysis.SUM)
@@ -182,10 +182,10 @@ def _countSpells(incube, season, ncfile, spell_length=None, lower_threshold=None
     incube = incube.extract(slicer)
     incube.coord('latitude').guess_bounds()
     incube.coord('longitude').guess_bounds()
-    if "_pr_" in ncfile:
+    if "pr_" in ncfile:
         incube.convert_units('kg m-2 day-1')
 
-    if ("_tas_" in ncfile) or ('_tasmax_' in ncfile) or ('_tasmin_' in ncfile):
+    if ("tas_" in ncfile) or ("tasmax_" in ncfile) or ("tasmin_" in ncfile):
         incube.convert_units('Celsius')
 
     # Start spell calculation
@@ -239,10 +239,10 @@ def _annualnbDayPerc(incube, season, ncfile, upper_threshold=None, lower_thresho
     incube = incube.extract(slicer)
     incube.coord('latitude').guess_bounds()
     incube.coord('longitude').guess_bounds()
-    if "_pr_" in ncfile:
+    if "pr_" in ncfile:
         incube.convert_units('kg m-2 day-1')
 
-    if ("_tas_" in ncfile) or ('_tasmax_' in ncfile) or ('_tasmin_' in ncfile):
+    if ("tas_" in ncfile) or ("tasmax_" in ncfile) or ("tasmin_" in ncfile):
         incube.convert_units('Celsius')
 
     bigger = incube.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= upper_threshold)
@@ -302,10 +302,10 @@ def _annualnbDay(incube, season, ncfile, threshold=None):
     incube = incube.extract(slicer)
     incube.coord('latitude').guess_bounds()
     incube.coord('longitude').guess_bounds()
-    if "_pr_" in ncfile:
+    if "pr_" in ncfile:
         incube.convert_units('kg m-2 day-1')
 
-    if ("_tas_" in ncfile) or ('_tasmax_' in ncfile) or ('_tasmin_' in ncfile):
+    if ("tas_" in ncfile) or ("tasmax_" in ncfile) or ("tasmin_" in ncfile):
         incube.convert_units('Celsius')
 
     bigger = incube.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= threshold)
@@ -352,10 +352,10 @@ def _xDaySumAnnualMax(incube, season, ncfile, nb_days=None):
     slicer = _getSeasConstr(season)
     incube = incube.extract(slicer)
 
-    if "_pr_" in ncfile:
+    if "pr_" in ncfile:
         incube.convert_units('kg m-2 day-1')
 
-    if ("_tas_" in ncfile) or ('_tasmax_' in ncfile) or ('_tasmin_' in ncfile):
+    if ("tas_" in ncfile) or ("tasmax_" in ncfile) or ("tasmin_" in ncfile):
         print('This aggregation makes no sense for temperature. Stopping calculation')
         return
 
@@ -404,10 +404,10 @@ def _xDayMeanAnnualMax(incube, season, ncfile, nb_days=None):
 
     cube2plot = incube
 
-    if "_pr_" in ncfile:
+    if "pr_" in ncfile:
         cube2plot.convert_units('kg m-2 day-1')
 
-    if ("_tas_" in ncfile) or ('_tasmax_' in ncfile) or ('_tasmin_' in ncfile):
+    if ("tas_" in ncfile) or ("tasmax_" in ncfile) or ("tasmin_" in ncfile):
         print('This aggregation makes no sense for temperature. Stopping calculation')
         return
 
@@ -538,10 +538,10 @@ def monthlyClimatologicalMean(incube, season, ncfile):
     #    slicer = _getSeasConstr(season)
     #    cubein = incube.extract(slicer)
 
-    if "_pr_" in ncfile:
+    if "pr_" in ncfile:
         incube.convert_units('kg m-2 day-1')
 
-    if ("_tas_" in ncfile) or ('_tasmax_' in ncfile) or ('_tasmin_' in ncfile):
+    if ("tas_" in ncfile) or ("tasmax_" in ncfile) or ("tasmin_" in ncfile):
         incube.convert_units('Celsius')
 
     tcalc = incube.aggregated_by(['month_number', 'year'], iris.analysis.MEAN)  # prepare trend calc
@@ -587,13 +587,13 @@ def annualMax(cubein, season, ncfile):
     slicer = _getSeasConstr(season)
     cubein = cubein.extract(slicer)
 
-    if "_pr_" in ncfile:
+    if "pr_" in ncfile:
         try:
             cubein.convert_units('kg m-2 day-1')
         except:
             return
 
-    if ("_tas_" in ncfile) or ('_tasmax_' in ncfile) or ('_tasmin_' in ncfile):
+    if ("tas_" in ncfile) or ("tasmax_" in ncfile) or ("tasmin_" in ncfile):
         try:
             cubein.convert_units('Celsius')
         except:
@@ -636,10 +636,10 @@ def annualMin(cubein, season, ncfile):
     slicer = _getSeasConstr(season)
     cubein = cubein.extract(slicer)
 
-    if "_pr_" in ncfile:
+    if "pr_" in ncfile:
         cubein.convert_units('kg m-2 day-1')
 
-    if ("_tas_" in ncfile) or ('_tasmax_' in ncfile) or ('_tasmin_' in ncfile):
+    if ("tas_" in ncfile) or ("tasmax_" in ncfile) or ("tasmin_" in ncfile):
         cubein.convert_units('Celsius')
 
     calc = cubein.aggregated_by(['year'], iris.analysis.MIN)
@@ -956,11 +956,11 @@ def trend(cubein, season, ncfile):
 
     if len(month_numbers) > 1:
 
-        if "_pr_" in ncfile:
+        if "pr_" in ncfile:
             incube_ym = incube.aggregated_by(['year', 'month_number'], iris.analysis.SUM)
             incube_ym.convert_units('kg m-2 month-1')
 
-        if ("_tas_" in ncfile) or ('_tasmax_' in ncfile) or ('_tasmin_' in ncfile):
+        if ("tas_" in ncfile) or ("tasmax_" in ncfile) or ("tasmin_" in ncfile):
             incube_ym = incube.aggregated_by(['year', 'month_number'], iris.analysis.MEAN)
             incube_ym.convert_units('Celsius')
 
