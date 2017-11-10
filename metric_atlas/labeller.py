@@ -80,13 +80,26 @@ def getTitle(m, v, seas, scen, bc, r, anom=None):
         temp_title = r + ': ' + atxt + METRICLONGNAME[m] + '\n('+seas+'; '+scen+bc+')'
         return(temp_title)
 
+def getUnit(var):
+
+    vardic = {
+        'pr': '(mm day$^{-1}$)',
+        'tasmax': '('+DC+')' ,
+        'rsds': '(W m$^{-2}$)',
+        'tasmin': '(' + DC + ')',
+        'tas': '(' + DC + ')',
+        'wind': '(m s$^{-1}$)'
+    }
+
+    return vardic[var]
+
 
 def getYlab(m, v, anom=None):
     
     metvar = m + '_' + v
     
     ylabLUT_metvar = {
-            'annualMax_pr' : 'Precipitation (mm/day)',
+            'annualMax_pr' : 'Precipitation (mm day$^{-1}$)',
             'annualMax_tasmax' : 'Daily Max Temperature ('+DC+')',
             'annualMax_rsds' : 'SW Incoming Radiation (W m$^{-2}$)',
             'annualMin_tasmin' : 'Daily Min Temperature ('+DC+')',
@@ -97,7 +110,7 @@ def getYlab(m, v, anom=None):
             'monthlyClimatologicalMean_tas' : 'Daily Mean Temperature ('+DC+')',
             'monthlyClimatologicalMean_tasmax' : 'Daily Max Temperature ('+DC+')',
             'monthlyClimatologicalMean_rsds' : 'SW Incoming Radiation (W m$^{-2}$)',
-            'monthlyClimatologicalMean_wind' : 'Wind Speed (ms^{-1})'
+            'monthlyClimatologicalMean_wind' : 'Wind Speed (m s$^{-1}$)'
             }
     
     ylabLUT = {
@@ -133,11 +146,13 @@ def getYlab(m, v, anom=None):
             ylab = ylabLUT[m]
     except:
         ylab = cnst.VARNAMES[v] + ': ' + m
+
+    unit = getUnit(v)
     
     if anom in ['percentage', 'percentageAnomaly']:
-        ylab = '% change'#in ' + ylab
+        ylab = '% change '#in ' + ylab
     if anom in ['absolute', 'anomaly']:
-        ylab = 'Absolute change'# in ' + ylab
+        ylab = 'Absolute change '+unit# in ' + ylab
     
     return(ylab)
 

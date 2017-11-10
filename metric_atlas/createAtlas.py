@@ -273,6 +273,7 @@ def isExcluded(metric, var, bc_res, seas, reg, pn, pt):
     # If it doesn't get to the end of the tree, then we return false
     return False
 
+
 def runAtlas():
     version = cnst.VERSION
     texdir = cnst.METRIC_ATLASDIR 
