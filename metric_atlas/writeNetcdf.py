@@ -61,30 +61,29 @@ def wfdei(variable, outpath, season, metric, region, overwrite):
 
         # Check if we have any missing files for all aggregation types, if so, run the metric calculation again
         # Note: the calc functions run for 2 or 3 aggregation methods
-        for agg in cnst.METRIC_AGGS[metric]:
-            print agg
 
-            if metric == 'pet' and var == 'rsds':
-                # This is a different case because PET needs multiple variables, rather than one
-                # NB: We use rsds, because generally, less models have this variable as opposed to tasmin or tasmax
-                tasmin = atlas_utils.load_data(file.replace(var, 'tasmin'), xmin, xmax, ymin, ymax)
-                tasmax = atlas_utils.load_data(file.replace(var, 'tasmax'), xmin, xmax, ymin, ymax)
-                rsds = atlas_utils.load_data(file.replace(var, 'rsds'), xmin, xmax, ymin, ymax)
-                cubeout = iris.cube.CubeList([tasmin, tasmax, rsds])
-                file_searcher = file_searcher.replace('rsds', 'multivars')
-                print cubeout
+        if metric == 'pet' and var == 'rsds':
+            # This is a different case because PET needs multiple variables, rather than one
+            # NB: We use rsds, because generally, less models have this variable as opposed to tasmin or tasmax
+            tasmin = atlas_utils.load_data(file.replace(var, 'tasmin'), xmin, xmax, ymin, ymax)
+            tasmax = atlas_utils.load_data(file.replace(var, 'tasmax'), xmin, xmax, ymin, ymax)
+            rsds = atlas_utils.load_data(file.replace(var, 'rsds'), xmin, xmax, ymin, ymax)
+            cubeout = iris.cube.CubeList([tasmin, tasmax, rsds])
+            file_searcher = file_searcher.replace('rsds', 'multivars')
+            var = 'multivars'
+            print cubeout
 
-            nc_file = file_searcher + '_WFDEI_' + agg + '.nc'
+        nc_file = file_searcher + '_WFDEI_tseries.nc'
 
-            if not os.path.isfile(nc_file) or (overwrite == 'Yes'):
-                print 'nc_file: ' + nc_file
-                print 'Load file: ' + file
+        if not os.path.isfile(nc_file) or (overwrite == 'Yes'):
+            print 'nc_file: ' + nc_file
+            print 'Load file: ' + file
 
-                if not cubeout:
-                    print 'newcube'
-                    cubeout = atlas_utils.load_data(file, xmin, xmax, ymin, ymax)
+            if not cubeout:
+                print 'newcube'
+                cubeout = atlas_utils.load_data(file, xmin, xmax, ymin, ymax)
 
-                calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
+            calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
 
 
 
@@ -115,6 +114,7 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
         xmax = box[1]
         ymin = box[2]
         ymax = box[3]
+        pdb.set_trace()
         if metric == 'pet' and var == 'multivars':
             var = 'rsds'
 
@@ -137,33 +137,33 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
             
             # Check if we have any missing files for all aggregation types, if so, run the metric calculation again
             # Note: the calc functions run for 2 or 3 aggregation methods
-            for agg in cnst.METRIC_AGGS[metric]:
-                print agg
+          #  for agg in cnst.METRIC_AGGS[metric]:
+               # print agg
                 
-                if metric == 'pet' and var == 'rsds':
-                    # This is a different case because PET needs multiple variables, rather than one
-                    # NB: We use rsds, because generally, less models have this variable as opposed to tasmin or tasmax
-                    tasmin = atlas_utils.load_data(file.replace(var, 'tasmin'), xmin, xmax, ymin, ymax)
-                    tasmax = atlas_utils.load_data(file.replace(var, 'tasmax'), xmin, xmax, ymin, ymax)
-                    rsds = atlas_utils.load_data(file.replace(var, 'rsds'), xmin, xmax, ymin, ymax)
-                    cubeout = iris.cube.CubeList([tasmin, tasmax, rsds])
-                    file_searcher = file_searcher.replace('rsds', 'multivars')
-                    print cubeout
-                    pdb.set_trace()
-                nc_file = file_searcher + '_' + str(nme) + '_singleModel_'+agg+'.nc'                
-                
-                if not os.path.isfile(nc_file) or (overwrite == 'Yes'):
-                    print 'nc_file: ' + nc_file
-                    print 'Load file: '+ file
+            if metric == 'pet' and var == 'rsds':
+                # This is a different case because PET needs multiple variables, rather than one
+                # NB: We use rsds, because generally, less models have this variable as opposed to tasmin or tasmax
+                tasmin = atlas_utils.load_data(file.replace(var, 'tasmin'), xmin, xmax, ymin, ymax)
+                tasmax = atlas_utils.load_data(file.replace(var, 'tasmax'), xmin, xmax, ymin, ymax)
+                rsds = atlas_utils.load_data(file.replace(var, 'rsds'), xmin, xmax, ymin, ymax)
+                cubeout = iris.cube.CubeList([tasmin, tasmax, rsds])
+                file_searcher = file_searcher.replace('rsds', 'multivars')
+                print cubeout
 
-                    if not cubeout:
-                        print 'newcube'
-                        cubeout = atlas_utils.load_data(file, xmin, xmax, ymin, ymax)
+            nc_file = file_searcher + '_' + str(nme) + '_singleModel_tseries.nc'
 
-                    calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
-        for agg in cnst.METRIC_AGGS[metric]:
+            if not os.path.isfile(nc_file) or (overwrite == 'Yes'):
+                print 'nc_file: ' + nc_file
+                print 'Load file: '+ file
 
-            big_cube(file_searcher, agg)
+                if not cubeout:
+                    print 'newcube'
+                    cubeout = atlas_utils.load_data(file, xmin, xmax, ymin, ymax)
+
+                calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
+    for agg in cnst.METRIC_AGGS[metric]:
+
+        big_cube(file_searcher, agg)
                 
             
 
