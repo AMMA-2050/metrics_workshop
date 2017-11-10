@@ -82,25 +82,25 @@ OVERWRITE = 'No' # 'Yes'
 
 AGG_PERIODS = ['jas']
 METRICS_TORUN = [
-    ['annualMax', ['pr'], AGG_PERIODS],  # , # ,  'tasmax', 'rsds'
-    ['annualMin', ['tasmin'], AGG_PERIODS],
-    ['annualTotalRain', ['pr'], AGG_PERIODS],
-    ['annualMean', ['tas', 'rsds'], AGG_PERIODS],  # , 'rsds'
-    ['annualMeanRainyDay', ['pr'], AGG_PERIODS],
-    ['monthlyClimatologicalMean',['pr', 'tasmin','tas',  'tasmax', 'rsds', 'wind'] , ['ann']],  # 'rsds','tas', ['pr', 'tasmin','tas',  'tasmax', 'rsds', 'wind']
-    ['annualRainyDays', ['pr'], AGG_PERIODS],
-    ['annualHotDays', ['tasmax'], AGG_PERIODS],
-    ['annualExtremeRain30', ['pr'], AGG_PERIODS],
-    ['annualExtremeRain50', ['pr'], AGG_PERIODS],
-    ['wetSpell10', ['pr'], AGG_PERIODS],
-    ['drySpell6', ['pr'], AGG_PERIODS],
-    ['annualMaxRain5dSum', ['pr'], AGG_PERIODS],
-    ['annualMaxRain3dSum', ['pr'], AGG_PERIODS],
-    ['annualMaxRain2dSum', ['pr'],AGG_PERIODS],
-    ['SPIxMonthly', ['pr'], AGG_PERIODS],
-    ['SPIbiannual', ['pr'], ['ann']],
-    ['onsetMarteau', ['pr'], ['mjjas']],
-    ['pet', ['multivars'], AGG_PERIODS]
+    # ['annualMax', ['pr'], AGG_PERIODS],  # , # ,  'tasmax', 'rsds'
+    # ['annualMin', ['tasmin'], AGG_PERIODS],
+    # ['annualTotalRain', ['pr'], AGG_PERIODS],
+    # ['annualMean', ['tas', 'rsds'], AGG_PERIODS],  # , 'rsds'
+     ['annualMeanRainyDay', ['pr'], AGG_PERIODS],
+    # ['monthlyClimatologicalMean',['pr', 'tasmin','tas',  'tasmax', 'rsds', 'wind'] , ['ann']],  # 'rsds','tas', ['pr', 'tasmin','tas',  'tasmax', 'rsds', 'wind']
+    # ['annualRainyDays', ['pr'], AGG_PERIODS],
+    # ['annualHotDays', ['tasmax'], AGG_PERIODS],
+    # ['annualExtremeRain30', ['pr'], AGG_PERIODS],
+    # ['annualExtremeRain50', ['pr'], AGG_PERIODS],
+    # ['wetSpell10', ['pr'], AGG_PERIODS],
+    # ['drySpell6', ['pr'], AGG_PERIODS],
+    # ['annualMaxRain5dSum', ['pr'], AGG_PERIODS],
+    # ['annualMaxRain3dSum', ['pr'], AGG_PERIODS],
+    # ['annualMaxRain2dSum', ['pr'],AGG_PERIODS],
+    # ['SPIxMonthly', ['pr'], AGG_PERIODS],
+    # ['SPIbiannual', ['pr'], ['ann']],
+    # ['onsetMarteau', ['pr'], ['mjjas']],
+    #['pet', ['multivars'], AGG_PERIODS]
      ]
 
 # NB: Currently excluding the following (but may add in later):
