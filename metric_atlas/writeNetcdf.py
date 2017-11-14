@@ -161,23 +161,20 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
                     cubeout = atlas_utils.load_data(file, xmin, xmax, ymin, ymax)
 
                 calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
-    for agg in cnst.METRIC_AGGS[metric]:
 
+    # runs big_cube for all available aggregations
+    for agg in cnst.AGGREGATION:
         big_cube(file_searcher, agg)
-                
-            
 
 
 def big_cube(file_searcher, aggregation):
     """
-    Reads single model files and creates multi model cubes for time series and 2d cubes
+    Reads single model files and creates multi model cubes for time series, trend and 2d cubes
     """
     print file_searcher, aggregation
-    overwrite = cnst.OVERWRITE # 'Yes'
+    overwrite = cnst.OVERWRITE
 
     ofile = str(file_searcher) + '_allModels_' + aggregation + '.nc'
-
-  #  ofile = ofile.replace('all_metric_data', 'test_data')
 
     if aggregation not in cnst.AGGREGATION:
         sys.exit('Data aggregation does not exist, choose either trend, tseries or 2d')
@@ -185,12 +182,14 @@ def big_cube(file_searcher, aggregation):
     if not os.path.isfile(ofile) or overwrite == 'Yes':
 
         list_of_files = glob.glob(file_searcher + '*_singleModel_' + aggregation + '.nc')
+        if len(list_of_files) == 0:
+            return
 
         model_names = [f.split('/')[-1].split('_')[-3].split('.')[0] for f in list_of_files]
         cubelist = iris.cube.CubeList([])
         problem_list=[]
         for file in list_of_files:
-    #        print file
+
             fi = list_of_files.index(file)
             mod_coord = iris.coords.AuxCoord([model_names[fi]], long_name='model_name', var_name='model_name', units='1')
 
@@ -211,8 +210,6 @@ def big_cube(file_searcher, aggregation):
                     problem_list.append(file)
                     continue
                 cubelist.append(newcube)
-
-    #    print cubelist
 
         if len(cubelist) < 20:
             print 'Cubelist length: ' + str(len(cubelist))

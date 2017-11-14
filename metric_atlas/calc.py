@@ -713,21 +713,16 @@ def SPIxMonthly(incube, season, ncfile):
     clim_std_cube = c_monthly.copy(clim_std_data)
 
     spi = (c_monthly - clim_mean_cube) / clim_std_cube
-
-    #iris.save(spi, ncfile)  #SPI is 3d cube at the moment. Not sure what we want to plot!
     
     tseries = spi.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
 
     calc2d = atlas_utils.time_slicer(spi, fdict['scenario'])
     c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)
-    trend2d = trend(spi, season, ncfile)
 
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
-    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
-
     iris.save(tseries, ncfile)  # monthly time series, 12 entries
     iris.save(c2d, nc2d)
-    iris.save(trend2d, nctrend2d)
+
 
 
 def SPIbiannual(incube, season, ncfile):
