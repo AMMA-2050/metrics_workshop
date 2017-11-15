@@ -11,6 +11,20 @@ import numpy as np
 import glob
 import pdb
 
+
+def create_variable_container():
+    dic = {'variable': None,
+           'scenario': None,
+           'bc_and_resolution': None,
+           'inpath': None,
+           'outpath': None,
+           'season': None,
+           'metric': None,
+           'region': None,
+           'overwrite': None
+           }
+    return dic
+
 def read_metrics_avail(inpath):
     """
     Creates a list of available metrics given the path to the metric files folder

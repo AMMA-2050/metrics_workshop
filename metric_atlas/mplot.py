@@ -85,6 +85,12 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
     if (anomaly == True) & (scen == 'historical'):
         return
 
+    wfdei_file = cnst.DATADIR + os.sep + 'WFDEI' + os.sep + str(variable) + '_daily*.nc'
+    wfdei = glob.glob(wfdei_file)
+    if len(wfdei) != 1:
+        'No or too many wfdei files. Please check'
+        pdb.set_trace()
+
     vname = cnst.VARNAMES[fdict['variable']]
     cube = iris.load_cube(ano)
 

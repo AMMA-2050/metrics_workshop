@@ -21,10 +21,18 @@ import constants as cnst
 import sys
 import pdb
 from iris.experimental.equalise_cubes import equalise_attributes
+from multiprocessing import Pool
 #import pdb
 
-def wfdei(variable, outpath, season, metric, region, overwrite):
+def wfdei(multi):
 
+    # this is necessary to make multiprocessing an option
+    variable = multi[0]
+    outpath =  multi[1]
+    season =  multi[2]
+    metric =  multi[3]
+    region = multi[4]
+    overwrite = multi[5]
 
     for seas, var in itertools.product(season, variable):
 
@@ -69,8 +77,9 @@ def wfdei(variable, outpath, season, metric, region, overwrite):
             tasmax = atlas_utils.load_data(file.replace(var, 'tasmax'), xmin, xmax, ymin, ymax)
             rsds = atlas_utils.load_data(file.replace(var, 'rsds'), xmin, xmax, ymin, ymax)
             cubeout = iris.cube.CubeList([tasmin, tasmax, rsds])
+
             file_searcher = file_searcher.replace('rsds', 'multivars')
-            var = 'multivars'
+
             print cubeout
 
         nc_file = file_searcher + '_WFDEI_tseries.nc'
@@ -84,7 +93,10 @@ def wfdei(variable, outpath, season, metric, region, overwrite):
                 cubeout = atlas_utils.load_data(file, xmin, xmax, ymin, ymax)
 
             calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
-
+            print '#######################################'
+            print 'Saving data for: '
+            print metric, var, seas
+            print '#######################################'
 
 
 
@@ -101,25 +113,35 @@ def load_file_names(inpath, variable, scenario, bc_and_resolution):
     return (files_good, modelID)
 
 
-
-def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, metric, region, overwrite):
+def model_files(multi):
     """
     Computes respective metric and returns single model files and multi-model cube at different aggregations
     """
+    #this is necessary to make multiprocessing an option
+    variable = multi[0]
+    scenario = multi[1]
+    bc_and_resolution = multi[2]
+    inpath = multi[3]
+    outpath = multi[4]
+    season = multi[5]
+    metric = multi[6]
+    region = multi[7]
+    overwrite = multi[8]
+
+    ###region box
+    box = region[2]
+    xmin = box[0]
+    xmax = box[1]
+    ymin = box[2]
+    ymax = box[3]
 
     for sc, bc, seas, var in itertools.product(scenario, bc_and_resolution, season, variable):
 
-        box = region[2]
-        xmin = box[0]
-        xmax = box[1]
-        ymin = box[2]
-        ymax = box[3]
-        pdb.set_trace()
+
         if metric == 'pet' and var == 'multivars':
             var = 'rsds'
 
         files_good, modelID = load_file_names(inpath, var, sc, bc)
-        #pdb.set_trace()
 
         if files_good == []:
             print inpath, sc, bc, seas, var
@@ -134,20 +156,18 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
         for file, nme in zip(files_good, modelID):
 
             cubeout=None
-            
-            # Check if we have any missing files for all aggregation types, if so, run the metric calculation again
-            # Note: the calc functions run for 2 or 3 aggregation methods
-          #  for agg in cnst.METRIC_AGGS[metric]:
-               # print agg
-                
+            print(nme, 'out', metric, var)
             if metric == 'pet' and var == 'rsds':
+                print(nme, 'in')
                 # This is a different case because PET needs multiple variables, rather than one
                 # NB: We use rsds, because generally, less models have this variable as opposed to tasmin or tasmax
+
                 tasmin = atlas_utils.load_data(file.replace(var, 'tasmin'), xmin, xmax, ymin, ymax)
                 tasmax = atlas_utils.load_data(file.replace(var, 'tasmax'), xmin, xmax, ymin, ymax)
                 rsds = atlas_utils.load_data(file.replace(var, 'rsds'), xmin, xmax, ymin, ymax)
                 cubeout = iris.cube.CubeList([tasmin, tasmax, rsds])
                 file_searcher = file_searcher.replace('rsds', 'multivars')
+
                 print cubeout
 
             nc_file = file_searcher + '_' + str(nme) + '_singleModel_tseries.nc'
@@ -157,14 +177,19 @@ def model_files(variable, scenario, bc_and_resolution, inpath, outpath, season, 
                 print 'Load file: '+ file
 
                 if not cubeout:
+                    print(nme, 'no cubeout')
                     print 'newcube'
                     cubeout = atlas_utils.load_data(file, xmin, xmax, ymin, ymax)
 
                 calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
+                print '#######################################'
+                print 'Saving data for: '
+                print metric, var, seas
+                print '#######################################'
 
-    # runs big_cube for all available aggregations
-    for agg in cnst.AGGREGATION:
-        big_cube(file_searcher, agg)
+        # runs big_cube for all available aggregations
+        for agg in cnst.AGGREGATION:
+            big_cube(file_searcher, agg)
 
 
 def big_cube(file_searcher, aggregation):
@@ -227,21 +252,3 @@ def big_cube(file_searcher, aggregation):
 #    print problem_list
 
 
-def run(variable, bc_and_resolution, inpath, outpath, season, metric, region, overwrite,):
-
-    """
-    Calls the functions to write single model, multi-model and anomaly NetCDF files.
-    Just a shortcut for calling them seperately.
-
-    :param variable: string list of chosen variables: e.g. ['pr', 'tasmax']
-    :param bc_and_resolution: string list of chosen correction option: e.g. ['BC_0.5x0.5' , '0.5x0.5']
-    :param inpath: path to CMIP5 Africa directory: '/my/path/CMIP5_Africa'
-    :param outpath: path where intermediate NetCDF files should be saved (single / multi-model / anomalies)
-    :param season: string list months for which the metric is to be computed: ['jas', 'ann']
-    :param metric: STRING identifing a metric (the calculation file), no list: 'annualMax'
-    :param overwrite: whether or not existing NetCDF files should be overwritten
-    :return: NetCDF files
-    """
-
-    # write all single model and big_cube files - make sure all scenarios are written to calculate anomalies!
-    model_files(variable, cnst.SCENARIO, bc_and_resolution, inpath, outpath, season, metric, region, overwrite)

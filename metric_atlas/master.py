@@ -19,6 +19,7 @@ from multiprocessing import Pool
 iris.FUTURE.netcdf_promote = True
 iris.FUTURE.netcdf_no_unlimited = True
 
+
 def allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric):
     ###
     # Plots that need all scenarios at once
@@ -79,9 +80,20 @@ def singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, se
             mplot.map_percentile_single(cube_path, out, region, anomaly=True)
 
 
-def saves():
+def saves(multiprocessing=False):
     """
     Function to create all netcdf files that are needed for later plotting. All scenarios!
+
+    Calls the functions to write single model, multi-model and anomaly NetCDF files.
+
+    :param variable: string list of chosen variables: e.g. ['pr', 'tasmax']
+    :param bc_and_resolution: string list of chosen correction option: e.g. ['BC_0.5x0.5' , '0.5x0.5']
+    :param inpath: path to CMIP5 Africa directory: '/my/path/CMIP5_Africa'
+    :param outpath: path where intermediate NetCDF files should be saved (single / multi-model / anomalies)
+    :param season: string list months for which the metric is to be computed: ['jas', 'ann']
+    :param metric: STRING identifing a metric (the calculation file), no list: 'annualMax'
+    :param overwrite: whether or not existing NetCDF files should be overwritten
+
     :return: Netcdf files for single models (_singleModel.nc), multi-model cube (_allModels.nc) and anomalies per model
      in a multi-model cube in absolute values (_anomalies.nc) and in percentage change (_anomaliesPerc.nc).
     """
@@ -93,26 +105,29 @@ def saves():
     outpath = cnst.METRIC_DATADIR
     bc_and_resolution = cnst.BC_RES  # mdlgrid does not work cause models are not on the same grid!
     region = cnst.ATLAS_REGION
+    scenarios = cnst.SCENARIO
 
     atlas_utils.create_outdirs(outpath, bc_and_resolution)
-    
-    # Metric-specific options are set in constants.py
+    multi_list = []
     for row in cnst.METRICS_TORUN:
-        
         metric = row[0]
         variable = row[1]
         season = row[2]
-        print '#######################################'
-        print 'Saving data for: '
-        print metric, variable, season
-        print '#######################################'
+        multi_list.append((variable, scenarios, bc_and_resolution, inpath, outpath, season, metric, region, cnst.OVERWRITE))
 
-        wNetcdf.run(variable, bc_and_resolution, inpath, outpath, season, metric, region, cnst.OVERWRITE)
+    if multiprocessing == True:
+        pool = Pool(processes=5)
+        res = pool.map(wNetcdf.model_files, multi_list)
+        pool.close()
+    else:
+        # Metric-specific options are set in constants.py
+        for m in multi_list:
+            wNetcdf.model_files(m)
 
     print 'All Netcdf files written, ready to plot!'
 
 
-def wfdei_saves():
+def wfdei_saves(multiprocessing=False):
     """
     Function to create all netcdf files that are needed for later plotting. All scenarios!
     :return: Netcdf files for single models (_singleModel.nc), multi-model cube (_allModels.nc) and anomalies per model
@@ -127,18 +142,21 @@ def wfdei_saves():
     region = cnst.ATLAS_REGION
 
     atlas_utils.create_outdirs(outpath, bc_and_resolution)
-
-    # Metric-specific options are set in constants.py
+    multi_list = []
     for row in cnst.METRICS_TORUN:
         metric = row[0]
         variable = row[1]
         season = row[2]
-        print '#######################################'
-        print 'Saving data for: '
-        print metric, variable, season
-        print '#######################################'
+        multi_list.append((variable, outpath, season, metric, region, cnst.OVERWRITE))
 
-        wNetcdf.wfdei(variable, outpath, season, metric, region, cnst.OVERWRITE)
+    if multiprocessing == True:
+        pool = Pool(processes=5)
+        res = pool.map(wNetcdf.wfdei, multi_list)
+        pool.close()
+    else:
+    # Metric-specific options are set in constants.py
+        for m in multi_list:
+            wNetcdf.wfdei(m)
 
     print 'All Netcdf files written, ready to plot!'
 
@@ -180,6 +198,8 @@ def plot():
         print '#######################################'
         print 'Finished plotting'
         print '#######################################'
+
+
 
 def main():
 #    saves()
