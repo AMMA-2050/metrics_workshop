@@ -189,7 +189,6 @@ def _countSpells(incube, season, ncfile, spell_length=None, lower_threshold=None
     incube = incube.extract(slicer)
     incube.coord('latitude').guess_bounds()
     incube.coord('longitude').guess_bounds()
-    pdb.set_trace()
 
     _calcUnit(incube, ncfile)
 
@@ -713,21 +712,16 @@ def SPIxMonthly(incube, season, ncfile):
     clim_std_cube = c_monthly.copy(clim_std_data)
 
     spi = (c_monthly - clim_mean_cube) / clim_std_cube
-
-    #iris.save(spi, ncfile)  #SPI is 3d cube at the moment. Not sure what we want to plot!
     
     tseries = spi.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
 
     calc2d = atlas_utils.time_slicer(spi, fdict['scenario'])
     c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)
-    trend2d = trend(spi, season, ncfile)
 
     nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
-    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
-
     iris.save(tseries, ncfile)  # monthly time series, 12 entries
     iris.save(c2d, nc2d)
-    iris.save(trend2d, nctrend2d)
+
 
 
 def SPIbiannual(incube, season, ncfile):
@@ -995,13 +989,19 @@ def pet(cubein, season, ncfile):
     fdict = atlas_utils.split_filename_path(ncfile)
     
     # NB: Had to do it this way because iris didn't like power function
-    tas_dif = tasmax - tasmin
+    try:
+        tas_dif = tasmax - tasmin
+    except ValueError:
+        print 'Cubes not of same length (timestep?), returning'
+        return
+
     tas_dif.data = tas_dif.data**0.5
     
     # NB: SW incoming radiation (in W m-2) needs to be converted to MJ m-2 and then mm day-1 equivalent using the following:
     # 1 W m-2 = 0.0864 MJ m-2 day-1
     # The value of 0.408 is the inverse of the latent heat flux of vaporization at 20C, changing the extraterrestrial radiation units from MJ m-2 day-1 into mm day-1 of evaporation equivalent (Allen et al., 1998)
     # pet = 0.0023 * ((tasmax+tasmin)/2 + 17.8) * (tasmax-tasmin)**0.5 * rsds
+
     try:
         pet = 0.0023 * ((tasmax+tasmin)/2 + 17.8) * tas_dif * (rsds * 0.0864 * 0.408)
     except ValueError:
@@ -1012,7 +1012,7 @@ def pet(cubein, season, ncfile):
     #Now aggregate to the season and according to the aggregation types
 
     slicer = _getSeasConstr(season)
-    
+
     if 'month_number' not in [coord.name() for coord in pet.coords()]:
         iris.coord_categorisation.add_month_number(pet, 'time', name='month_number')
     if 'year' not in [coord.name() for coord in pet.coords()]:
