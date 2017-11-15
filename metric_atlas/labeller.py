@@ -88,7 +88,8 @@ def getUnit(var):
         'rsds': '(W m$^{-2}$)',
         'tasmin': '(' + DC + ')',
         'tas': '(' + DC + ')',
-        'wind': '(m s$^{-1}$)'
+        'wind': '(m s$^{-1}$)',
+        'multivars' : '(mm day$^{-1}$)'
     }
 
     return vardic[var]
@@ -164,7 +165,7 @@ def getFigSize(region, plottype):
         comb = plottype
     
     # (width, height)
-    thisLUT = {'map_BF': (7,7),
+    thisLUT = {'map_BF': (7,10),
                'map_SG': (6,8),
                'map_WA': (8,6),
                'nbModelHistogram': (8.5,6)
