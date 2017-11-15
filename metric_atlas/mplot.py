@@ -165,9 +165,10 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         lat = data.coord('latitude').points
 
         ax = f.add_subplot(311, projection=ccrs.PlateCarree())
-        ax1.set_title('WFDEI historical')
-        map = ax.contourf(lon, lat, p['data'][1].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],
-                            levels=p['levels'][1], extend='both')
+        ax.set_title('WFDEI historical')
+        map = ax.contourf(lon, lat, wcube.data, transform=ccrs.PlateCarree(), cmap='viridis',
+                            vmin=np.nanmin(wcube.data), vmax=np.nanmax(wcube.data), extend='both')
+        #pdb.set_trace()
         ax.coastlines()
         # Gridlines
         siz = 6
@@ -181,11 +182,11 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         # Countries
         ax.add_feature(cartopy.feature.BORDERS, linestyle='--')
         cb = plt.colorbar(map, format='%1.1f')
-        cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']))
+        cb.set_label(lblr.getYlab(metric, variable))
 
 
         ax1 = f.add_subplot(312, projection=ccrs.PlateCarree())
-        ax1.set_title('90th Percentile')
+        ax1.set_title('Future 90th percentile')
         try:
             map1 = ax1.contourf(lon, lat, p['data'][1].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],
                                 levels=p['levels'][1], extend='both')
@@ -216,7 +217,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
             pdb.set_trace()
             continue
         ax2.coastlines()
-        ax2.set_title('10th Percentile')
+        ax2.set_title('Future 10th percentile')
         # Gridlines
         xl = ax2.gridlines(draw_labels=True, );
         xl.xlabels_top = False

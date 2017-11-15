@@ -49,12 +49,12 @@ OVERWRITE = 'No' # 'Yes'
 # variable: list of climate variable(s) to send to the calc function
 # season: list of seasons to run the metric-variable combination for
 
-## monthlyClimatologicalMean and onsetMarteau are exceptions to the atlas aggregation period!
+## SPIbiannual, monthlyClimatologicalMean and onsetMarteau are exceptions to the atlas aggregation period!
 ## Their aggregation period never changes.
 
 AGG_PERIODS = ['jas']
 METRICS_TORUN = [
-    ['annualMax', ['pr'], AGG_PERIODS],  # , # ,  'tasmax', 'rsds'
+    #['annualMax', ['pr'], AGG_PERIODS],  # , # ,  'tasmax', 'rsds'
     # ['annualMin', ['tasmin'], AGG_PERIODS],
     # ['annualTotalRain', ['pr'], AGG_PERIODS],
     # ['annualMean', ['tas', 'rsds'], AGG_PERIODS],  # , 'rsds'
@@ -65,14 +65,14 @@ METRICS_TORUN = [
     # ['annualExtremeRain30', ['pr'], AGG_PERIODS],
     # ['annualExtremeRain50', ['pr'], AGG_PERIODS],
     # ['wetSpell10', ['pr'], AGG_PERIODS],
-    # ['drySpell6', ['pr'], AGG_PERIODS],
+   #s  ['drySpell6', ['pr'], AGG_PERIODS],
     # ['annualMaxRain5dSum', ['pr'], AGG_PERIODS],
     # ['annualMaxRain3dSum', ['pr'], AGG_PERIODS],
     # ['annualMaxRain2dSum', ['pr'],AGG_PERIODS],
     # ['SPIxMonthly', ['pr'], AGG_PERIODS],
     # ['SPIbiannual', ['pr'], ['ann']],
-    # ['onsetMarteau', ['pr'], ['mjjas']],
-   ['pet', ['multivars'], AGG_PERIODS]
+     ['onsetMarteau', ['pr'], ['mjjas']],
+    #['pet', ['multivars'], AGG_PERIODS]
      ]
 # NB: Currently excluding the following (but may add in later):
 #            ['annualStrongWindDays', ['wind'], ['jas']]
@@ -151,30 +151,30 @@ PLOTS_TOEXCLUDE = [
 
 ### This is only used by the plot routines to make sure all expected aggregations are available (error check)
 METRIC_AGGS = {
-            # 'annualMax' : ['tseries', '2d'],
-            # 'annualMin' : ['tseries', '2d'],
-            # 'annualTotalRain' : ['tseries', '2d'],
-            # 'annualMean' : ['tseries', '2d'],
-            # 'annualMeanRainyDay' : ['tseries', '2d'],
-            # 'monthlyClimatologicalMean' : ['tseries'],
-            # 'annualHotDaysPerc' : ['tseries', '2d'],
-            # 'annualRainyDays' : ['tseries', '2d'],
-            # 'annualRainyDaysPerc' : ['tseries', '2d'],
-            # 'annualHotDays' : ['tseries', '2d'],
-            # 'annualExtremeRain30' : ['tseries', '2d'],
-            # 'annualExtremeRain50' : ['tseries', '2d', 'trend'],
-            # 'annualExtremeRain100' : ['tseries', '2d', 'trend'],
-            # 'annualStrongWindDays' : ['tseries', '2d', 'trend'],
-            # 'wetSpell10': ['tseries', '2d'],
-            # 'drySpell6': ['tseries', '2d'],
-            # 'annualMaxRain5dSum': ['tseries', '2d'],
-            # 'annualMaxRain3dSum' : ['tseries', '2d'],
-            # 'annualMaxRain2dSum' : ['tseries', '2d'],
-            # 'annualMaxRain5dMean': ['tseries', '2d'],
-            # 'annualMaxRain3dMean': ['tseries', '2d'],
-            # 'annualMaxRain2dMean': ['tseries', '2d'],
-            # 'SPIxMonthly' : ['tseries', '2d'],
-            # 'SPIbiannual' : ['tseries', '2d'],
-            # 'onsetMarteau' : ['tseries', '2d', 'trend'],
+            'annualMax' : ['tseries', '2d'],
+            'annualMin' : ['tseries', '2d'],
+            'annualTotalRain' : ['tseries', '2d'],
+            'annualMean' : ['tseries', '2d'],
+            'annualMeanRainyDay' : ['tseries', '2d'],
+            'monthlyClimatologicalMean' : ['tseries'],
+            'annualHotDaysPerc' : ['tseries', '2d'],
+            'annualRainyDays' : ['tseries', '2d'],
+            'annualRainyDaysPerc' : ['tseries', '2d'],
+            'annualHotDays' : ['tseries', '2d'],
+            'annualExtremeRain30' : ['tseries', '2d'],
+            'annualExtremeRain50' : ['tseries', '2d', 'trend'],
+            'annualExtremeRain100' : ['tseries', '2d', 'trend'],
+            'annualStrongWindDays' : ['tseries', '2d', 'trend'],
+            'wetSpell10': ['tseries', '2d'],
+            'drySpell6': ['tseries', '2d'],
+            'annualMaxRain5dSum': ['tseries', '2d'],
+            'annualMaxRain3dSum' : ['tseries', '2d'],
+            'annualMaxRain2dSum' : ['tseries', '2d'],
+            'annualMaxRain5dMean': ['tseries', '2d'],
+            'annualMaxRain3dMean': ['tseries', '2d'],
+            'annualMaxRain2dMean': ['tseries', '2d'],
+            'SPIxMonthly' : ['tseries', '2d'],
+            'SPIbiannual' : ['tseries', '2d'],
+            'onsetMarteau' : ['tseries', '2d', 'trend'],
             'pet' : ['tseries', '2d', 'trend']
         }
