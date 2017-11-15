@@ -85,7 +85,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
     if (anomaly == True) & (scen == 'historical'):
         return
 
-    wfdei_file = cnst.DATADIR + os.sep + 'WFDEI' + os.sep + str(variable) + '_daily*.nc'
+    wfdei_file = cnst.METRIC_DATADIR + os.sep + 'WFDEI' + os.sep + metric +'_' + variable + '_WFDEI_historical_' + season + '*_2d.nc'
     wfdei = glob.glob(wfdei_file)
     if len(wfdei) != 1:
         'No or too many wfdei files. Please check'
@@ -93,6 +93,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
 
     vname = cnst.VARNAMES[fdict['variable']]
     cube = iris.load_cube(ano)
+    wcube = iris.load_cube(wfdei)
 
     if anomaly:
 
@@ -163,16 +164,33 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         lon = data.coord('longitude').points
         lat = data.coord('latitude').points
 
-        ax1 = f.add_subplot(211, projection=ccrs.PlateCarree())
+        ax = f.add_subplot(311, projection=ccrs.PlateCarree())
+        ax1.set_title('WFDEI historical')
+        map = ax.contourf(lon, lat, p['data'][1].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],
+                            levels=p['levels'][1], extend='both')
+        ax.coastlines()
+        # Gridlines
+        siz = 6
+        xl = ax.gridlines(draw_labels=True)
+        xl.xlabels_top = False
+        xl.ylabels_right = False
+        xl.xformatter = LONGITUDE_FORMATTER
+        xl.yformatter = LATITUDE_FORMATTER
+        xl.xlabel_style = {'size': siz, 'color': 'k'}
+        xl.ylabel_style = {'size': siz, 'color': 'k'}
+        # Countries
+        ax.add_feature(cartopy.feature.BORDERS, linestyle='--')
+        cb = plt.colorbar(map, format='%1.1f')
+        cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']))
 
-        # ax1.set_title(vname + ': ' + fdict['metric'], fontsize=10)
+
+        ax1 = f.add_subplot(312, projection=ccrs.PlateCarree())
         ax1.set_title('90th Percentile')
-
         try:
             map1 = ax1.contourf(lon, lat, p['data'][1].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],
                                 levels=p['levels'][1], extend='both')
         except:
-            #            pdb.set_trace()
+
             continue
         ax1.coastlines()
         # Gridlines
@@ -190,7 +208,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         # cb.set_label('10th percentile ' + p['cblabel'])
         cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']))
 
-        ax2 = f.add_subplot(212, projection=ccrs.PlateCarree())
+        ax2 = f.add_subplot(313, projection=ccrs.PlateCarree())
         try:
             map2 = ax2.contourf(lon, lat, p['data'][0].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],
                                 levels=p['levels'][0], extend='both')
