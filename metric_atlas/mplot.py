@@ -88,7 +88,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
     wfdei_file = cnst.METRIC_DATADIR + os.sep + 'WFDEI' + os.sep + metric +'_' + variable + '_WFDEI_historical_' + season + '*_2d.nc'
     wfdei = glob.glob(wfdei_file)
     if len(wfdei) != 1:
-        'No or too many wfdei files. Please check'
+        print('No or too many wfdei files. Please check')
         pdb.set_trace()
 
     vname = cnst.VARNAMES[fdict['variable']]
@@ -230,11 +230,11 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         ax2.add_feature(cartopy.feature.BORDERS, linestyle='--');
         cb = plt.colorbar(map2, format='%1.1f')
         cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']))
-
-        # plt.tight_layout()
-        # f.suptitle('Long figure title')
         f.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['cblabel']), fontsize=10)
-        f.subplots_adjust(left=0.05)
+        plt.tight_layout(rect=[0,0.01,1,0.95])
+        # f.suptitle('Long figure title')
+
+        f.subplots_adjust(right=0.8, left=0.2)
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_mapPerc_' + p['ftag'] + '.png')
 

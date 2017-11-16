@@ -165,8 +165,8 @@ def getFigSize(region, plottype):
         comb = plottype
     
     # (width, height)
-    thisLUT = {'map_BF': (7,10),
-               'map_SG': (6,8),
+    thisLUT = {'map_BF':(8,8),
+               'map_SG': (8,8),
                'map_WA': (8,6),
                'nbModelHistogram': (8.5,6)
             }
