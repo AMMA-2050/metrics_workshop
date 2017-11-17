@@ -2,16 +2,20 @@
 Contains global constants for the CMIP5 atlas
 """
 VERSION = 'v0.2.3'
+LANGUAGE = 'ENGLISH' # 'FRANCAIS'
 DATADIR = '/users/global/cornkle/CMIP/CMIP5_Africa' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
-REGIONS = {'WA' : ['WA', 'West Africa', [-18, 25, 4, 25], 'WA_files'],   # lon1, lon2, lat1, lat2
+REGIONS = {'WA' : ['WA', 'West Africa' if LANGUAGE == 'ENGLISH' else 'Afrique de l\'Ouest', [-18, 25, 4, 25], 'WA_files'],   # lon1, lon2, lat1, lat2
            'BF' : ['BF','Burkina Faso',[-6, 2.8, 9 ,15.5], 'Burkina_files'],
-           'SG' : ['SG', 'Senegal', [-18, -11, 12, 17], 'Senegal_files']
+           'SG' : ['SG', 'Senegal', [-18, -11, 12, 17], 'Senegal_files'],
+           'SH' : ['SH', 'Sahelian Zone' if LANGUAGE == 'ENGLISH' else 'Zone Sahélienne', [-11, 30, 12.5, 17.5], 'Sahel_files'],
+           'SD' : ['SD', 'Sudanian Zone' if LANGUAGE == 'ENGLISH' else 'Zone Sudanienne', [-18, 30, 9.5, 12.5], 'Sudanian_files'],
+           'GC' : ['GC', 'Guinea Coast Zone' if LANGUAGE == 'ENGLISH' else 'Zone della Côte Guinée', [-15, 10, 5, 9.5], 'GuineaCoast_files']
            }
 #### Atlas production / file creation is supporting only one region at a time
 ATLAS_REGION = REGIONS['SG']
 
 METRIC_DATADIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] +'/save_files/netcdf'
-METRIC_PLOTDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] + '/save_files/plots'
+METRIC_PLOTDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] + '/save_files/plots_' + LANGUAGE
 METRIC_ATLASDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3]
 BC_RES = ['BC_0.5x0.5'] #'0.5x0.5'
 
@@ -21,13 +25,22 @@ AGGREGATION = ['tseries', '2d', 'trend']
 
 FTYPES = ['singleModels', 'allModels', 'anomalies', 'anomaliesPerc']
 
-VARNAMES = {'pr' : 'daily precipitation',
+VARNAMES = {'ENGLISH' : {'pr' : 'daily precipitation',
             'tas' : 'daily mean temperature',
             'tasmin' : 'daily minimum temperature',
             'tasmax' : 'daily maximum temperature',
             'rsds' : 'surface downwelling shortwave radiation',
             'wind' : 'near surface wind speed',
             'multivars' : 'multiple input variables'
+            },
+            'FRANCAIS' :{'pr' : 'précipitations quotidien',
+            'tas' : '	température moyenne quotidien',
+            'tasmin' : 'température minimum quotidien',
+            'tasmax' : 'température maximum quotidien',
+            'rsds' : 'descendant radiation à ondes courtes alla surface',
+            'wind' : 'vitesse du vent près della surface',
+            'multivars' : 'multiple input variables' # needs to stay the same (not used in captions)
+            }
             }
 
 FUT_TREND = [2010, 2060]
@@ -52,9 +65,10 @@ OVERWRITE = 'No' # 'Yes'
 ## SPIbiannual, monthlyClimatologicalMean and onsetMarteau are exceptions to the atlas aggregation period!
 ## Their aggregation period never changes.
 
-AGG_PERIODS = ['jas', 'jun', 'jul', 'aug', 'sep', 'oct']
+AGG_PERIODS = ['jas', 'may', 'jun', 'jul','aug','sep','oct','nov']
 CONSTANT_PERIOD_METRIC = ['onsetMarteau', 'SPIbiannual', 'monthlyClimatologicalMean']
 ### slowest variables go first!
+
 METRICS_TORUN = [
     ['pet', ['multivars'], AGG_PERIODS],
     ['onsetMarteau', ['pr'], ['mjjas']],
