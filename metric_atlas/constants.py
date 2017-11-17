@@ -12,7 +12,7 @@ REGIONS = {'WA' : ['WA', 'West Africa' if LANGUAGE == 'ENGLISH' else 'Afrique de
            'GC' : ['GC', 'Guinea Coast Zone' if LANGUAGE == 'ENGLISH' else 'Zone della Côte Guinée', [-15, 10, 5, 9.5], 'GuineaCoast_files']
            }
 #### Atlas production / file creation is supporting only one region at a time
-ATLAS_REGION = REGIONS['BF']
+ATLAS_REGION = REGIONS['SG']
 
 METRIC_DATADIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] +'/save_files/netcdf'
 METRIC_PLOTDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] + '/save_files/plots_' + LANGUAGE
@@ -66,28 +66,31 @@ OVERWRITE = 'No' # 'Yes'
 ## Their aggregation period never changes.
 
 AGG_PERIODS = ['jas', 'may', 'jun', 'jul','aug','sep','oct','nov']
+CONSTANT_PERIOD_METRIC = ['onsetMarteau', 'SPIbiannual', 'monthlyClimatologicalMean']
+### slowest variables go first!
 
 METRICS_TORUN = [
-    #['annualMax', ['pr'], AGG_PERIODS],  # , # ,  'tasmax', 'rsds'
-    # ['annualMin', ['tasmin'], AGG_PERIODS],
-    # ['annualTotalRain', ['pr'], AGG_PERIODS],
-    # ['annualMean', ['tas', 'rsds'], AGG_PERIODS],  # , 'rsds'
-    # ['annualMeanRainyDay', ['pr'], AGG_PERIODS],
-    # ['monthlyClimatologicalMean',['pr', 'tasmin','tas',  'tasmax', 'rsds', 'wind'] , ['ann']],  # 'rsds','tas', ['pr', 'tasmin','tas',  'tasmax', 'rsds', 'wind']
-    # ['annualRainyDays', ['pr'], AGG_PERIODS],
-    # ['annualHotDays', ['tasmax'], AGG_PERIODS],
-    # ['annualExtremeRain30', ['pr'], AGG_PERIODS],
-    # ['annualExtremeRain50', ['pr'], AGG_PERIODS],
-    # ['wetSpell10', ['pr'], AGG_PERIODS],
-   #s  ['drySpell6', ['pr'], AGG_PERIODS],
-    # ['annualMaxRain5dSum', ['pr'], AGG_PERIODS],
-    # ['annualMaxRain3dSum', ['pr'], AGG_PERIODS],
-    # ['annualMaxRain2dSum', ['pr'],AGG_PERIODS],
-    # ['SPIxMonthly', ['pr'], AGG_PERIODS],
-    # ['SPIbiannual', ['pr'], ['ann']],
-     ['onsetMarteau', ['pr'], ['mjjas']],
-    #['pet', ['multivars'], AGG_PERIODS]
+    ['pet', ['multivars'], AGG_PERIODS],
+    ['onsetMarteau', ['pr'], ['mjjas']],
+    ['SPIxMonthly', ['pr'], AGG_PERIODS],
+    ['SPIbiannual', ['pr'], ['ann']],
+    ['wetSpell10', ['pr'], AGG_PERIODS],
+    ['drySpell6', ['pr'], AGG_PERIODS],
+    ['annualMax', ['pr'], AGG_PERIODS],
+    ['annualMin', ['tasmin'], AGG_PERIODS],
+    ['annualTotalRain', ['pr'], AGG_PERIODS],
+    ['annualMean', ['tas', 'rsds'], AGG_PERIODS],
+    ['annualMeanRainyDay', ['pr'], AGG_PERIODS],
+    ['monthlyClimatologicalMean',['pr', 'tasmin','tas',  'tasmax', 'rsds', 'wind'] , ['ann']],
+    ['annualRainyDays', ['pr'], AGG_PERIODS],
+    ['annualHotDays', ['tasmax'], AGG_PERIODS],
+    ['annualExtremeRain30', ['pr'], AGG_PERIODS],
+    ['annualExtremeRain50', ['pr'], AGG_PERIODS],
+    ['annualMaxRain5dSum', ['pr'], AGG_PERIODS],
+    ['annualMaxRain3dSum', ['pr'], AGG_PERIODS],
+    ['annualMaxRain2dSum', ['pr'],AGG_PERIODS]
      ]
+
 # NB: Currently excluding the following (but may add in later):
 #            ['annualStrongWindDays', ['wind'], ['jas']]
 #            ['annualHotDaysPerc', ['tasmax'], ['jas']],
@@ -120,7 +123,7 @@ PLOTS_TOEXCLUDE = [
      ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85',  'anomaly']],
 
     ['monthlyClimatologicalMean', ['rsds', 'wind'], ['all'], ['all'], ['all'],
-     ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85', 'anomaly']],
+     ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85']],
 
     ['annualRainyDays', ['pr'], ['all'], ['all'], ['all'],
      ['rcp26PercentageAnomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85', 'percentageAnomaly']],

@@ -115,8 +115,8 @@ def saves(multiprocessing=False):
         season = row[2]
         multi_list.append((variable, scenarios, bc_and_resolution, inpath, outpath, season, metric, region, cnst.OVERWRITE))
 
-    if multiprocessing == True:
-        pool = Pool(processes=5)
+    if multiprocessing:
+        pool = Pool(processes=multiprocessing)
         res = pool.map(wNetcdf.model_files, multi_list)
         pool.close()
     else:
@@ -195,9 +195,9 @@ def plot():
         allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
         singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
 
-        print '#######################################'
-        print 'Finished plotting'
-        print '#######################################'
+    print '#######################################'
+    print 'Finished plotting'
+    print '#######################################'
 
 
 
@@ -205,7 +205,7 @@ def main():
 #    saves()
 #    wfdei_saves()
 #    plot()
-    ca.runAtlas()
+    ca.runAtlas('jas')
 
 
 if __name__ == "__main__":

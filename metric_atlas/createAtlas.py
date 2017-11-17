@@ -291,15 +291,15 @@ def isExcluded(metric, var, bc_res, seas, reg, pn, pt):
     return False
 
 
-def runAtlas():
+def runAtlas(season):
     version = cnst.VERSION
-    texdir = cnst.METRIC_ATLASDIR 
+    texdir = cnst.METRIC_ATLASDIR + os.sep + season + '_atlas'
     imgdir = cnst.METRIC_PLOTDIR 
     coverpage = 'AMMA2050_atlas_coverpage_v0.2.2.pdf'
-    
+
     if os.path.isdir(texdir):
         shutil.rmtree(texdir, ignore_errors=True)
-        
+
     try:
         os.makedirs(texdir)
     except:
@@ -324,8 +324,10 @@ def runAtlas():
         
         metric = row[0]
         variable = row[1] # NB: Could be multiple
-        season = row[2] # NB: Could be multiple
-        
+        if metric in cnst.CONSTANT_PERIOD_METRIC:
+            seas = row[2][0]
+        else: seas = season
+
         for var in variable:
             # Create a new section for this metric
             section_fname = texdir + '/' + str(section_counter) + "_" + metric + "_" + var + ".tex"
@@ -341,8 +343,9 @@ def runAtlas():
             fmetric.write(getIntroText(metric) + '\r\n')
             fmetric.write('\r\n')
         
-            for seas, region, bc_res in itertools.product(season, cnst.REGIONS_LIST, cnst.BC_RES):
-                reg = region[0]
+            for bc_res in cnst.BC_RES:
+                reg = cnst.ATLAS_REGION[0]
+
                 imgfiles = sorted(glob(imgdir + os.sep + bc_res + os.sep + metric + os.sep + metric + '_' + var + '_' + bc_res + '_' + seas +'_'+reg+ '*.png'))
                 imgdata = [atlas_utils.split_imgname(imgfile) for imgfile in imgfiles]
                 
@@ -391,7 +394,7 @@ def runAtlas():
     #                            fmetric.write('\\caption{'+getShortCaption(metric, bc_res, seas, pt)+'}\r\n')
     #                        else:
     #                            fmetric.write('\\caption{'+getFullCaption(metric, bc_res, seas, pt)+'}\r\n')
-                            fmetric.write('\\caption{'+getFullCaption(metric, var, region, bc_res, seas, pn, pt)+'}\r\n')
+                            fmetric.write('\\caption{'+getFullCaption(metric, var, cnst.ATLAS_REGION[1], bc_res, seas, pn, pt)+'}\r\n')
     
                             fmetric.write('\\label{fig:'+os.path.basename(this_file).rstrip(".png")+'}\r\n')
                             fmetric.write('\\end{figure}\r\n')
@@ -411,7 +414,7 @@ def runAtlas():
     # writeTex("atlas_"+version+".tex")
     # print(plot_sections)
 
-    with open(texdir + "/atlas_template.tex", "r") as fin, open(texdir + "/atlas_"+version+".tex","w") as fout:
+    with open(texdir + "/atlas_template.tex", "r") as fin, open(texdir + "/atlas_"+cnst.ATLAS_REGION[0] +'_' + seas + '_' +version+".tex","w") as fout:
         for line in fin:
             # print(line.encode("utf-8"))
             if line.strip() == '%InsertHere':
@@ -427,11 +430,12 @@ def runAtlas():
                 fout.write(line+'\r\n')
 
     # Compile TWICE in latex
-    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + os.sep + "atlas_"+cnst.LANGUAGE+'_'+version+".tex"])
-    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + os.sep + "atlas_"+cnst.LANGUAGE+'_'+version+".tex"])
+    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + os.sep + "atlas_"+cnst.ATLAS_REGION[0] +'_' + seas + '_' +version+cnst.LANGUAGE[:2]+".tex"])
+    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + os.sep + "atlas_"+cnst.ATLAS_REGION[0] +'_' + seas + '_' +version+cnst.LANGUAGE[:2]+".tex"])
    # pdb.set_trace()
-    if os.path.isfile(texdir + os.sep + "atlas_"+cnst.LANGUAGE+'_'+version+ ".pdf"):
-        print('File successfully created: ' + texdir + os.sep + "atlas_"+cnst.LANGUAGE+'_'+version+ ".pdf")
+    afile = texdir + os.sep + "atlas_"+cnst.ATLAS_REGION[0] +'_' + seas + '_' +version+cnst.LANGUAGE[:2]+".pdf"
+    if os.path.isfile(afile):
+        print('File successfully created: ' + afile)
     else:
-        print('File NOT created: ' + texdir + os.sep + "atlas_"+cnst.LANGUAGE+'_'+version+ ".pdf")
+        print('File NOT created: ' + afile )
     
