@@ -199,7 +199,7 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
     myCaption = myCaption.replace('xxx_region_xxx', region[1])
     
     # Add plot type information
-    pt_long_desc ={
+    pt_long_desc = {'ENGLISH' : {
             'rcp26PercentageAnomaly' : 'the percentage change for the RCP2.6 scenario',
             'rcp45PercentageAnomaly' : 'the percentage change for the RCP4.5 scenario',
             'rcp85PercentageAnomaly' : 'the percentage change for the RCP8.5 scenario',
@@ -214,6 +214,23 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
             'percentageAnomaly' : 'the percentage change for all available scenarios',  # not sure about the 'all available scenarios' bit
             'anomaly' : 'the absolute change for all available scenarios',
             'allscen' : 'all available scenarios'
+            },
+            'FRANCAIS' : {
+            'rcp26PercentageAnomaly' : 'the percentage change for the RCP2.6 scenario',
+            'rcp45PercentageAnomaly' : 'the percentage change for the RCP4.5 scenario',
+            'rcp85PercentageAnomaly' : 'the percentage change for the RCP8.5 scenario',
+            'rcp26Anomaly' : 'the absolute change for the RCP2.6 scenario',
+            'rcp45Anomaly' : 'the absolute change for the RCP4.5 scenario',
+            'rcp85Anomaly' : 'the absolute change for the RCP8.5 scenario',
+            'rcp26' : 'future RCP2.6 scenario distribution',
+            'rcp45' : 'future RCP4.5 scenario distribution',
+            'rcp85' : 'future RCP8.5 scenario distribution',
+            'scenarios' : 'all available scenarios',
+            'historical' : 'the historical distribution',
+            'percentageAnomaly' : 'the percentage change for all available scenarios',  # not sure about the 'all available scenarios' bit
+            'anomaly' : 'the absolute change for all available scenarios',
+            'allscen' : 'all available scenarios'
+            }
             }
     try:
         pt_long_txt = pt_long_desc[plottype]
@@ -410,11 +427,11 @@ def runAtlas():
                 fout.write(line+'\r\n')
 
     # Compile TWICE in latex
-    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + "/" + "atlas_"+version+".tex"])
-    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + "/" + "atlas_"+version+".tex"])
+    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + os.sep + "atlas_"+cnst.LANGUAGE+'_'+version+".tex"])
+    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + os.sep + "atlas_"+cnst.LANGUAGE+'_'+version+".tex"])
    # pdb.set_trace()
-    if os.path.isfile(texdir + "/atlas_" +version+ ".pdf"):
-        print('File successfully created: ' + texdir + "/atlas_" +version+ ".pdf")
+    if os.path.isfile(texdir + os.sep + "atlas_"+cnst.LANGUAGE+'_'+version+ ".pdf"):
+        print('File successfully created: ' + texdir + os.sep + "atlas_"+cnst.LANGUAGE+'_'+version+ ".pdf")
     else:
-        print('File NOT created: ' + texdir + "/atlas_" +version+ ".pdf")
+        print('File NOT created: ' + texdir + os.sep + "atlas_"+cnst.LANGUAGE+'_'+version+ ".pdf")
     

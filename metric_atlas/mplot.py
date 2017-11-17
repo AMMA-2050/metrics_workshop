@@ -132,7 +132,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
 
         if not 'tas' in variable:
             plot_dic2 = {'data': data_perc,
-                         'ftag': scen + 'PercentageAnomaly',
+                         'ftag': scen + 'PercentageAnomaly', # if cnst.LANGUAGE == 'ENGLISH' else '
                          'cblabel': 'percentageAnomaly',
                          'levels': plevels,
                          'cmap': cmap
