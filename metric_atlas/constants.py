@@ -8,7 +8,7 @@ REGIONS = {'WA' : ['WA', 'West Africa', [-18, 25, 4, 25], 'WA_files'],   # lon1,
            'SG' : ['SG', 'Senegal', [-18, -11, 12, 17], 'Senegal_files']
            }
 #### Atlas production / file creation is supporting only one region at a time
-ATLAS_REGION = REGIONS['BF']
+ATLAS_REGION = REGIONS['SG']
 
 METRIC_DATADIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] +'/save_files/netcdf'
 METRIC_PLOTDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] + '/save_files/plots'
@@ -52,9 +52,16 @@ OVERWRITE = 'No' # 'Yes'
 ## SPIbiannual, monthlyClimatologicalMean and onsetMarteau are exceptions to the atlas aggregation period!
 ## Their aggregation period never changes.
 
-AGG_PERIODS = ['jas']
+AGG_PERIODS = ['jas', 'jun', 'jul', 'aug', 'sep', 'oct']
 CONSTANT_PERIOD_METRIC = ['onsetMarteau', 'SPIbiannual', 'monthlyClimatologicalMean']
+### slowest variables go first!
 METRICS_TORUN = [
+    ['pet', ['multivars'], AGG_PERIODS],
+    ['onsetMarteau', ['pr'], ['mjjas']],
+    ['SPIxMonthly', ['pr'], AGG_PERIODS],
+    ['SPIbiannual', ['pr'], ['ann']],
+    ['wetSpell10', ['pr'], AGG_PERIODS],
+    ['drySpell6', ['pr'], AGG_PERIODS],
     ['annualMax', ['pr'], AGG_PERIODS],
     ['annualMin', ['tasmin'], AGG_PERIODS],
     ['annualTotalRain', ['pr'], AGG_PERIODS],
@@ -65,15 +72,9 @@ METRICS_TORUN = [
     ['annualHotDays', ['tasmax'], AGG_PERIODS],
     ['annualExtremeRain30', ['pr'], AGG_PERIODS],
     ['annualExtremeRain50', ['pr'], AGG_PERIODS],
-    ['wetSpell10', ['pr'], AGG_PERIODS],
-    ['drySpell6', ['pr'], AGG_PERIODS],
     ['annualMaxRain5dSum', ['pr'], AGG_PERIODS],
     ['annualMaxRain3dSum', ['pr'], AGG_PERIODS],
-    ['annualMaxRain2dSum', ['pr'],AGG_PERIODS],
-    ['SPIxMonthly', ['pr'], AGG_PERIODS],
-    ['SPIbiannual', ['pr'], ['ann']],
-    ['onsetMarteau', ['pr'], ['mjjas']],
-    ['pet', ['multivars'], AGG_PERIODS]
+    ['annualMaxRain2dSum', ['pr'],AGG_PERIODS]
      ]
 
 # NB: Currently excluding the following (but may add in later):
@@ -108,7 +109,7 @@ PLOTS_TOEXCLUDE = [
      ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85',  'anomaly']],
 
     ['monthlyClimatologicalMean', ['rsds', 'wind'], ['all'], ['all'], ['all'],
-     ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85', 'anomaly']],
+     ['rcp26Anomaly', 'rcp26', 'rcp45Anomaly', 'rcp45', 'rcp85Anomaly', 'rcp85']],
 
     ['annualRainyDays', ['pr'], ['all'], ['all'], ['all'],
      ['rcp26PercentageAnomaly', 'rcp26', 'rcp45PercentageAnomaly', 'rcp45', 'rcp85PercentageAnomaly', 'rcp85', 'percentageAnomaly']],

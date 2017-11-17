@@ -397,7 +397,7 @@ def runAtlas(season):
     # writeTex("atlas_"+version+".tex")
     # print(plot_sections)
 
-    with open(texdir + "/atlas_template.tex", "r") as fin, open(texdir + "/atlas_"+version+".tex","w") as fout:
+    with open(texdir + "/atlas_template.tex", "r") as fin, open(texdir + "/atlas_"+cnst.ATLAS_REGION[0] +'_' + seas + '_' +version+".tex","w") as fout:
         for line in fin:
             # print(line.encode("utf-8"))
             if line.strip() == '%InsertHere':
@@ -413,11 +413,12 @@ def runAtlas(season):
                 fout.write(line+'\r\n')
 
     # Compile TWICE in latex
-    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + "/" + "atlas_"+version+".tex"])
-    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + "/" + "atlas_"+version+".tex"])
+    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + "/" + "atlas_"+cnst.ATLAS_REGION[0] +'_' + seas + '_' +version+".tex"])
+    subprocess.call(["pdflatex", "-output-directory", texdir, "-interaction", "batchmode", texdir + "/" + "atlas_"+cnst.ATLAS_REGION[0] +'_' + seas + '_' +version+".tex"])
    # pdb.set_trace()
-    if os.path.isfile(texdir + "/atlas_" +version+ ".pdf"):
-        print('File successfully created: ' + texdir + "/atlas_" +version+ ".pdf")
+    afile = texdir + "/atlas_"+cnst.ATLAS_REGION[0] +'_' + seas + '_' +version+ ".pdf"
+    if os.path.isfile(afile):
+        print('File successfully created: ' + afile)
     else:
-        print('File NOT created: ' + texdir + "/atlas_" +version+ ".pdf")
+        print('File NOT created: ' + afile )
     

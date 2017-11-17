@@ -115,8 +115,8 @@ def saves(multiprocessing=False):
         season = row[2]
         multi_list.append((variable, scenarios, bc_and_resolution, inpath, outpath, season, metric, region, cnst.OVERWRITE))
 
-    if multiprocessing == True:
-        pool = Pool(processes=5)
+    if multiprocessing:
+        pool = Pool(processes=multiprocessing)
         res = pool.map(wNetcdf.model_files, multi_list)
         pool.close()
     else:
