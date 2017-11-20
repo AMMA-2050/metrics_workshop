@@ -536,15 +536,15 @@ def monthlyClimatologicalMean(incube, season, ncfile):
 
     tcalc = incube.aggregated_by(['month_number', 'year'], iris.analysis.MEAN)  # prepare trend calc
     tcalc.units = incube.units
-    trend2d = trend(tcalc, season, ncfile)
+    #trend2d = trend(tcalc, season, ncfile)
 
     incube = atlas_utils.time_slicer(incube, fdict['scenario'])  # time slicing for 2d and time series
     calc = incube.aggregated_by('month_number', iris.analysis.MEAN)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
-    c2d = calc.collapsed('year', iris.analysis.MEDIAN)
+    #c2d = calc.collapsed('year', iris.analysis.MEDIAN)
 
-    nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
-    nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
+    #nc2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[1])
+    #nctrend2d = ncfile.replace(cnst.AGGREGATION[0], cnst.AGGREGATION[2])
 
     # monthly time series, 12 entries
     iris.save(tseries, ncfile)
@@ -1023,7 +1023,7 @@ def pet(cubein, season, ncfile):
 #    pet.data = ma.masked_invalid(pet.data)
     
     calc = pet.aggregated_by(['year'], iris.analysis.MEAN)
-    tseries = pet.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
+    tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
 
     calc2d = atlas_utils.time_slicer(calc, fdict['scenario'])
     c2d = calc2d.collapsed('year', iris.analysis.MEDIAN)

@@ -91,7 +91,6 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         print('No or too many wfdei files. Please check')
         pdb.set_trace()
 
-    vname = cnst.VARNAMES[fdict['variable']]
     cube = iris.load_cube(ano)
     wcube = iris.load_cube(wfdei)
 
@@ -333,6 +332,7 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
         except ValueError:
             print('Boxplot data has a problem, please check. Cannot continue')
             pdb.set_trace()
+
         plt.title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']), fontsize=10)
         plt.xlabel('Scenario')
         plt.ylabel(p['ylabel'])
@@ -629,7 +629,6 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
     if (anomaly == True) & (scen == 'historical'):
         return
 
-    vname = cnst.VARNAMES[fdict['variable']]
     cube = iris.load_cube(ano)
     cube = atlas_utils.time_slicer(cube, fdict['scenario'])
     cube = cube.collapsed('year', iris.analysis.MEAN)
@@ -880,7 +879,6 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
     if (anomaly == True) & (scen == 'historical'):
         return
 
-    vname = cnst.VARNAMES[fdict['variable']]
     cube = iris.load_cube(ano)
     cube = atlas_utils.time_slicer(cube, fdict['scenario'])
     cube = cube.collapsed('year', iris.analysis.MEAN)

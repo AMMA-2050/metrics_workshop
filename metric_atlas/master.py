@@ -28,7 +28,7 @@ def allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, seas
 
 
     for bc, var, seas in itertools.product(bc_and_resolution, variable, season):
-        print 'All scenarios: ' + var
+        print 'All scenarios: ', var, seas
         ### DOES NOT CHANGE
         cube_path = inpath + os.sep + bc + os.sep + str(metric) + '_' + str(var) + '_' + \
                     str(bc) + '_*_' + str(seas) + '_' + str(region[0]) + '_allModels'
@@ -56,7 +56,7 @@ def singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, se
     ###
 
     for bc, var, scen, seas in itertools.product(bc_and_resolution, variable, cnst.SCENARIO, season):
-        print 'Single scenario: '+var
+        print 'Single scenario: ', var, scen, seas
 
         if (scen not in cnst.SINGLE_SCEN_PLOT):
             continue
