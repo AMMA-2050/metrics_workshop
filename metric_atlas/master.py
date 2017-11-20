@@ -149,8 +149,8 @@ def wfdei_saves(multiprocessing=False):
         season = row[2]
         multi_list.append((variable, outpath, season, metric, region, cnst.OVERWRITE))
 
-    if multiprocessing == True:
-        pool = Pool(processes=5)
+    if multiprocessing:
+        pool = Pool(processes=multiprocessing)
         res = pool.map(wNetcdf.wfdei, multi_list)
         pool.close()
     else:
@@ -202,9 +202,9 @@ def plot():
 
 
 def main():
-#    saves()
-#    wfdei_saves()
-#    plot()
+    #saves(multiprocessing=16)
+    #wfdei_saves(multiprocessing=16)
+    plot()
     ca.runAtlas('jas')
 
 
