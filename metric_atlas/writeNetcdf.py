@@ -145,7 +145,9 @@ def model_files(multi):
 
         if files_good == []:
             print inpath, sc, bc, seas, var
-            sys.exit('No files found. Check your input directory!!!')
+            print 'No files found. Check your input directory!!!'
+            continue
+            #sys.exit('No files found. Check your input directory!!!')
 
         out = outpath + os.sep + bc
 
@@ -156,7 +158,7 @@ def model_files(multi):
         for file, nme in zip(files_good, modelID):
 
             cubeout=None
-            print(nme, 'out', metric, var)
+            print('Doing:', nme, metric, var)
             if metric == 'pet' and var == 'rsds':
                 print(nme, 'in')
                 # This is a different case because PET needs multiple variables, rather than one
@@ -177,14 +179,15 @@ def model_files(multi):
                 print 'Load file: '+ file
 
                 if not cubeout:
-                    print(nme, 'no cubeout')
+                    print(nme, 'no cubeout yet, loading file')
                     print 'newcube'
+
                     cubeout = atlas_utils.load_data(file, xmin, xmax, ymin, ymax)
 
                 calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
                 print '#######################################'
                 print 'Saving data for: '
-                print metric, var, seas
+                print nme, metric, var, seas
                 print '#######################################'
 
         # runs big_cube for all available aggregations

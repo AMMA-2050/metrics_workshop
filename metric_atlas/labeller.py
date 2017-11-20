@@ -2,6 +2,7 @@
 Contains functions to create labels in all types of plots
 '''
 import constants as cnst
+import pdb
 
 DC = '$^\circ$C'
 
@@ -89,40 +90,42 @@ def getTitle(m, v, seas, scen, bc, r, anom=None):
         atxt = ''
 
     # e.g. Burkina Faso: Number of days when daily maximum temperature exceeds 40C (JAS)
+    metricname= METRICLONGNAME[cnst.LANGUAGE][m]
+    varname = cnst.VARNAMES[cnst.LANGUAGE][v].title()
     titleLUT = {'ENGLISH' : {
-            'annualMax_pr' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'annualMax_tasmax' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'annualMax_rsds' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'annualMin_tasmin' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'annualMean_tas' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'annualMean_rsds' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_pr' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_tasmin' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_tas' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_tasmax' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_rsds' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_wind' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')'
+            'annualMax_pr' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'annualMax_tasmax' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'annualMax_rsds' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'annualMin_tasmin' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'annualMean_tas' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'annualMean_rsds' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_pr' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_tasmin' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_tas' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_tasmax' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_rsds' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_wind' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')'
             },
             'FRANCAIS' : {
-            'annualMax_pr' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'annualMax_tasmax' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'annualMax_rsds' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'annualMin_tasmin' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'annualMean_tas' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'annualMean_rsds' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_pr' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_tasmin' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_tas' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_tasmax' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_rsds' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_wind' : r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + ' ' + cnst.VARNAMES[v].title() + '\n('+seas+'; '+scen+bc+')'
+            'annualMax_pr' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'annualMax_tasmax' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'annualMax_rsds' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'annualMin_tasmin' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'annualMean_tas' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'annualMean_rsds' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_pr' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_tasmin' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_tas' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_tasmax' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_rsds' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_wind' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')'
             }
             }
-    
+
     try:
         return(titleLUT[cnst.LANGUAGE][metvar])
     except:
-        temp_title = r + ': ' + atxt + METRICLONGNAME[cnst.LANGUAGE][m] + '\n('+seas+'; '+scen+bc+')'
+        temp_title = r + ': ' + atxt + metricname + '\n('+seas+'; '+scen+bc+')'
         return(temp_title)
 
 def getUnit(var):
