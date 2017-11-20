@@ -1,9 +1,10 @@
+# encoding: utf-8
 """
 Contains global constants for the CMIP5 atlas
 """
 VERSION = 'v0.2.3'
 LANGUAGE = 'ENGLISH' # 'FRANCAIS'
-DATADIR = '/users/global/cornkle/CMIP/CMIP5_Africa' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
+DATADIR = '/project/FCFA/CMIP5/bias_corrected/WA_data' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
 REGIONS = {'WA' : ['WA', 'West Africa' if LANGUAGE == 'ENGLISH' else 'Afrique de l\'Ouest', [-18, 25, 4, 25], 'WA_files'],   # lon1, lon2, lat1, lat2
            'BF' : ['BF','Burkina Faso',[-6, 2.8, 9 ,15.5], 'Burkina_files'],
            'SG' : ['SG', 'Senegal', [-18, -11, 12, 17], 'Senegal_files'],
@@ -12,14 +13,16 @@ REGIONS = {'WA' : ['WA', 'West Africa' if LANGUAGE == 'ENGLISH' else 'Afrique de
            'GC' : ['GC', 'Guinea Coast Zone' if LANGUAGE == 'ENGLISH' else 'Zone della Côte Guinée', [-15, 10, 5, 9.5], 'GuineaCoast_files']
            }
 #### Atlas production / file creation is supporting only one region at a time
-ATLAS_REGION = REGIONS['SG']
+#ATLAS_REGION = REGIONS['SG']
+#### If we call the master.py from a shell script , we can specify the region on the command line 
+ATLAS_REGION = REGIONS['BF']
 
 METRIC_DATADIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] +'/save_files/netcdf'
 METRIC_PLOTDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] + '/save_files/plots_' + LANGUAGE
 METRIC_ATLASDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3]
 BC_RES = ['BC_0.5x0.5'] #'0.5x0.5'
 
-SCENARIO = ['historical', 'rcp26', 'rcp45', 'rcp85'] #['historical', 'rcp85'] # ['historical', 'rcp85'] #
+SCENARIO = ['historical', 'rcp26', 'rcp45', 'rcp85'] 
 
 AGGREGATION = ['tseries', '2d', 'trend']
 
@@ -65,7 +68,11 @@ OVERWRITE = 'No' # 'Yes'
 ## SPIbiannual, monthlyClimatologicalMean and onsetMarteau are exceptions to the atlas aggregation period!
 ## Their aggregation period never changes.
 
-AGG_PERIODS = ['jas', 'may', 'jun', 'jul','aug','sep','oct','nov']
+if ATLAS_REGION[0] == 'GC':
+    AGG_PERIODS = ['jas', 'may', 'jun', 'jul','aug','sep','oct','nov']
+else:
+    AGG_PERIODS = ['jas', 'jun', 'jul','aug','sep','oct'] # ['jas', 'may', 'jun', 'jul','aug','sep','oct','nov']
+    
 CONSTANT_PERIOD_METRIC = ['onsetMarteau', 'SPIbiannual', 'monthlyClimatologicalMean']
 ### slowest variables go first!
 
