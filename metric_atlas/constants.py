@@ -1,4 +1,5 @@
 # encoding: utf-8
+
 """
 Contains global constants for the CMIP5 atlas
 """
@@ -67,11 +68,12 @@ OVERWRITE = 'No' # 'Yes'
 ## SPIbiannual, monthlyClimatologicalMean and onsetMarteau are exceptions to the atlas aggregation period!
 ## Their aggregation period never changes.
 
+
 if ATLAS_REGION[0] == 'GC':
     AGG_PERIODS = ['jas', 'may', 'jun', 'jul','aug','sep','oct','nov']
 else:
     AGG_PERIODS = ['jas', 'jun', 'jul','aug','sep','oct'] # ['jas', 'may', 'jun', 'jul','aug','sep','oct','nov']
-    
+
 CONSTANT_PERIOD_METRIC = ['onsetMarteau', 'SPIbiannual', 'monthlyClimatologicalMean']
 ### slowest variables go first!
 
@@ -87,15 +89,15 @@ METRICS_TORUN = [
     ['annualTotalRain', ['pr'], AGG_PERIODS],
     ['annualMean', ['tas', 'rsds'], AGG_PERIODS],
     ['annualMeanRainyDay', ['pr'], AGG_PERIODS],
-    ['monthlyClimatologicalMean',['pr', 'tasmin','tas',  'tasmax', 'rsds', 'wind'] , ['ann']],
+    ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['ann']],
     ['annualRainyDays', ['pr'], AGG_PERIODS],
     ['annualHotDays', ['tasmax'], AGG_PERIODS],
     ['annualExtremeRain30', ['pr'], AGG_PERIODS],
     ['annualExtremeRain50', ['pr'], AGG_PERIODS],
     ['annualMaxRain5dSum', ['pr'], AGG_PERIODS],
     ['annualMaxRain3dSum', ['pr'], AGG_PERIODS],
-    ['annualMaxRain2dSum', ['pr'],AGG_PERIODS]
-     ]
+    ['annualMaxRain2dSum', ['pr'], AGG_PERIODS]
+]
 
 # NB: Currently excluding the following (but may add in later):
 #            ['annualStrongWindDays', ['wind'], ['jas']]

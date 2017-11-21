@@ -253,6 +253,8 @@ def getYlab(m, v, anom=None):
         ylab = cnst.VARNAMES[cnst.LANGUAGE][v] + ': ' + m
 
     unit = getUnit(v)
+    if 'No.' in ylab:
+        unit = '(No.)'
     
     if anom in ['percentage', 'percentageAnomaly']:
         ylab = '% change ' if cnst.LANGUAGE == 'ENGLISH' else 'Changement (%) de '

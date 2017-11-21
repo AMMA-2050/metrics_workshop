@@ -17,6 +17,7 @@ if not 'eld' in os.uname()[1]:
     mpl.use('Agg')
 import iris
 import matplotlib.pyplot as plt
+from matplotlib import cm
 import numpy as np
 import os
 import constants as cnst
@@ -86,6 +87,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
     if (anomaly == True) & (scen == 'historical'):
         return
 
+
     wfdei_file = cnst.METRIC_DATADIR + os.sep + 'WFDEI' + os.sep + metric +'_' + variable + '_WFDEI_historical_' + season + '*_2d.nc'
     wfdei = glob.glob(wfdei_file)
     if len(wfdei) != 1:
@@ -106,7 +108,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         data_perc = data_perc.collapsed('model_name', iris.analysis.PERCENTILE, percent=[10, 90])
         data = data.collapsed('model_name', iris.analysis.PERCENTILE, percent=[10, 90])
 
-        if np.max(data.data) - np.min(data.data) > np.max(data.data):
+        if np.nanmax(data.data) - np.nanmin(data.data) > np.nanmax(data.data):
             levels = (atlas_utils.datalevels_ano(np.append(data[0].data, data[1].data)),
                       atlas_utils.datalevels_ano(np.append(data[0].data, data[1].data)))
             cmap = 'RdBu_r' if 'tas' in variable else 'RdBu'
@@ -115,7 +117,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
                       atlas_utils.datalevels(np.append(data[0].data, data[1].data)))
             cmap = 'Reds' if 'tas' in variable else 'Blues'
 
-        if np.max(data_perc.data) - np.min(data_perc.data) > np.max(data_perc.data):
+        if np.nanmax(data_perc.data) - np.nanmin(data_perc.data) > np.nanmax(data_perc.data):
             plevels = (atlas_utils.datalevels_ano(np.append(data_perc[0].data, data_perc[1].data)),
                        atlas_utils.datalevels_ano(np.append(data_perc[0].data, data_perc[1].data)))
 
@@ -158,81 +160,119 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
 
         toplot = [plot_dic1]
 
+    map = False
+    map1 = False
+    map2 = False
+
+
     for p in toplot:
         f = plt.figure(figsize=lblr.getFigSize(region[0], 'map'), dpi=300)
         siz = 6
         lon = data.coord('longitude').points
         lat = data.coord('latitude').points
 
-        ax = f.add_subplot(311, projection=ccrs.PlateCarree())
+        if not np.nansum(wcube.data):
+            ax = f.add_subplot(311)
+            ax.text(0.5, 0.5, 'Zero values', ha='center')
+        else:
+            try:
+                ax = f.add_subplot(311, projection=ccrs.PlateCarree())
+                dataw = np.ma.array(wcube.data, mask=wcube.data == np.nan)
+                ax.set_autoscale_on('False')
+                map = ax.contourf(lon, lat, dataw, transform=ccrs.PlateCarree(), cmap='viridis',
+                                  vmin=np.nanmin(dataw), vmax=np.nanmax(dataw), extend='both')
+                ax.set_ylim(np.min(lat), np.max(lat))
+                ax.set_xlim(np.min(lon), np.max(lon))
+            except ValueError:
+                ax = f.add_subplot(311)
+                ax.text(0.5, 0.5, 'Zero values', ha='center')
+
+            if map:
+                ax.coastlines()
+                # Gridlines
+                siz = 6
+                xl = ax.gridlines(draw_labels=True)
+                xl.xlabels_top = False
+                xl.ylabels_right = False
+                xl.xformatter = LONGITUDE_FORMATTER
+                xl.yformatter = LATITUDE_FORMATTER
+                xl.xlabel_style = {'size': siz, 'color': 'k'}
+                xl.ylabel_style = {'size': siz, 'color': 'k'}
+                # Countries
+                ax.add_feature(cartopy.feature.BORDERS, linestyle='--')
+                cb = plt.colorbar(map, format='%1.1f')
+                cb.set_label(lblr.getYlab(metric, variable))
         ax.set_title('WFDEI historical')
-        map = ax.contourf(lon, lat, wcube.data, transform=ccrs.PlateCarree(), cmap='viridis',
-                            vmin=np.nanmin(wcube.data), vmax=np.nanmax(wcube.data), extend='both')
-        #pdb.set_trace()
-        ax.coastlines()
-        # Gridlines
-        siz = 6
-        xl = ax.gridlines(draw_labels=True)
-        xl.xlabels_top = False
-        xl.ylabels_right = False
-        xl.xformatter = LONGITUDE_FORMATTER
-        xl.yformatter = LATITUDE_FORMATTER
-        xl.xlabel_style = {'size': siz, 'color': 'k'}
-        xl.ylabel_style = {'size': siz, 'color': 'k'}
-        # Countries
-        ax.add_feature(cartopy.feature.BORDERS, linestyle='--')
-        cb = plt.colorbar(map, format='%1.1f')
-        cb.set_label(lblr.getYlab(metric, variable))
 
+        if not np.nansum( p['data'][1].data):
+            ax1 = f.add_subplot(312)
+            ax1.text(0.5, 0.5, 'Zero values', ha='center')
+        else:
+            try:
+                ax1 = f.add_subplot(312, projection=ccrs.PlateCarree())
+                data1 = np.ma.array(p['data'][1].data, mask=p['data'][1].data==np.nan)
+                ax1.set_autoscale_on('False')
+               # plt.gca().patch.set_color('.25')
+                map1 = ax1.contourf(lon, lat, data1, transform=ccrs.PlateCarree(), cmap=p['cmap'],
+                                    levels=p['levels'][1], extend='both')
+                ax1.set_ylim(np.min(lat), np.max(lat))
+                ax1.set_xlim(np.min(lon), np.max(lon))
+            except ValueError:
+                ax1 = f.add_subplot(312)
+                ax1.text(0.5, 0.5, 'Zero values', ha='center')
 
-        ax1 = f.add_subplot(312, projection=ccrs.PlateCarree())
+            if map1:
+                ax1.coastlines()
+                # Gridlines
+                siz = 6
+                xl = ax1.gridlines(draw_labels=True);
+                xl.xlabels_top = False
+                xl.ylabels_right = False
+                xl.xformatter = LONGITUDE_FORMATTER
+                xl.yformatter = LATITUDE_FORMATTER
+                xl.xlabel_style = {'size': siz, 'color': 'k'}
+                xl.ylabel_style = {'size': siz, 'color': 'k'}
+                # Countries
+                ax1.add_feature(cartopy.feature.BORDERS, linestyle='--');
+                cb = plt.colorbar(map1, format='%1.1f')
+                # cb.set_label('10th percentile ' + p['cblabel'])
+                cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']))
         ax1.set_title('Future 90th percentile')
-        try:
-            map1 = ax1.contourf(lon, lat, p['data'][1].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],
-                                levels=p['levels'][1], extend='both')
-        except:
 
-            continue
-        ax1.coastlines()
-        # Gridlines
-        siz = 6
-        xl = ax1.gridlines(draw_labels=True);
-        xl.xlabels_top = False
-        xl.ylabels_right = False
-        xl.xformatter = LONGITUDE_FORMATTER
-        xl.yformatter = LATITUDE_FORMATTER
-        xl.xlabel_style = {'size': siz, 'color': 'k'}
-        xl.ylabel_style = {'size': siz, 'color': 'k'}
-        # Countries
-        ax1.add_feature(cartopy.feature.BORDERS, linestyle='--');
-        cb = plt.colorbar(map1, format='%1.1f')
-        # cb.set_label('10th percentile ' + p['cblabel'])
-        cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']))
+        if not np.nansum(p['data'][0].data):
+            ax2 = f.add_subplot(313)
+            ax2.text(0.5, 0.5, 'Zero values', ha='center')
+        else:
+            try:
+                ax2 = f.add_subplot(313, projection=ccrs.PlateCarree())
+                data2 = np.ma.array(p['data'][0].data, mask=p['data'][0].data == np.nan)
+                ax2.set_autoscale_on('False')
+                map2 = ax2.contourf(lon, lat, data2, transform=ccrs.PlateCarree(), cmap=p['cmap'],
+                                    levels=p['levels'][0], extend='both')
+                ax2.set_ylim(np.min(lat), np.max(lat))
+                ax2.set_xlim(np.min(lon), np.max(lon))
+            except ValueError:
+                ax2 = f.add_subplot(313)
+                ax2.text(0.5, 0.5, 'Zero values', ha='center')
 
-        ax2 = f.add_subplot(313, projection=ccrs.PlateCarree())
-        try:
-            map2 = ax2.contourf(lon, lat, p['data'][0].data, transform=ccrs.PlateCarree(), cmap=p['cmap'],
-                                levels=p['levels'][0], extend='both')
-        except:
-            pdb.set_trace()
-            continue
-        ax2.coastlines()
+            if map2:
+                ax2.coastlines()
+                # Gridlines
+                xl = ax2.gridlines(draw_labels=True, );
+                xl.xlabels_top = False
+                xl.ylabels_right = False
+                xl.xformatter = LONGITUDE_FORMATTER
+                xl.yformatter = LATITUDE_FORMATTER
+                xl.xlabel_style = {'size': siz, 'color': 'k'}
+                xl.ylabel_style = {'size': siz, 'color': 'k'}
+                # Countries
+                ax2.add_feature(cartopy.feature.BORDERS, linestyle='--');
+                cb = plt.colorbar(map2, format='%1.1f')
+                cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']))
         ax2.set_title('Future 10th percentile')
-        # Gridlines
-        xl = ax2.gridlines(draw_labels=True, );
-        xl.xlabels_top = False
-        xl.ylabels_right = False
-        xl.xformatter = LONGITUDE_FORMATTER
-        xl.yformatter = LATITUDE_FORMATTER
-        xl.xlabel_style = {'size': siz, 'color': 'k'}
-        xl.ylabel_style = {'size': siz, 'color': 'k'}
-        # Countries
-        ax2.add_feature(cartopy.feature.BORDERS, linestyle='--');
-        cb = plt.colorbar(map2, format='%1.1f')
-        cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']))
+
         f.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['cblabel']), fontsize=10)
-        plt.tight_layout(rect=[0,0.01,1,0.95])
-        # f.suptitle('Long figure title')
+        plt.tight_layout(rect=[0, 0.01, 1, 0.95])
 
         f.subplots_adjust(right=0.8, left=0.2)
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
@@ -350,7 +390,7 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
             except:
                 pdb.set_trace()
 
-        if np.max(d) - np.min(d) > np.max(d):
+        if np.nanmax(d) - np.nanmin(d) > np.nanmax(d):
             plt.hlines(0, 0, len(d), linestyle='dashed', color='grey')
 
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
@@ -393,7 +433,6 @@ def boxplotMonthlyClim(incubes, outpath, region, anomaly=False):
     if (anomaly == True) & (scen == 'historical'):
         return
 
-    vname = cnst.VARNAMES[fdict['variable']]
     cube = iris.load_cube(ano)
     cube.remove_coord('year')
     cube.remove_coord('time')
@@ -463,7 +502,7 @@ def boxplotMonthlyClim(incubes, outpath, region, anomaly=False):
             except:
                 pdb.set_trace()
 
-        if np.max(d) - np.min(d) > np.max(d):
+        if np.nanmax(d) - np.nanmin(d) > np.nanmax(d):
             plt.hlines(0, 0, len(d), linestyle='dashed', color='grey')
 
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
@@ -648,12 +687,12 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
         data = data.data
         data_perc = data_perc.data
 
-        if np.max(data) - np.min(data) > np.max(data):
+        if np.nanmax(data) - np.nanmin(data) > np.nanmax(data):
             levels = atlas_utils.binlevels(data)
         else:
             levels = np.linspace(data.min(), data.max(), 14)
 
-        if np.max(data_perc) - np.min(data_perc) > np.max(data_perc):
+        if np.nanmax(data_perc) - np.nanmin(data_perc) > np.nanmax(data_perc):
             plevels = atlas_utils.binlevels(data_perc)
         else:
             plevels = np.linspace(data_perc.min(), data_perc.max(), 14)
@@ -681,7 +720,7 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
 
     else:
         cube = cube.data
-        if np.max(cube) - np.min(cube) > np.max(cube):
+        if np.nanmax(cube) - np.nanmin(cube) > np.nanmax(cube):
             levels = atlas_utils.binlevels(cube)
         else:
             levels = np.linspace(cube.min(), cube.max(), 10)
@@ -706,7 +745,7 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
             d.set_color('lightslategray')
             d.set_edgecolor('black')
 
-        ax.set_xlim(np.floor(np.min((bin[0:-1])[(p['data'])>0])-(bin[1] - bin[0])), np.ceil(np.max((bin[1::])[(p['data'])>0])+(bin[-1] - bin[-2])) )
+        ax.set_xlim(np.floor(np.nanmin((bin[0:-1])[(p['data'])>0])-(bin[1] - bin[0])), np.ceil(np.nanmax((bin[1::])[(p['data'])>0])+(bin[-1] - bin[-2])) )
         ax.set_xlabel(p['ylabel'])
         ax.set_ylabel('Number of models')
         ax.set_title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']), fontsize=11)
@@ -937,7 +976,7 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
 
         f = plt.figure(figsize=(8.5, 6))
 
-        if np.max(p['data']) - np.min(p['data']) > np.max(p['data']):
+        if np.nanmax(p['data']) - np.nanmin(p['data']) > np.nanmax(p['data']):
             plt.hlines(0, 0, len(p['data']), linestyle='dashed', color='grey')
 
         for i in range(0, len(p['data'])):

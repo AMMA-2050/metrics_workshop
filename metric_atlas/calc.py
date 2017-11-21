@@ -103,9 +103,12 @@ def _annualMeanThresh(incube, season, ncfile, lower_threshold=None):
 
     csum = incube.aggregated_by(['year'], iris.analysis.SUM)
     ccount = incube.aggregated_by(['year'], iris.analysis.COUNT, function=lambda values: values >= lower_threshold)
+    ccount.data=np.array(ccount.data, dtype=float)
+    ccount.data[ccount.data==0] = np.nan
     calc = csum / ccount #incube.aggregated_by(['year'], iris.analysis.MEAN) #csum / ccount  # mean
     calc.units = incube.units
     calc.long_name = incube.long_name
+
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
 
     calc2d = atlas_utils.time_slicer(calc, fdict['scenario'])

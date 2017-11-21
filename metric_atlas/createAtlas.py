@@ -278,9 +278,9 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
     
     # Fix metric name peculiarities
     if metric in ['annualMax', 'annualMin', 'annualMean', 'monthlyClimatologicalMean']:
-        oname = lblr.METRICLONGNAME[metric] + ' ' + cnst.VARNAMES[var].title()
+        oname = lblr.METRICLONGNAME[cnst.LANGUAGE][metric] + ' ' + cnst.VARNAMES[cnst.LANGUAGE][var].title()
     else:
-        oname = lblr.METRICLONGNAME[metric]
+        oname = lblr.METRICLONGNAME[cnst.LANGUAGE][metric]
 
     myCaption = myCaption.replace('xxx_metric_xxx', oname.lower())
     
@@ -531,7 +531,7 @@ def runAtlas(season):
     # writeTex("atlas_"+version+".tex")
     # print(plot_sections)
 
-    with open(texdir + "/atlas_template.tex", "r") as fin, open(texdir + "/atlas_"+cnst.ATLAS_REGION[0] +'_' + seas + '_' +version+".tex","w") as fout:
+    with open(texdir + "/atlas_template.tex", "r") as fin, open(texdir + "/atlas_"+cnst.ATLAS_REGION[0] +'_' + seas + '_' +version+cnst.LANGUAGE[:2]+".tex","w") as fout:
         for line in fin:
             # print(line.encode("utf-8"))
             if line.strip() == '%InsertHere':
