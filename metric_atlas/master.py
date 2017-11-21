@@ -202,9 +202,9 @@ def plot():
 
 
 def main():
-#    saves()
-#    wfdei_saves()
-#    plot()
+    #saves(multiprocessing=16)
+    #wfdei_saves(multiprocessing=16)
+    plot()
     ca.runAtlas('jas')
 
 

@@ -1,3 +1,4 @@
+# encoding: utf-8
 '''
 Contains functions to create labels in all types of plots
 '''

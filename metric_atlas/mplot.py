@@ -1,3 +1,4 @@
+# encoding: utf-8
 """
 This module contains all plotting functions for the climate metrics atlas.
 Plots called *_single show single scenarios while plots called *_scenarios show all scenarios at once.
