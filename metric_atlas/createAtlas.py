@@ -264,9 +264,9 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
     
     # Fix metric name peculiarities
     if metric in ['annualMax', 'annualMin', 'annualMean', 'monthlyClimatologicalMean']:
-        oname = lblr.METRICLONGNAME[metric] + ' ' + cnst.VARNAMES[var].title()
+        oname = lblr.METRICLONGNAME[cnst.LANGUAGE][metric] + ' ' + cnst.VARNAMES[cnst.LANGUAGE][var].title()
     else:
-        oname = lblr.METRICLONGNAME[metric]
+        oname = lblr.METRICLONGNAME[cnst.LANGUAGE][metric]
 
     myCaption = myCaption.replace('xxx_metric_xxx', oname.lower())
     
