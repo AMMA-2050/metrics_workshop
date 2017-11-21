@@ -325,8 +325,10 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
             hist = atlas_utils.time_slicer(hist, 'historical')
 
             hist = hist.collapsed('year', iris.analysis.MEAN)
-
-            data = atlas_utils.anomalies(hist, cube, percentage=False)
+            try:
+                data = atlas_utils.anomalies(hist, cube, percentage=False)
+            except:
+                pdb.set_trace()
             data_perc = atlas_utils.anomalies(hist, cube, percentage=True)
 
             an = 'anomaly'

@@ -27,7 +27,7 @@ def getIntroText(metric):
             'annualMin' : 'This shows the minimum daily value for each variable, for the period shown.',
             'annualTotalRain' : 'This shows the total accumulated rainfall for the period shown.',
             'annualMean' : 'This shows the mean daily value for each variable, for the period shown.',
-            'annualMeanRainyDay' : 'This shows the mean rainfall on the days that it rained with the period shown.',
+            'annualMeanRainyDay' : 'This shows the mean rainfall on the days that it rained during the period shown.',
             'monthlyClimatologicalMean' : 'This shows the climatology for each variable for each month within the period shown.',
             'annualRainyDays' : 'This shows the number of days per in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.',
             'annualRainyDaysPerc' : 'This shows the percentage of days in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.',
@@ -51,12 +51,12 @@ def getIntroText(metric):
             'pet' : 'Potential Evapo-Transpiration (Hargreaves equation based on daily Tmin, Tmax, Tmean and radiation)'
             },
             'FRANCAIS' : {
-            'annualMax' : 'This shows the maximum daily value for each variable, for the period shown.',
-            'annualMin' : 'This shows the minimum daily value for each variable, for the period shown.',
-            'annualTotalRain' : 'This shows the total accumulated rainfall for the period shown.',
-            'annualMean' : 'This shows the mean daily value for each variable, for the period shown.',
-            'annualMeanRainyDay' : 'This shows the mean rainfall on the days that it rained with the period shown.',
-            'monthlyClimatologicalMean' : 'This shows the climatology for each variable for each month within the period shown.',
+            'annualMax' : 'Cela illustre la valeur maximale journalière pour chaque variable, pour la période indiquée.',#'This shows the maximum daily value for each variable, for the period shown.',
+            'annualMin' : 'Cela illustre la valeur minimale journalière pour chaque variable, pour la période indiquée.', #'This shows the minimum daily value for each variable, for the period shown.',
+            'annualTotalRain' : 'Cela illustre la quantité totale de pluie tombée pendant la période indiquée.', #'This shows the total accumulated rainfall for the period shown.',
+            'annualMean' : 'Cela illustre la valeur moyenne journalière pour chaque variable, pour la période indiquée.', #'This shows the mean daily value for each variable, for the period shown.',
+            'annualMeanRainyDay' : 'Cela illustre les précipitations moyennes pendant les jours pluvieux, pour la période indiquée.', #'This shows the mean rainfall on the days that it rained with the period shown.',
+            'monthlyClimatologicalMean' : 'Cela illustre la climatologie pour chaque variable pour chaque mois, pour la période indiquée.', #'This shows the climatology for each variable for each month within the period shown.',
             'annualRainyDays' : 'This shows the number of days per in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.',
             'annualRainyDaysPerc' : 'This shows the percentage of days in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.',
             'annualHotDays' : 'This shows the number of days in the period shown with a Daily Maximum Temperature exceeding '+str(cnst.HOTDAYS_THRESHOLD)+lblr.DC+'.',
@@ -94,19 +94,33 @@ def monthLookUp(abrv):
         'ja'    : 'July and August',
         'as'    : 'August and September',
         'so'    : 'September and October',
-        'ann'   : 'Annual'
+        'ann'   : 'Annual',
+        'may'   : 'May',
+        'jun'   : 'June',
+        'jul'   : 'July',
+        'aug'   : 'August',
+        'sep'   : 'September',
+        'oct'   : 'October',
+        'nov'   : 'November'
         },
         'FRANCAIS' : {
         'mjjas' : 'mai à septembre',
-        'amj'   : 'April, May and June',
-        'jas'   : 'July, August and September',
-        'ond'   : 'October, November and December',
-        'mj'    : 'May and June',
-        'jj'    : 'June and July',
-        'ja'    : 'July and August',
-        'as'    : 'August and September',
-        'so'    : 'September and October',
-        'ann'   : 'Annual'
+        'amj'   : 'avril, mai et juin',
+        'jas'   : 'juillet, août et septembre',
+        'ond'   : 'octobre, novembre and décembre',
+        'mj'    : 'mai et juin',
+        'jj'    : 'juin et juillet',
+        'ja'    : 'juillet et août',
+        'as'    : 'août et septembre',
+        'so'    : 'septembre et octobre',
+        'ann'   : 'Annuel'
+        'may'   : 'mai',
+        'jun'   : 'juin',
+        'jul'   : 'juillet',
+        'aug'   : 'août',
+        'sep'   : 'septembre',
+        'oct'   : 'octobre',
+        'nov'   : 'novembre'
         }
         }
     
@@ -135,14 +149,14 @@ def getNicePlotName(plot_name):
             'allModelMonthClim' : 'Monthly climatological mean'
             },
             'FRANCAIS' : {
-            'allModelRank' : 'Model ranking scatterplots', 
-            'mapPerc' : 'Maps of ensemble spread (10th and 90th percentiles)',
-            'nbModelHistogram' : '\'Number of model\' histograms', 
-            'MultiNbModelHistogram' : '\'Number of model\' histograms for all scenarios', 
-            'allModelBoxplot' : 'Boxplots', 
-            'lineplot' : 'Spaghetti timeseries', 
-            'allModelHisto' : '\'All Model\' histograms',
-            'allModelMonthClim' : 'Monthly climatological mean'
+            'allModelRank' : 'Diagrammes de dispersion des modèles climatiques', 
+            'mapPerc' : 'Cartes de l\'écart de l\'ensemble (10e et 90e percentile)',
+            'nbModelHistogram' : 'Histogrammes de \'nombre de modèles\'', 
+            'MultiNbModelHistogram' : 'Histogrammes de \'nombre de modèles\' par tous les scénarios', 
+            'allModelBoxplot' : 'Les tracé en boîte', 
+            'lineplot' : 'Les séries chronologiques', 
+            'allModelHisto' : 'Histogrammes de \'tous les modèles\'',
+            'allModelMonthClim' : 'Les climatologies mensuelles moyennes'
             }
             }
     try:
@@ -169,20 +183,20 @@ def getNicePlotType(plot_type):
             'allscen' : 'All scenarios for 1950-2100'
             },
             'FRANCAIS' : {
-            'rcp26PercentageAnomaly' : '\% Change by Scenario',
-            'rcp45PercentageAnomaly' : '\% Change by Scenario',
-            'rcp85PercentageAnomaly' : '\% Change by Scenario',
-            'rcp26Anomaly' : 'Absolute Change by Scenario',
-            'rcp45Anomaly' : 'Absolute Change by Scenario',
-            'rcp85Anomaly' : 'Absolute Change by Scenario',
-            'rcp26' : 'Each Scenario', 
-            'rcp45' : 'Each Scenario', 
-            'rcp85' : 'Each Scenario', 
-            'scenarios' : 'All scenarios', 
-            'historical' : 'Each Scenario', 
-            'percentageAnomaly' : 'Percentage Change',
-            'anomaly' : 'Absolute Change',
-            'allscen' : 'All scenarios for 1950-2100'
+            'rcp26PercentageAnomaly' : 'Variation en pourcentage par scénario',
+            'rcp45PercentageAnomaly' : 'Variation en pourcentage par scénario',
+            'rcp85PercentageAnomaly' : 'Variation en pourcentage par scénario',
+            'rcp26Anomaly' : 'Variation absolue par scénario',
+            'rcp45Anomaly' : 'Variation absolue par scénario',
+            'rcp85Anomaly' : 'Variation absolue par scénario',
+            'rcp26' : 'Chaque scénario', 
+            'rcp45' : 'Chaque scénario', 
+            'rcp85' : 'Chaque scénario', 
+            'scenarios' : 'Tous les scénarios', 
+            'historical' : 'Chaque scénario', 
+            'percentageAnomaly' : 'Variation en pourcentage',
+            'anomaly' : 'Variation absolue',
+            'allscen' : 'Tous les scénarios pour 1950-2100'
             }
             }
     try:
