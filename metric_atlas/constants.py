@@ -40,7 +40,7 @@ VARNAMES = {'ENGLISH' : {'pr' : 'daily precipitation',
             'tas' : '	température moyenne journalière',
             'tasmin' : 'température minimale journalière',
             'tasmax' : 'température maximale journalière',
-            'rsds' : 'descendant radiation à ondes courtes alla surface', #???
+            'rsds' : 'flux solaire entrant à la surface', #'descendant radiation à ondes courtes alla surface', #??? flux solaire entrant à la surface 
             'wind' : 'vitesse du vent près de la surface',
             'multivars' : 'multiple input variables' # needs to stay the same (not used in captions)
             }
