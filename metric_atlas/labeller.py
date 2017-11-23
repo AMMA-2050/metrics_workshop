@@ -59,17 +59,24 @@ METRICLONGNAME = {'ENGLISH' : {
             'annualMaxRain5dMean': 'Précipitations maximum dans une période de 5 jours (taux moyenne quotidien)', #'Maximum Rainfall in a 5-day Period (Mean Daily Rate)',
             'annualMaxRain3dMean': 'Précipitations maximum dans une période de 3 jours (taux moyenne quotidien)', #'Maximum Rainfall in a 3-day Period (Mean Daily Rate)',
             'annualMaxRain2dMean': 'Précipitations maximum dans une période de 2 jours (taux moyenne quotidien)', #'Maximum Rainfall in a 2-day Period (Mean Daily Rate)',
-            'SPIxMonthly' : 'Indice des précipitations standardisées',# 'Standardised Precipitation Index',
-            'SPIbiannual' : 'Indice des précipitations standardisées (bi-annuelle)',
-            'onsetMarteau' : 'Date de début de la mousson (agronomie locale ; Marteau)', # 'Local Agronomic Monsoon Onset Date (Marteau)',
-            'cdd' : 'Nombre de journées sèches consécutives', #'Consecutive Dry Days',
+            'SPIxMonthly' : 'Indice normalisé de précipitations',# 'Standardised Precipitation Index',
+            'SPIbiannual' : 'Indice normalisé de précipitations (bi-annuelle)',
+            'onsetMarteau' : 'Date de déclenchement de la mousson basé sur critères d\'agronomie locale (Marteau)', # 'Local Agronomic Monsoon Onset Date (Marteau)',
+            'cdd' : 'Nombre de jours consécutifs sans précipitation', #'Consecutive Dry Days',
             'pet' : 'Evapotranspiration potentielle' #'Potential Evapotranspiration'
             }
     }
 
 MONTHS = [  'jan', 'feb', 'mar', 'apr','may', 'jun', 'jul', 'aug', 'sep','oct', 'nov','dec']
 
-
+def deFunction(atxt, metricname):
+    
+    if cnst.LANGUAGE == ENGLISH:
+        atxt_new, metricname_new = [atxt, metricname]
+    else:
+        
+    return([atxt_new, metricname_new])
+    
 def getTitle(m, v, seas, scen, bc, r, anom=None):
     
     metvar = m + '_' + v
@@ -94,7 +101,7 @@ def getTitle(m, v, seas, scen, bc, r, anom=None):
     metricname= METRICLONGNAME[cnst.LANGUAGE][m]
     varname = cnst.VARNAMES[cnst.LANGUAGE][v].title()
     
-    atxt, metricname = deFunction(atxt, metricname, cnst.LANGUAGE) # Changes de to du/de/de la/des/de l' and removes capitalisation
+    atxt, metricname = deFunction(atxt, metricname) # Changes de to du/de/de la/des/de l' and removes capitalisation
     
     
     titleLUT = {'ENGLISH' : {
@@ -177,7 +184,7 @@ def getYlab(m, v, anom=None):
             'monthlyClimatologicalMean_wind' : 'Wind Speed (m s$^{-1}$)'
             },
             'FRANCAIS' : {
-            'annualMax_pr' : 'Precipitation (mm day$^{-1}$)',
+            'annualMax_pr' : 'Précipitations (mm jour$^{-1}$)',
             'annualMax_tasmax' : 'Daily Max Temperature ('+DC+')',
             'annualMax_rsds' : 'SW Incoming Radiation (W m$^{-2}$)',
             'annualMin_tasmin' : 'Daily Min Temperature ('+DC+')',
@@ -220,27 +227,27 @@ def getYlab(m, v, anom=None):
             'FRANCAIS' : {
             'annualTotalRain' : 'Précipitations (mm)',
             'annualMeanRainyDay' : 'Précipitations (mm)',
-            'annualHotDaysPerc' : 'No. de jours', #when Max Temp >'+str(cnst.HOTDAYS_THRESHOLD)+'$^{\circ}$C',
-            'annualRainyDays' : 'No. of Rainy Days', # (>'+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$)',
-            'annualRainyDaysPerc' : 'No. of Rainy Days', # (>'+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$)',
-            'annualHotDays' : 'No. of Days', # when Max Temp >'+str(cnst.HOTDAYS_THRESHOLD)+'$^{\circ}$C',
-            'annualExtremeRain30' : 'No. of Days', # > 30mm day$^{-1}$',
-            'annualExtremeRain50' : 'No. of Days', # > 50mm day$^{-1}$',
-            'annualExtremeRain100' : 'No. of Days', # > 100mm day$^{-1}$',
-            'annualStrongWindDays' : 'No. of Days', # >'+str(cnst.STRONGWIND_THRESHOLD)+'ms$^{-1}$',
-            'wetSpell10': 'No. of Wet Periods', # > 10 Days',
-            'drySpell6': 'No. of Dry Periods', # > 6 Days',
-            'annualMaxRain_5dSum': '5-day Total Precipitation',
-            'annualMaxRain_3dSum' : '3-day Total Precipitation',
-            'annualMaxRain_2dSum' : '2-day Total Precipitation',
-            'annualMaxRain_5dMean': '5-day Mean Precipitation Rate (mm day$^{-1}$)',
-            'annualMaxRain_3dMean': '3-day Mean Precipitation Rate (mm day$^{-1}$)',
-            'annualMaxRain_2dMean': '2-day Mean Precipitation Rate (mm day$^{-1}$)',
-            'SPIxMonthly' : 'SPI',
-            'SPIbiannual' : 'SPI (bi-annual)',
-            'onsetMarteau' : 'Julian Day',
-            'cdd' : 'Consecutive Dry Days',
-            'pet' : 'PET (mm day$^{-1}$)'
+            'annualHotDaysPerc' : 'Nombre des jours', #when Max Temp >'+str(cnst.HOTDAYS_THRESHOLD)+'$^{\circ}$C',
+            'annualRainyDays' : 'Nombre des journée pluvieuse', # (>'+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$)',
+            'annualRainyDaysPerc' : 'Nombre des journée pluvieuse', # (>'+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$)',
+            'annualHotDays' : 'Nombre des jours', # when Max Temp >'+str(cnst.HOTDAYS_THRESHOLD)+'$^{\circ}$C',
+            'annualExtremeRain30' : 'Nombre des jours', # > 30mm day$^{-1}$',
+            'annualExtremeRain50' : 'Nombre des jours', # > 50mm day$^{-1}$',
+            'annualExtremeRain100' : 'Nombre des jours', # > 100mm day$^{-1}$',
+            'annualStrongWindDays' : 'Nombre des jours', # >'+str(cnst.STRONGWIND_THRESHOLD)+'ms$^{-1}$',
+            'wetSpell10': 'Nombre des périodes pluvieuses', # > 10 Days',
+            'drySpell6': 'Nombre des périodes sèches', # > 6 Days',
+            'annualMaxRain_5dSum': 'Précipitations totales (depuis 5 jours)',
+            'annualMaxRain_3dSum' : 'Précipitations totales (depuis 3 jours)',
+            'annualMaxRain_2dSum' : 'Précipitations totales (depuis 2 jours)',
+            'annualMaxRain_5dMean': 'Précipitations moyennes (depuis 5 jours ; mm jour$^{-1}$)',
+            'annualMaxRain_3dMean': 'Précipitations moyennes (depuis 3 jours ; mm jour$^{-1}$)',
+            'annualMaxRain_2dMean': 'Précipitations moyennes (depuis 2 jours ; mm jour$^{-1}$)',
+            'SPIxMonthly' : 'Indice des précipitations standardisées',
+            'SPIbiannual' : 'Indice des précipitations standardisées (bi-annuelle)',
+            'onsetMarteau' : 'Jour julien',
+            'cdd' : 'Nombre de journées sèches consécutives',
+            'pet' : 'Evapotranspiration potentielle (mm jour$^{-1}$)'
             }
             }
     
