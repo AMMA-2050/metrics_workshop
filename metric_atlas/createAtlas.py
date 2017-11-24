@@ -23,21 +23,21 @@ Date : 2nd May 2017
 def getIntroText(metric):
     
     intro_text = {'ENGLISH' : {
-            'annualMax' : 'This shows the maximum daily value for each variable, for the period shown.',
-            'annualMin' : 'This shows the minimum daily value for each variable, for the period shown.',
-            'annualTotalRain' : 'This shows the total accumulated rainfall for the period shown.',
-            'annualMean' : 'This shows the mean daily value for each variable, for the period shown.',
-            'annualMeanRainyDay' : 'This shows the mean rainfall on the days that it rained with the period shown.',
-            'monthlyClimatologicalMean' : 'This shows the climatology for each variable for each month within the period shown.',
-            'annualRainyDays' : 'This shows the number of days per in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.',
-            'annualRainyDaysPerc' : 'This shows the percentage of days in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.',
-            'annualHotDays' : 'This shows the number of days in the period shown with a Daily Maximum Temperature exceeding '+str(cnst.HOTDAYS_THRESHOLD)+lblr.DC+'.',
-            'annualExtremeRain30' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 30mm day$^{-1}$',
-            'annualExtremeRain50' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 50mm day$^{-1}$',
-            'annualExtremeRain100' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 100mm day$^{-1}$',
-            'annualStrongWindDays' : 'This shows the number of days in the period shown when daily mean wind speed exceeds a threshold of '+str(cnst.STRONGWIND_THRESHOLD)+'m s$^{-1}$',
-            'wetSpell10': 'This shows the number of periods with a wet spell longer than 10 days for the season shown.',
-            'drySpell6': 'This shows the number of periods with a dry spell longer than 6 days for the season shown.',
+            'annualMax' : 'This metric shows the maximum daily value for each variable, for the period shown.',
+            'annualMin' : 'This metric shows the minimum daily value for each variable, for the period shown.',
+            'annualTotalRain' : 'This metric shows the total accumulated rainfall for the period shown.',
+            'annualMean' : 'This metric shows the mean daily value for each variable, for the period shown.',
+            'annualMeanRainyDay' : 'This metric shows the mean rainfall on the days that it rained during the period shown.',
+            'monthlyClimatologicalMean' : 'This metric shows the climatology for each variable for each month within the period shown.',
+            'annualRainyDays' : 'This metric shows the number of days for the selected period when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.',
+            'annualRainyDaysPerc' : 'This metric shows the percentage of days for the selected period when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.',
+            'annualHotDays' : 'This metric shows the number of daysfor the selected period with a Daily Maximum Temperature exceeding '+str(cnst.HOTDAYS_THRESHOLD)+lblr.DC+'.',
+            'annualExtremeRain30' : 'This metric shows the number of days for the selected period when rainfall exceeds a threshold of 30mm day$^{-1}$',
+            'annualExtremeRain50' : 'This metric shows the number of days for the selected period when rainfall exceeds a threshold of 50mm day$^{-1}$',
+            'annualExtremeRain100' : 'This metric shows the number of days for the selected period when rainfall exceeds a threshold of 100mm day$^{-1}$',
+            'annualStrongWindDays' : 'This metric shows the number of days for the selected period when daily mean wind speed exceeds a threshold of '+str(cnst.STRONGWIND_THRESHOLD)+'m s$^{-1}$',
+            'wetSpell10': 'This metric shows the number of periods with a wet spell longer than 10 days for the selected period.',
+            'drySpell6': 'This metric shows the number of periods with a dry spell longer than 6 days for the selected period.',
             'annualMaxRain5dSum': 'Maximum Rainfall Total in a 5-day Period',
             'annualMaxRain3dSum' : 'Maximum Rainfall Total in a 3-day Period',
             'annualMaxRain2dSum' : 'Maximum Rainfall Total in a 2-day Period',
@@ -51,15 +51,15 @@ def getIntroText(metric):
             'pet' : 'Potential Evapo-Transpiration (Hargreaves equation based on daily Tmin, Tmax, Tmean and radiation)'
             },
             'FRANCAIS' : {
-            'annualMax' : 'This shows the maximum daily value for each variable, for the period shown.',
-            'annualMin' : 'This shows the minimum daily value for each variable, for the period shown.',
-            'annualTotalRain' : 'This shows the total accumulated rainfall for the period shown.',
-            'annualMean' : 'This shows the mean daily value for each variable, for the period shown.',
-            'annualMeanRainyDay' : 'This shows the mean rainfall on the days that it rained with the period shown.',
-            'monthlyClimatologicalMean' : 'This shows the climatology for each variable for each month within the period shown.',
-            'annualRainyDays' : 'This shows the number of days per in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.',
-            'annualRainyDaysPerc' : 'This shows the percentage of days in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.',
-            'annualHotDays' : 'This shows the number of days in the period shown with a Daily Maximum Temperature exceeding '+str(cnst.HOTDAYS_THRESHOLD)+lblr.DC+'.',
+            'annualMax' : 'Cette indicateur illustre la valeur maximale journalière pour chaque variable, pour la période indiquée.',#'This shows the maximum daily value for each variable, for the period shown.',
+            'annualMin' : 'Cette indicateur illustre la valeur minimale journalière pour chaque variable, pour la période indiquée.', #'This shows the minimum daily value for each variable, for the period shown.',
+            'annualTotalRain' : 'Cette indicateur illustre la quantité totale de pluie tombée pendant la période indiquée.', #'This shows the total accumulated rainfall for the period shown.',
+            'annualMean' : 'Cette indicateur illustre la valeur moyenne journalière pour chaque variable, pour la période indiquée.', #'This shows the mean daily value for each variable, for the period shown.',
+            'annualMeanRainyDay' : 'Cette indicateur illustre la moyenne des précipitations pendant les jours pluvieux, pour la période indiquée.', #'This shows the mean rainfall on the days that it rained with the period shown.',
+            'monthlyClimatologicalMean' : 'Cette indicateur illustre la moyenne climatologique de chaque variable pour chaque mois, pour la période indiquée.', #'This shows the climatology for each variable for each month within the period shown.',
+            'annualRainyDays' : 'Cette indicateur illustre le nombre de jours pour lesquels la pluviométrie est au-dessus du seuil de '+str(cnst.RAINYDAY_THRESHOLD)+' mm jour$^{-1}$, pendant la période indiquée.', # 'This shows the number of days in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.', could also be: la pluviométrie depasse un seuil de
+            'annualRainyDaysPerc' : 'Cette indicateur illustre le pourcentage de jours pour lesquels la pluviométrie est au-dessus du seuil de '+str(cnst.RAINYDAY_THRESHOLD)+'mm jour$^{-1}$, pendant la période indiquée.',
+            'annualHotDays' : 'Cette indicateur illustre le nombre de jours pour lesquels la temperature maximale journalière est au-dessus du seuil de  '+str(cnst.HOTDAYS_THRESHOLD)+lblr.DC+', pendant la période indiquée.',
             'annualExtremeRain30' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 30mm day$^{-1}$',
             'annualExtremeRain50' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 50mm day$^{-1}$',
             'annualExtremeRain100' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 100mm day$^{-1}$',
@@ -72,7 +72,7 @@ def getIntroText(metric):
             'annualMaxRain5dMean': 'Maximum Rainfall in a 5-day Period (Mean Daily Rate)',
             'annualMaxRain3dMean': 'Maximum Rainfall in a 3-day Period (Mean Daily Rate)',
             'annualMaxRain2dMean': 'Maximum Rainfall in a 2-day Period (Mean Daily Rate)',
-            'SPIxMonthly' : 'The Standardised Precipitation Index (SPI) shown here is defined as the anomaly relative to the baseline period devided by the standard deviation of that baseline period', #'The Standardised Precipitation Index (SPI) is a metric which was developed primarily for defining and monitoring drought. It allows a user to determine the rarity of drought at a given time scale of interest. It can also be used to determine periods of anomalously wet events.',
+            'SPIxMonthly' : 'L\'indice normalisé de précipitations ci-dessous est defini comme l\'anomalie par rapport à la période de référence diviser par l\'écart type pour cette même période.', #'The Standardised Precipitation Index (SPI) is a metric which was developed primarily for defining and monitoring drought. It allows a user to determine the rarity of drought at a given time scale of interest. It can also be used to determine periods of anomalously wet events.',
             'SPIbiannual' : 'The Standardised Precipitation Index (SPI) shown here is defined as the anomaly relative to the baseline period devided by the standard deviation of that baseline period. In this case, a 2-year rolling window is used to compute the anomaly.',
             'onsetMarteau' : 'Local Agronomic Monsoon Onset Date (Marteau) is defined as the first rainy day (precipitation greater than 1 mm) of two consecutive rainy days (with total precipitation greater than 20 mm) and no 7-day dry spell with less than 5 mm of rainfall during the subsequent 20 days',
             'cdd' : 'Consecutive Dry Days',
@@ -105,23 +105,23 @@ def monthLookUp(abrv):
         },
         'FRANCAIS' : {
         'mjjas' : 'mai à septembre',
-        'amj'   : 'avril, may et juin',
+        'amj'   : 'avril, mai et juin',
         'jas'   : 'juillet, août et septembre',
-        'ond'   : 'octobre, novembre et decembre',
-        'mj'    : 'may et juin',
+        'ond'   : 'octobre, novembre and décembre',
+        'mj'    : 'mai et juin',
         'jj'    : 'juin et juillet',
         'ja'    : 'juillet et août',
         'as'    : 'août et septembre',
         'so'    : 'septembre et octobre',
-        'ann'   : 'annuel',
-        'may'   : 'may',
+        'ann'   : 'Annuel'
+        'may'   : 'mai',
         'jun'   : 'juin',
         'jul'   : 'juillet',
         'aug'   : 'août',
         'sep'   : 'septembre',
         'oct'   : 'octobre',
         'nov'   : 'novembre'
-    }
+        }
         }
     
     return(month_long_names[cnst.LANGUAGE][abrv])
@@ -149,14 +149,14 @@ def getNicePlotName(plot_name):
             'allModelMonthClim' : 'Monthly climatological mean'
             },
             'FRANCAIS' : {
-            'allModelRank' : 'Model ranking scatterplots', 
-            'mapPerc' : 'Maps of ensemble spread (10th and 90th percentiles)',
-            'nbModelHistogram' : '\'Number of model\' histograms', 
-            'MultiNbModelHistogram' : '\'Number of model\' histograms for all scenarios', 
-            'allModelBoxplot' : 'Boxplots', 
-            'lineplot' : 'Spaghetti timeseries', 
-            'allModelHisto' : '\'All Model\' histograms',
-            'allModelMonthClim' : 'Monthly climatological mean'
+            'allModelRank' : 'Diagrammes de dispersion des modèles climatiques', # 'Model ranking scatterplots',
+            'mapPerc' : 'Cartes de l\'écart de l\'ensemble (10e et 90e percentile)', # 'Maps of ensemble spread (10th and 90th percentiles)',
+            'nbModelHistogram' : 'Histogrammes de \'nombre de modèles\'', # '\'Number of model\' histograms',
+            'MultiNbModelHistogram' : 'Histogrammes de \'nombre de modèles\' par tous les scénarios', # '\'Number of model\' histograms for all scenarios',
+            'allModelBoxplot' : 'Les tracé en boîte', # 'Boxplots',
+            'lineplot' : 'Les séries chronologiques', # 'Spaghetti timeseries',
+            'allModelHisto' : 'Histogrammes de \'tous les modèles\'', # '\'All Model\' histograms',
+            'allModelMonthClim' : 'Les climatologies mensuelles moyennes' #'Monthly climatological mean'
             }
             }
     try:
@@ -183,20 +183,20 @@ def getNicePlotType(plot_type):
             'allscen' : 'All scenarios for 1950-2100'
             },
             'FRANCAIS' : {
-            'rcp26PercentageAnomaly' : '\% Change by Scenario',
-            'rcp45PercentageAnomaly' : '\% Change by Scenario',
-            'rcp85PercentageAnomaly' : '\% Change by Scenario',
-            'rcp26Anomaly' : 'Absolute Change by Scenario',
-            'rcp45Anomaly' : 'Absolute Change by Scenario',
-            'rcp85Anomaly' : 'Absolute Change by Scenario',
-            'rcp26' : 'Each Scenario', 
-            'rcp45' : 'Each Scenario', 
-            'rcp85' : 'Each Scenario', 
-            'scenarios' : 'All scenarios', 
-            'historical' : 'Each Scenario', 
-            'percentageAnomaly' : 'Percentage Change',
-            'anomaly' : 'Absolute Change',
-            'allscen' : 'All scenarios for 1950-2100'
+            'rcp26PercentageAnomaly' : 'Variation en pourcentage par scénario', #'\% Change by Scenario',
+            'rcp45PercentageAnomaly' : 'Variation en pourcentage par scénario', #'\% Change by Scenario',
+            'rcp85PercentageAnomaly' : 'Variation en pourcentage par scénario', #'\% Change by Scenario',
+            'rcp26Anomaly' : 'Variation absolue par scénario', # 'Absolute Change by Scenario',
+            'rcp45Anomaly' : 'Variation absolue par scénario', # 'Absolute Change by Scenario',
+            'rcp85Anomaly' : 'Variation absolue par scénario', # 'Absolute Change by Scenario',
+            'rcp26' : 'Chaque scénario', #'Each Scenario',
+            'rcp45' : 'Chaque scénario', #'Each Scenario',
+            'rcp85' : 'Chaque scénario', #'Each Scenario',
+            'scenarios' : 'Tous les scénarios', # 'All scenarios', 
+            'historical' : 'Chaque scénario', # 'Each Scenario', 
+            'percentageAnomaly' : 'Variation en pourcentage', # 'Percentage Change',
+            'anomaly' : 'Variation absolue', # 'Absolute Change',
+            'allscen' : 'Tous les scénarios pour 1950-2100' # 'All scenarios for 1950-2100'
             }
             }
     try:
@@ -221,7 +221,7 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
             'allModelMonthClim': 'This boxplot of the monthly climatology shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point (horizontal red line) shows an individual model averaged over the xxx_region_xxx region, with the solid box representing the 25th to 75th percentile range, and the whiskers the 10th to 90th percentile range. This particular plot shows xxx_pt_long_xxx.'# xxx_title_end_xxx.',
     },
     'FRANCAIS' : {
-    'allModelRank' : 'This scatterplot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point shows an individual model averaged over xxx_region_xxx, and ranked according to the magnitude of the value on the y-axis. This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
+    'allModelRank' : 'Cette diagramme de dispersion illustre xxx_pt_short_xxx xxx_metric_xxx pendant le  xxx_periodstart_xxx à xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point shows an individual model averaged over xxx_region_xxx, and ranked according to the magnitude of the value on the y-axis. This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
             'mapPerc' : 'These maps show the ensemble spread in xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. They show the 90th and 10th percentiles of the distribution across the model ensemble, computed separately at each grid point, for the xxx_region_xxx region. This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
             'nbModelHistogram' : 'This histogram shows the number of models that agree on xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows the number of models that agree on the range of values shown on the x-axis for the xxx_region_xxx region. This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
             'MultiNbModelHistogram' : 'These histograms shows the number of models that agree on xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows the number of models that agree on the range of values shown on the x-axis for the xxx_region_xxx region . This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
