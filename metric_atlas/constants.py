@@ -84,7 +84,7 @@ METRICS_TORUN = [
     ['SPIbiannual', ['pr'], ['ann']],
     ['wetSpell10', ['pr'], AGG_PERIODS],
     ['drySpell6', ['pr'], AGG_PERIODS],
-    ['annualMax', ['pr'], AGG_PERIODS],
+    ['annualMax', ['pr', 'tasmax', 'rsds'], AGG_PERIODS],
     ['annualMin', ['tasmin'], AGG_PERIODS],
     ['annualTotalRain', ['pr'], AGG_PERIODS],
     ['annualMean', ['tas', 'rsds'], AGG_PERIODS],
