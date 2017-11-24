@@ -105,10 +105,11 @@ def _annualMeanThresh(incube, season, ncfile, lower_threshold=None):
     ccount = incube.aggregated_by(['year'], iris.analysis.COUNT, function=lambda values: values >= lower_threshold)
     ccount.data=np.array(ccount.data, dtype=float)
     ccount.data[ccount.data==0] = np.nan
-    calc = csum / ccount #incube.aggregated_by(['year'], iris.analysis.MEAN) #csum / ccount  # mean
+    ccount.data = np.ma.masked_invalid(ccount.data)
+    calc = csum / ccount
     calc.units = incube.units
     calc.long_name = incube.long_name
-
+    calc.data = np.ma.masked_invalid(calc.data)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
 
     calc2d = atlas_utils.time_slicer(calc, fdict['scenario'])
@@ -158,7 +159,7 @@ def _countSpells(incube, season, ncfile, spell_length=None, lower_threshold=None
         # Find the windows "full of True-s" (along the added 'window axis').
         full_windows = np.all(hit_windows, axis=axis + 1)
         # Count points fulfilling the condition (along the time axis).
-        spell_point_counts = np.sum(full_windows, axis=axis, dtype=int)
+        spell_point_counts = np.nansum(full_windows, axis=axis, dtype=int)
         return spell_point_counts
 
     if not spell_length:
@@ -194,6 +195,7 @@ def _countSpells(incube, season, ncfile, spell_length=None, lower_threshold=None
     incube.coord('longitude').guess_bounds()
 
     _calcUnit(incube, ncfile)
+    incube.data = ma.masked_invalid(incube.data)
 
     # Start spell calculation
     # Make an aggregator from days count
@@ -203,6 +205,8 @@ def _countSpells(incube, season, ncfile, spell_length=None, lower_threshold=None
     calc = incube.aggregated_by(['year'], SPELL_COUNT, threshold=threshold,
                                 spell_length=spell_length)
     calc.units = incube.units
+    calc.data = np.ma.masked_invalid(np.array(calc.data,dtype=float))
+
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
 
     calc2d = atlas_utils.time_slicer(calc, fdict['scenario'])
@@ -251,8 +255,10 @@ def _annualnbDayPerc(incube, season, ncfile, upper_threshold=None, lower_thresho
 
     bigger = incube.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= upper_threshold)
     monthcount = incube.aggregated_by('year', iris.analysis.COUNT, function=lambda values: values >= lower_threshold)
-    bigger.data = bigger.data.astype(float)
+    bigger.data = np.ma.masked_invalid(bigger.data.astype(float))
     monthcount.data = monthcount.data.astype(float)
+    monthcount[monthcount == 0] = np.nan
+    monthcount.data = np.ma.masked_invalid(monthcount.data)
 
     trend_data = bigger / monthcount * 100
 
@@ -265,9 +271,13 @@ def _annualnbDayPerc(incube, season, ncfile, upper_threshold=None, lower_thresho
     bigger_c2d = bigger2d.collapsed('year', iris.analysis.SUM)
 
     monthcount_tseries = monthcount.collapsed(['longitude', 'latitude'], iris.analysis.SUM)
+    monthcount_tseries[monthcount_tseries==0] = np.nan
+    monthcount_tseries.data = np.ma.masked_invalid(monthcount_tseries.data)
 
     monthcount2d = atlas_utils.time_slicer(monthcount, fdict['scenario'])
     monthcount_c2d = monthcount2d.collapsed('year', iris.analysis.SUM)
+    monthcount_c2d[monthcount_c2d == 0] = np.nan
+    monthcount_c2d.data = np.ma.masked_invalid(monthcount_c2d.data)
 
     tseries = (bigger_tseries / monthcount_tseries) * 100
     c2d = (bigger_c2d / monthcount_c2d) * 100
@@ -304,6 +314,9 @@ def _annualnbDay(incube, season, ncfile, threshold=None):
 
     slicer = _getSeasConstr(season)
     incube = incube.extract(slicer)
+
+    incube.data = np.ma.masked_invalid(incube.data)
+
     incube.coord('latitude').guess_bounds()
     incube.coord('longitude').guess_bounds()
 
@@ -358,8 +371,10 @@ def _xDaySumAnnualMax(incube, season, ncfile, nb_days=None):
         return
 
     _calcUnit(incube, ncfile)
+    incube.data = np.ma.masked_invalid(incube.data)
 
     calc = incube.rolling_window('time', iris.analysis.SUM, nb_days)
+    calc.data = np.ma.masked_invalid(calc.data)
     calc = calc.aggregated_by(['year'], iris.analysis.MAX)
 
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
@@ -407,9 +422,11 @@ def _xDayMeanAnnualMax(incube, season, ncfile, nb_days=None):
         return
 
     _calcUnit(incube, ncfile)
+    incube.data = np.ma.masked_invalid(incube.data)
 
     calc = incube.rolling_window('time', iris.analysis.MEAN, nb_days)
     calc = calc.aggregated_by(['year'], iris.analysis.MAX)
+    calc.data = np.ma.masked_invalid(calc.data)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
 
     calc2d = atlas_utils.time_slicer(calc, fdict['scenario'])
@@ -536,6 +553,7 @@ def monthlyClimatologicalMean(incube, season, ncfile):
     #    cubein = incube.extract(slicer)
 
     _calcUnit(incube, ncfile)
+    incube.data = np.ma.masked_invalid(incube.data)
 
     tcalc = incube.aggregated_by(['month_number', 'year'], iris.analysis.MEAN)  # prepare trend calc
     tcalc.units = incube.units
@@ -577,6 +595,7 @@ def annualMax(incube, season, ncfile):
     incube = incube.extract(slicer)
 
     _calcUnit(incube, ncfile)
+    incube.data = np.ma.masked_invalid(incube.data)
 
     calc = incube.aggregated_by(['year'], iris.analysis.MAX)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
@@ -616,6 +635,7 @@ def annualMin(incube, season, ncfile):
     incube = incube.extract(slicer)
 
     _calcUnit(incube, ncfile)
+    incube.data = np.ma.masked_invalid(incube.data)
 
     calc = incube.aggregated_by(['year'], iris.analysis.MIN)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
@@ -654,6 +674,7 @@ def annualTotalRain(incube, season, ncfile):
 
     incube = incube.extract(slicer)
     _calcUnit(incube, ncfile)
+    incube.data = np.ma.masked_invalid(incube.data)
 
     calc = incube.aggregated_by(['year'], iris.analysis.SUM)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
@@ -693,8 +714,9 @@ def SPIxMonthly(incube, season, ncfile):
     slicer = _getSeasConstr(season)
 
     incube = incube.extract(slicer)
-
     _calcUnit(incube, ncfile)
+    incube.data = np.ma.masked_invalid(incube.data)
+
     c_monthly = atlas_utils.time_slicer(incube, fdict['scenario'])  # shorten time period
     c_monthly = c_monthly.aggregated_by(['year'], iris.analysis.MEAN)
 
@@ -703,8 +725,8 @@ def SPIxMonthly(incube, season, ncfile):
     mean = c_monthly.collapsed('year', iris.analysis.MEAN)
 
     # We need to change the shape of the monthly climatologies to match the shape of the timeseries (in the cube c_monthly)
-    mean = mean.data
-    std = std.data
+    mean = ma.masked_invalid(mean.data)
+    std = ma.masked_invalid(std.data)
 
     clim_mean_data = np.repeat(mean.reshape(1, mean.shape[0], mean.shape[1]), c_monthly.shape[0],
                                axis=0)  # np.tile(mean.data, (c_monthly.shape[0] / mean.shape[0], 1, 1))
@@ -715,6 +737,7 @@ def SPIxMonthly(incube, season, ncfile):
     clim_std_cube = c_monthly.copy(clim_std_data)
 
     spi = (c_monthly - clim_mean_cube) / clim_std_cube
+    spi.data = np.ma.masked_invalid(spi.data)
     
     tseries = spi.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
 
@@ -751,6 +774,7 @@ def SPIbiannual(incube, season, ncfile):
     incube = incube.extract(slicer)
 
     _calcUnit(incube, ncfile)
+    incube.data = np.ma.masked_invalid(incube.data)
     c_monthly = atlas_utils.time_slicer(incube, fdict['scenario'])  # shorten time period
     c_monthly = c_monthly.aggregated_by(['year'], iris.analysis.MEAN)
 
@@ -761,18 +785,19 @@ def SPIbiannual(incube, season, ncfile):
     c_biannual = c_monthly.rolling_window(['year'], iris.analysis.MEAN, 2)
 
     # We need to change the shape of the monthly climatologies to match the shape of the timeseries (in the cube c_monthly)
-    mean = mean.data
-    std = std.data
+    mean = ma.masked_invalid(mean.data)
+    std = ma.masked_invalid(std.data)
 
     clim_mean_data = np.repeat(mean.reshape(1, mean.shape[0], mean.shape[1]), c_biannual.shape[0],
                                axis=0)  # np.tile(mean.data, (c_monthly.shape[0] / mean.shape[0], 1, 1))
     clim_std_data = np.repeat(std.reshape(1, std.shape[0], std.shape[1]), c_biannual.shape[0],
                               axis=0)  # np.tile(std.data, (c_monthly.shape[0] / std.shape[0], 1, 1))
 
-    clim_mean_cube = c_biannual.copy(clim_mean_data)
-    clim_std_cube = c_biannual.copy(clim_std_data)
+    clim_mean_cube = ma.masked_invalid(c_biannual.copy(clim_mean_data))
+    clim_std_cube = ma.masked_invalid(c_biannual.copy(clim_std_data))
 
     spi = (c_biannual - clim_mean_cube) / clim_std_cube
+    spi.data = ma.masked_invalid(spi.data)
 
     tseries = spi.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
     c2d = spi.collapsed('year', iris.analysis.MEDIAN)
@@ -858,10 +883,9 @@ def onsetMarteau(incube, season, ncfile):
                         continue
                     break
                 if latmean == 0:
-                    onsets[yr - years[0], y, x] = float('NaN')
+                    onsets[yr - years[0], y, x] = np.nan
 
-    yrs.data = onsets[:]
-
+    yrs.data = ma.masked_invalid(onsets)
     tseries = yrs.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
 
     yrs2d = atlas_utils.time_slicer(yrs, fdict['scenario'])
@@ -1023,7 +1047,7 @@ def pet(cubein, season, ncfile):
         
     pet = pet.extract(slicer)
     pet.units = cf_units.Unit('mm day-1') # Over-rides units because temp and radiation values are used to give an approximation of potential evapotranspiration in mm per day
-#    pet.data = ma.masked_invalid(pet.data)
+    pet.data = ma.masked_invalid(pet.data)
     
     calc = pet.aggregated_by(['year'], iris.analysis.MEAN)
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)

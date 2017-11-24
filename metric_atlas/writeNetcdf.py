@@ -241,7 +241,7 @@ def big_cube(file_searcher, aggregation):
 
         if len(cubelist) < 20:
             print 'Cubelist length: ' + str(len(cubelist))
-            print 'Where have my models gone (<20!)? Stopping'
+            print 'Where have my models gone (<20!)? '
         if not cubelist:
             print "No cubes found"
         else:
