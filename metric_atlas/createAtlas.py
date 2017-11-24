@@ -94,20 +94,34 @@ def monthLookUp(abrv):
         'ja'    : 'July and August',
         'as'    : 'August and September',
         'so'    : 'September and October',
-        'ann'   : 'Annual'
+        'ann'   : 'Annual',
+        'may'   : 'May',
+        'jun'   : 'June',
+        'jul'   : 'July',
+        'aug'   : 'August',
+        'sep'   : 'September',
+        'oct'   : 'October',
+        'nov'   : 'November'
         },
         'FRANCAIS' : {
         'mjjas' : 'mai à septembre',
-        'amj'   : 'April, May and June',
-        'jas'   : 'July, August and September',
-        'ond'   : 'October, November and December',
-        'mj'    : 'May and June',
-        'jj'    : 'June and July',
-        'ja'    : 'July and August',
-        'as'    : 'August and September',
-        'so'    : 'September and October',
-        'ann'   : 'Annual'
-        }
+        'amj'   : 'avril, may et juin',
+        'jas'   : 'juillet, août et septembre',
+        'ond'   : 'octobre, novembre et decembre',
+        'mj'    : 'may et juin',
+        'jj'    : 'juin et juillet',
+        'ja'    : 'juillet et août',
+        'as'    : 'août et septembre',
+        'so'    : 'septembre et octobre',
+        'ann'   : 'annuel',
+        'may'   : 'may',
+        'jun'   : 'juin',
+        'jul'   : 'juillet',
+        'aug'   : 'août',
+        'sep'   : 'septembre',
+        'oct'   : 'octobre',
+        'nov'   : 'novembre'
+    }
         }
     
     return(month_long_names[cnst.LANGUAGE][abrv])
