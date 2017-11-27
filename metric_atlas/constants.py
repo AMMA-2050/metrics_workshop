@@ -55,7 +55,7 @@ RAINYDAY_THRESHOLD = 1
 STRONGWIND_THRESHOLD = 10 # Values in 1 sample file have a historical max of 7 to 9, so this value is still far too high
 
 
-OVERWRITE = 'No' # 'Yes'
+OVERWRITE = 'Yes' # 'Yes'
 
 
 #######################################
