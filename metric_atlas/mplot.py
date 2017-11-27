@@ -317,18 +317,16 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
 
         cube = iris.load_cube(ano)
         cube = atlas_utils.time_slicer(cube, fdict['scenario'])
-        cube = cube.collapsed('year', iris.analysis.MEAN)
+        cube = cube.collapsed('year', iris.analysis.MEDIAN)
 
         if anomaly:
             ano_hist = ano.replace(fdict['scenario'], 'historical')
             hist = iris.load_cube(ano_hist)
             hist = atlas_utils.time_slicer(hist, 'historical')
+            hist = hist.collapsed('year', iris.analysis.MEDIAN)
 
-            hist = hist.collapsed('year', iris.analysis.MEAN)
-            try:
-                data = atlas_utils.anomalies(hist, cube, percentage=False)
-            except:
-                pdb.set_trace()
+            data = atlas_utils.anomalies(hist, cube, percentage=False)
+
             data_perc = atlas_utils.anomalies(hist, cube, percentage=True)
 
             an = 'anomaly'
@@ -382,7 +380,7 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
 
         for median, box, lab in zip(bp['medians'], bp['boxes'], p['xlabel']):
             box.set(facecolor='none')
-            median.set(linewidth=2, color='steelblue')
+            median.set(linewidth=0)#, color='steelblue')
 
         for id, d in enumerate(p['data']):
             try:
@@ -494,7 +492,7 @@ def boxplotMonthlyClim(incubes, outpath, region, anomaly=False):
 
         for median, box in zip(bp['medians'], bp['boxes']):
             box.set(facecolor='none')
-            median.set(linewidth=2, color='steelblue')
+            median.set(linewidth=0)#, color='steelblue')
 
         for id, d in enumerate(data):
             try:
@@ -551,14 +549,14 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
 
         cube = iris.load_cube(ano)
         cube = atlas_utils.time_slicer(cube, fdict['scenario'])
-        cube = cube.collapsed('year', iris.analysis.MEAN)
+        cube = cube.collapsed('year', iris.analysis.MEDIAN)
         lmodels.append(np.ndarray.tolist(cube.coord('model_name').points))
 
         if anomaly:
             ano_hist = ano.replace(fdict['scenario'], 'historical')
             hist = iris.load_cube(ano_hist)
             hist = atlas_utils.time_slicer(hist, 'historical')
-            hist = hist.collapsed('year', iris.analysis.MEAN)
+            hist = hist.collapsed('year', iris.analysis.MEDIAN)
 
             data = atlas_utils.anomalies(hist, cube, percentage=False)
             data_perc = atlas_utils.anomalies(hist, cube, percentage=True)
@@ -673,32 +671,48 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
 
     cube = iris.load_cube(ano)
     cube = atlas_utils.time_slicer(cube, fdict['scenario'])
-    cube = cube.collapsed('year', iris.analysis.MEAN)
+    cube.data = np.ma.masked_invalid(cube.data)
+
+    cube = cube.collapsed('year', iris.analysis.MEDIAN)
 
     if anomaly:
         ano_hist = ano.replace(fdict['scenario'], 'historical')
         hist = iris.load_cube(ano_hist)
         hist = atlas_utils.time_slicer(hist, 'historical')
-        hist = hist.collapsed('year', iris.analysis.MEAN)
+        hist.data = np.ma.masked_invalid(hist.data)
+        hist = hist.collapsed('year', iris.analysis.MEDIAN)
 
         data = atlas_utils.anomalies(hist, cube, percentage=False)
+
         data_perc = atlas_utils.anomalies(hist, cube, percentage=True)
 
-        data = data.data
-        data_perc = data_perc.data
 
-        if np.nanmax(data) - np.nanmin(data) > np.nanmax(data):
-            levels = atlas_utils.binlevels(data)
-        else:
-            levels = np.linspace(data.min(), data.max(), 14)
+        data = np.ma.masked_invalid(data.data)
+        data_perc = np.ma.masked_invalid(data_perc.data)
 
-        if np.nanmax(data_perc) - np.nanmin(data_perc) > np.nanmax(data_perc):
-            plevels = atlas_utils.binlevels(data_perc)
+        if np.nansum(data) and np.ma.count(data):
+            if np.nanmax(data) - np.nanmin(data) > np.nanmax(data):
+                levels = atlas_utils.binlevels(data)
+            else:
+                levels = np.linspace(np.nanmin(data), np.nanmax(data), 14)
         else:
-            plevels = np.linspace(data_perc.min(), data_perc.max(), 14)
+                levels = np.arange(-1, 1, 10)
+                data = np.zeros_like(data)
+
+        if np.nansum(data_perc) and np.ma.count(data):
+            if np.nanmax(data_perc) - np.nanmin(data_perc) > np.nanmax(data_perc):
+                plevels = atlas_utils.binlevels(data_perc)
+            else:
+                plevels = np.linspace(np.nanmin(data_perc), np.nanmax(data_perc), 14)
+        else:
+            plevels = np.arange(-1, 1, 10)
+            data_perc = np.zeros_like(data_perc)
+
+
 
         histo, h = np.histogram(data, bins=levels)
         histop, hp = np.histogram(data_perc, bins=plevels)
+
 
         plot_dic1 = {'data': histo,
                      'ftag': scen + 'Anomaly',
@@ -740,14 +754,20 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
         middle = bin[0:-1] + ((bin[1::] - bin[0:-1]) / 2)
         barlist = ax.bar(bin[0:-1] + ((bin[1::] - bin[0:-1]) / 2), p['data'], edgecolor='black', width=(bin[1::] - bin[0:-1]),
                 color='lightblue')
+
         dummy = np.array(barlist)
         for d in dummy[middle<0]:
             d.set_color('lightslategray')
             d.set_edgecolor('black')
-
-        ax.set_xlim(np.floor(np.nanmin((bin[0:-1])[(p['data'])>0])-(bin[1] - bin[0])), np.ceil(np.nanmax((bin[1::])[(p['data'])>0])+(bin[-1] - bin[-2])) )
+        try:
+            ax.set_xlim(np.floor(np.nanmin((bin[0:-1])[(p['data'])>0])-(bin[1] - bin[0])), np.ceil(np.nanmax((bin[1::])[(p['data'])>0])+(bin[-1] - bin[-2])) )
+        except ValueError:
+            pass
         ax.set_xlabel(p['ylabel'])
         ax.set_ylabel('Number of models')
+        if not np.nansum(p['data']):
+            ax.text(0.5, 0.5, 'Zero values', zorder=10)
+            print metric, 'set text'
         ax.set_title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']), fontsize=11)
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_nbModelHistogram_' + p[
@@ -796,13 +816,13 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
         cube = iris.load_cube(ano)
         cube = atlas_utils.time_slicer(cube, fdict['scenario'])
 
-        cube = cube.collapsed('year', iris.analysis.MEAN)
+        cube = cube.collapsed('year', iris.analysis.MEDIAN)
 
         if anomaly:
             ano_hist = ano.replace(fdict['scenario'], 'historical')
             hist = iris.load_cube(ano_hist)
             hist = atlas_utils.time_slicer(hist, 'historical')
-            hist = hist.collapsed('year', iris.analysis.MEAN)
+            hist = hist.collapsed('year', iris.analysis.MEDIAN)
 
             data = atlas_utils.anomalies(hist, cube, percentage=False)
             data_perc = atlas_utils.anomalies(hist, cube, percentage=True)
@@ -923,13 +943,13 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
 
     cube = iris.load_cube(ano)
     cube = atlas_utils.time_slicer(cube, fdict['scenario'])
-    cube = cube.collapsed('year', iris.analysis.MEAN)
+    cube = cube.collapsed('year', iris.analysis.MEDIAN)
 
     if anomaly:
         ano_hist = ano.replace(fdict['scenario'], 'historical')
         hist = iris.load_cube(ano_hist)
         hist = atlas_utils.time_slicer(hist, 'historical')
-        hist = hist.collapsed('year', iris.analysis.MEAN)
+        hist = hist.collapsed('year', iris.analysis.MEDIAN)
 
         data = atlas_utils.anomalies(hist, cube, percentage=False)
         data_perc = atlas_utils.anomalies(hist, cube, percentage=True)
