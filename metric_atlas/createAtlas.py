@@ -44,39 +44,39 @@ def getIntroText(metric):
             'annualMaxRain5dMean': 'Maximum Rainfall in a 5-day Period (Mean Daily Rate)',
             'annualMaxRain3dMean': 'Maximum Rainfall in a 3-day Period (Mean Daily Rate)',
             'annualMaxRain2dMean': 'Maximum Rainfall in a 2-day Period (Mean Daily Rate)',
-            'SPIxMonthly' : 'The Standardised Precipitation Index (SPI) shown here is defined as the anomaly relative to the baseline period devided by the standard deviation of that baseline period', #'The Standardised Precipitation Index (SPI) is a metric which was developed primarily for defining and monitoring drought. It allows a user to determine the rarity of drought at a given time scale of interest. It can also be used to determine periods of anomalously wet events.',
+            'SPIxMonthly' : 'The Standardised Precipitation Index (SPI) shown here is defined as the anomaly relative to the baseline period devided by the standard deviation of that baseline period. The Standardised Precipitation Index (SPI) is a metric which was developed primarily for defining and monitoring drought. It allows a user to determine the rarity of drought at a given time scale of interest. It can also be used to determine periods of anomalously wet events.',
             'SPIbiannual' : 'The Standardised Precipitation Index (SPI) shown here is defined as the anomaly relative to the baseline period devided by the standard deviation of that baseline period. In this case, a 2-year rolling window is used to compute the anomaly.',
             'onsetMarteau' : 'Local Agronomic Monsoon Onset Date (Marteau) is defined as the first rainy day (precipitation greater than 1 mm) of two consecutive rainy days (with total precipitation greater than 20 mm) and no 7-day dry spell with less than 5 mm of rainfall during the subsequent 20 days',
             'cdd' : 'Consecutive Dry Days',
             'pet' : 'Potential Evapo-Transpiration (Hargreaves equation based on daily Tmin, Tmax, Tmean and radiation)'
             },
             'FRANCAIS' : {
-            'annualMax' : 'Cette indicateur illustre la valeur maximale journalière pour chaque variable, pour la période indiquée.',#'This shows the maximum daily value for each variable, for the period shown.',
-            'annualMin' : 'Cette indicateur illustre la valeur minimale journalière pour chaque variable, pour la période indiquée.', #'This shows the minimum daily value for each variable, for the period shown.',
-            'annualTotalRain' : 'Cette indicateur illustre la quantité totale de pluie tombée pendant la période indiquée.', #'This shows the total accumulated rainfall for the period shown.',
-            'annualMean' : 'Cette indicateur illustre la valeur moyenne journalière pour chaque variable, pour la période indiquée.', #'This shows the mean daily value for each variable, for the period shown.',
-            'annualMeanRainyDay' : 'Cette indicateur illustre la moyenne des précipitations pendant les jours pluvieux, pour la période indiquée.', #'This shows the mean rainfall on the days that it rained with the period shown.',
-            'monthlyClimatologicalMean' : 'Cette indicateur illustre la moyenne climatologique de chaque variable pour chaque mois, pour la période indiquée.', #'This shows the climatology for each variable for each month within the period shown.',
-            'annualRainyDays' : 'Cette indicateur illustre le nombre de jours pour lesquels la pluviométrie est au-dessus du seuil de '+str(cnst.RAINYDAY_THRESHOLD)+' mm jour$^{-1}$, pendant la période indiquée.', # 'This shows the number of days in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.', could also be: la pluviométrie depasse un seuil de
-            'annualRainyDaysPerc' : 'Cette indicateur illustre le pourcentage de jours pour lesquels la pluviométrie est au-dessus du seuil de '+str(cnst.RAINYDAY_THRESHOLD)+'mm jour$^{-1}$, pendant la période indiquée.',
-            'annualHotDays' : 'Cette indicateur illustre le nombre de jours pour lesquels la temperature maximale journalière est au-dessus du seuil de  '+str(cnst.HOTDAYS_THRESHOLD)+lblr.DC+', pendant la période indiquée.',
-            'annualExtremeRain30' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 30mm day$^{-1}$',
-            'annualExtremeRain50' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 50mm day$^{-1}$',
-            'annualExtremeRain100' : 'This shows the number of days in the period shown when rainfall exceeds a threshold of 100mm day$^{-1}$',
-            'annualStrongWindDays' : 'This shows the number of days in the period shown when daily mean wind speed exceeds a threshold of '+str(cnst.STRONGWIND_THRESHOLD)+'m s$^{-1}$',
-            'wetSpell10': 'This shows the number of periods with a wet spell longer than 10 days for the season shown.',
-            'drySpell6': 'This shows the number of periods with a dry spell longer than 6 days for the season shown.',
-            'annualMaxRain5dSum': 'Maximum Rainfall Total in a 5-day Period',
-            'annualMaxRain3dSum' : 'Maximum Rainfall Total in a 3-day Period',
-            'annualMaxRain2dSum' : 'Maximum Rainfall Total in a 2-day Period',
-            'annualMaxRain5dMean': 'Maximum Rainfall in a 5-day Period (Mean Daily Rate)',
-            'annualMaxRain3dMean': 'Maximum Rainfall in a 3-day Period (Mean Daily Rate)',
-            'annualMaxRain2dMean': 'Maximum Rainfall in a 2-day Period (Mean Daily Rate)',
-            'SPIxMonthly' : 'L\'indice normalisé de précipitations ci-dessous est defini comme l\'anomalie par rapport à la période de référence diviser par l\'écart type pour cette même période.', #'The Standardised Precipitation Index (SPI) is a metric which was developed primarily for defining and monitoring drought. It allows a user to determine the rarity of drought at a given time scale of interest. It can also be used to determine periods of anomalously wet events.',
-            'SPIbiannual' : 'The Standardised Precipitation Index (SPI) shown here is defined as the anomaly relative to the baseline period devided by the standard deviation of that baseline period. In this case, a 2-year rolling window is used to compute the anomaly.',
-            'onsetMarteau' : 'Local Agronomic Monsoon Onset Date (Marteau) is defined as the first rainy day (precipitation greater than 1 mm) of two consecutive rainy days (with total precipitation greater than 20 mm) and no 7-day dry spell with less than 5 mm of rainfall during the subsequent 20 days',
-            'cdd' : 'Consecutive Dry Days',
-            'pet' : 'Potential Evapo-Transpiration (Hargreaves equation based on daily Tmin, Tmax, Tmean and radiation)'
+            'annualMax' : 'Cet indicateur illustre la valeur maximale journalière pour chaque variable, pour la période indiquée.',#'This shows the maximum daily value for each variable, for the period shown.',
+            'annualMin' : 'Cet indicateur illustre la valeur minimale journalière pour chaque variable, pour la période indiquée.', #'This shows the minimum daily value for each variable, for the period shown.',
+            'annualTotalRain' : 'Cet indicateur illustre la quantité totale de pluie tombée pendant la période indiquée.', #'This shows the total accumulated rainfall for the period shown.',
+            'annualMean' : 'Cet indicateur illustre la valeur moyenne journalière pour chaque variable, pour la période indiquée.', #'This shows the mean daily value for each variable, for the period shown.',
+            'annualMeanRainyDay' : 'Cet indicateur illustre la moyenne des précipitations pendant les jours pluvieux, pour la période indiquée.the period shown.', #'This shows the mean rainfall on the days that it rained with the period shown.',
+            'monthlyClimatologicalMean' : 'Cet indicateur illustre la moyenne climatologique de chaque variable pour chaque mois, pour la période indiquée.', #'This shows the climatology for each variable for each month within the period shown.',
+            'annualRainyDays' : 'Cet indicateur illustre le nombre de jours pour lesquels la pluviométrie est au-dessus du seuil de '+str(cnst.RAINYDAY_THRESHOLD)+' mm jour$^{-1}$, pendant la période indiquée.', # 'This shows the number of days in the period shown when rainfall was above a threshold of '+str(cnst.RAINYDAY_THRESHOLD)+'mm day$^{-1}$.', could also be: la pluviométrie depasse un seuil de
+            'annualRainyDaysPerc' : 'Cet indicateur illustre le pourcentage de jours pour lesquels la pluviométrie est au-dessus du seuil de '+str(cnst.RAINYDAY_THRESHOLD)+'mm jour$^{-1}$, pendant la période indiquée.',
+            'annualHotDays' : 'Cet indicateur illustre le nombre de jours pour lesquels la temperature maximale journalière est au-dessus du seuil de  '+str(cnst.HOTDAYS_THRESHOLD)+lblr.DC+', pendant la période indiquée.',
+            'annualExtremeRain30' : 'Cet indicateur illustre le nombre de jours pour lesquels la pluviométrie est au-dessus du seuil de 30 mm jour$^{-1}$, pendant la période indiquée.',
+            'annualExtremeRain50' : 'Cet indicateur illustre le nombre de jours pour lesquels la pluviométrie est au-dessus du seuil de 50 mm jour$^{-1}$, pendant la période indiquée.',
+            'annualExtremeRain100' : 'Cet indicateur illustre le nombre de jours pour lesquels la pluviométrie est au-dessus du seuil de 100 mm jour$^{-1}$, pendant la période indiquée.',
+            'annualStrongWindDays' : 'Cet indicateur illustre le nombre de jours pour lesquels la vitesse du vent est au-dessus du seuil de '+str(cnst.STRONGWIND_THRESHOLD)+'m s$^{-1}$,
+            'wetSpell10': 'Cet indicateur illustre le nombre de périodes pluvieuse d\'une durée plus longue que 10 jours, pendant la période indiquée.',
+            'drySpell6': 'Cet indicateur illustre le nombre de périodes sèche d\'une durée plus longue que 10 jours, pendant la période indiquée.,
+            'annualMaxRain5dSum': 'Cet indicateur illustre la pluviométrie maximale sur 5 jours.',
+            'annualMaxRain3dSum' : 'Cet indicateur illustre la pluviométrie maximale sur 3 jours.',
+            'annualMaxRain2dSum' : 'Cet indicateur illustre la pluviométrie maximale sur 2 jours.',
+            'annualMaxRain5dMean': 'Cet indicateur illustre les taux de précipitation maximal sur 5 jours (taux journalier moyen)',
+            'annualMaxRain3dMean': 'Cet indicateur illustre les taux de précipitation maximal sur 3 jours (taux journalier moyen)',
+            'annualMaxRain2dMean': 'Cet indicateur illustre les taux de précipitation maximal sur 2 jours (taux journalier moyen)',
+            'SPIxMonthly' : 'L\'indice normalisé de précipitations ci-dessous est défini comme l\'anomalie par rapport à la période de référence divisée par l\'écart type pour cette même période. Cet indice normalisé de précipitations (SPI en anglais) est un indicateur qui a été développé principalement pour la caractérisation et la surveillance des sécheresses. Elle permet à un utilisateur de determiner la rareté de sécheresse à une échelle de temps donnée d\'intérêt. Elle peut aussi être utilisée pour identifier des périodes particulièrement humides.',
+            'SPIbiannual' : 'L\'indice normalisé de précipitations ci-dessous est defini comme l\'anomalie par rapport à la période de référence diviser par l\'écart type pour cette même période. Une fenêtre glissante de 2 ans est utilisée pour calculer l\'anomalie.',
+            'onsetMarteau' : 'La date de déclenchement de la mousson basé sur critères d\'agronomie locale (Marteau) est definie comme le premier jour de pluie (précipitation supérieure à 1 mm) de deux jours de pluie consecutifs (avec précipitation totale supérieure à 20 mm) et pas de période de secheresse (7 jours consecutifs avec moins de 5 mm de pluie) pendant les 20 jours successifs'',
+            'cdd' : 'Cet indicateur illustre le nombre de jours secs consécutifs pendant la période indiquée',
+            'pet' : 'Cet indicateur illustre l\'évapotranspiration potentielle (équation de Hargreaves, basée sur les valeurs journalières de Tmin, Tmax, Tmean et flux solaire)'
             }
             }
     
@@ -113,7 +113,7 @@ def monthLookUp(abrv):
         'ja'    : 'juillet et août',
         'as'    : 'août et septembre',
         'so'    : 'septembre et octobre',
-        'ann'   : 'Annuel'
+        'ann'   : 'Annuel',
         'may'   : 'mai',
         'jun'   : 'juin',
         'jul'   : 'juillet',
@@ -151,9 +151,9 @@ def getNicePlotName(plot_name):
             'FRANCAIS' : {
             'allModelRank' : 'Diagrammes de dispersion des modèles climatiques', # 'Model ranking scatterplots',
             'mapPerc' : 'Cartes de l\'écart de l\'ensemble (10e et 90e percentile)', # 'Maps of ensemble spread (10th and 90th percentiles)',
-            'nbModelHistogram' : 'Histogrammes de \'nombre de modèles\'', # '\'Number of model\' histograms',
-            'MultiNbModelHistogram' : 'Histogrammes de \'nombre de modèles\' par tous les scénarios', # '\'Number of model\' histograms for all scenarios',
-            'allModelBoxplot' : 'Les tracé en boîte', # 'Boxplots',
+            'nbModelHistogram' : 'Histogrammes de \'nombre des modèles\'', # '\'Number of model\' histograms',
+            'MultiNbModelHistogram' : 'Histogrammes de \'nombre des modèles\' par tous les scénarios', # '\'Number of model\' histograms for all scenarios',
+            'allModelBoxplot' : 'Les tracés en boîte', # 'Boxplots',
             'lineplot' : 'Les séries chronologiques', # 'Spaghetti timeseries',
             'allModelHisto' : 'Histogrammes de \'tous les modèles\'', # '\'All Model\' histograms',
             'allModelMonthClim' : 'Les climatologies mensuelles moyennes' #'Monthly climatological mean'
@@ -221,14 +221,14 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
             'allModelMonthClim': 'This boxplot of the monthly climatology shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point (horizontal red line) shows an individual model averaged over the xxx_region_xxx region, with the solid box representing the 25th to 75th percentile range, and the whiskers the 10th to 90th percentile range. This particular plot shows xxx_pt_long_xxx.'# xxx_title_end_xxx.',
     },
     'FRANCAIS' : {
-    'allModelRank' : 'Cette diagramme de dispersion illustre xxx_pt_short_xxx xxx_metric_xxx pendant le  xxx_periodstart_xxx à xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point shows an individual model averaged over xxx_region_xxx, and ranked according to the magnitude of the value on the y-axis. This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
-            'mapPerc' : 'These maps show the ensemble spread in xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. They show the 90th and 10th percentiles of the distribution across the model ensemble, computed separately at each grid point, for the xxx_region_xxx region. This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
-            'nbModelHistogram' : 'This histogram shows the number of models that agree on xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows the number of models that agree on the range of values shown on the x-axis for the xxx_region_xxx region. This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
-            'MultiNbModelHistogram' : 'These histograms shows the number of models that agree on xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows the number of models that agree on the range of values shown on the x-axis for the xxx_region_xxx region . This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
-            'allModelBoxplot' : 'This boxplot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point (horizontal red line) shows an individual model averaged over the xxx_region_xxx region, with the solid box representing the 25th to 75th percentile range, and the whiskers the 10th to 90th percentile range. This particular plot shows xxx_pt_long_xxx.',# xxx_title_end_xxx.',
-            'lineplot' : 'This timeseries plot shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each line represents an individual model averaged over the xxx_region_xxx of interest for each year in the timeseries. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.', 
-            'allModelHisto' : 'This histogram shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each vertical bar shows an individual model averaged over the xxx_region_xxx region. This particular plot shows xxx_pt_long_xxx xxx_title_end_xxx.' ,
-            'allModelMonthClim': 'This boxplot of the monthly climatology shows xxx_pt_short_xxx xxx_metric_xxx for the period xxx_periodstart_xxx to xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Each data point (horizontal red line) shows an individual model averaged over the xxx_region_xxx region, with the solid box representing the 25th to 75th percentile range, and the whiskers the 10th to 90th percentile range. This particular plot shows xxx_pt_long_xxx.'# xxx_title_end_xxx.',
+    'allModelRank' : 'Ce diagramme de dispersion illustre xxx_pt_short_xxx xxx_metric_xxx entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque point indique la moyenne spatiale d\'un modèle sur xxx_region_xxx; les points sont organisés ("rank", sur l\'axe des abscisses) en fonction de la magnitude de leur valeur sur l\'axe des ordonnées. Ce diagramme montre xxx_pt_long_xxx.',# xxx_title_end_xxx.',
+            'mapPerc' : 'Ces cartes illustrent l\'écart de l\'ensemble pour xxx_pt_short_xxx xxx_metric_xxx, pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Elles indiquent les 90eme et 10eme pourcentiles de la distribution des modèles dans l\'ensemble, calculés séparément a chaque point de grille, sur la région xxx_region_xxx. Ce diagramme montre xxx_pt_long_xxx.',# xxx_title_end_xxx.',
+            'nbModelHistogram' : 'Cet histogramme illustre le nombre de modèles en accord avec  xxx_pt_short_xxx xxx_metric_xxx pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque barre verticale indique le nombre de modèles en accord avec la gamme de valeur indiquée sur l\'axe des abscisses pour la région xxx_region_xxx. Ce diagramme montre xxx_pt_plot_xxx.',# xxx_title_end_xxx.',
+            'MultiNbModelHistogram' : 'Ces histogrammes illustrent le nombre de modèles en accord avec xxx_pt_short_xxx xxx_metric_xxx pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque barre verticale indique le nombre de modèles en accord avec la gamme de valeur indiquée sur l\'axe des abscisses pour la région xxx_region_xxx. Ce diagramme montre xxx_pt_long_xxx.',# xxx_title_end_xxx.',
+            'allModelBoxplot' : 'Ce tracé en boîte illustre xxx_pt_short_xxx xxx_metric_xxx pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque point (ligne rouge horizontale) indique la moyenne spatiale d\'un modèle sur la région xxx_region_xxx, la boîte indiquant l\'intervalle entre le 25eme et le 75eme pourcentile, et les moustaches l\'intervalle entre le 10eme et le 90eme pourcentile. Ce diagramme montre xxx_pt_long_xxx.',# xxx_title_end_xxx.',
+            'lineplot' : 'Cette série chronologique illustre xxx_pt_short_xxx xxx_metric_xxx pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque ligne indique la moyenne spatiale d\'un modèle sur la région xxx_region_xxx étudiée, pour chaque année de la série chronologique. Ce diagramme montre xxx_pt_long_xxx xxx_title_end_xxx.'', 
+            'allModelHisto' :  'Cet histogramme illustre xxx_pt_short_xxx xxx_metric_xxx pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque barre verticale indique la moyenne spatiale d\'un modèle sur la région xxx_region_xxx. Ce diagramme montre xxx_pt_long_xxx xxx_title_end_xxx.'  ,
+            'allModelMonthClim':  'Ce tracé en boîte de la climatologie mensuelle illustre xxx_pt_short_xxx xxx_metric_xxx pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque point (ligne rouge horizontale) indique la moyenne spatiale d\'un modèle sur la région xxx_region_xxx region, la boîte indiquant l\'intervalle entre le 25eme et le 75eme pourcentile, et les moustaches l\'intervalle entre le 10eme et le 90eme pourcentile. Ce diagramme montre xxx_pt_long_xxx.' 
     }
     }
     
@@ -254,26 +254,27 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
             'allscen' : 'all available scenarios of'
             },
             'FRANCAIS' : {
-            'rcp26PercentageAnomaly' : 'the percentage change in', 
-            'rcp45PercentageAnomaly' : 'the percentage change in', 
-            'rcp85PercentageAnomaly' : 'the percentage change in', 
-            'rcp26Anomaly' : 'the absolute change in', 
-            'rcp45Anomaly' : 'the absolute change in', 
-            'rcp85Anomaly' : 'the absolute change in', 
-            'rcp26' : 'the future (RCP2.6) distribution of', 
-            'rcp45' : 'the future (RCP4.5) distribution of', 
-            'rcp85' : 'the future (RCP8.5) distribution of', 
-            'scenarios' : 'historical model spread (for the '+str(cnst.HIST[0])+' - '+str(cnst.HIST[1])+' period) compared to all available future scenarios of', 
-            'historical' : 'the historical distribution of', 
-            'percentageAnomaly' : 'the percentage change (all available scenarios) in',  # not sure about the 'all available scenarios' bit
-            'anomaly' : 'the absolute change (all available scenarios) of',
-            'allscen' : 'all available scenarios of'
+            'rcp26PercentageAnomaly' : 'le pourcentage de variation de', 
+            'rcp45PercentageAnomaly' : 'le pourcentage de variation de', 
+            'rcp85PercentageAnomaly' : 'le pourcentage de variation de', 
+            'rcp26Anomaly' : 'la variation absolue de', 
+            'rcp45Anomaly' : 'la variation absolue de', 
+            'rcp85Anomaly' : 'la variation absolue de', 
+            'rcp26' : 'la distribution future (RCP 2.6) de', 
+            'rcp45' : 'la distribution future (RCP 4.5) de', 
+            'rcp85' : 'la distribution future (RCP 8.5) de', 
+            'scenarios' : 'l\'écart historique des modèles (pour la période de ' + str(cnst.HIST[0]) + ' à ' +str(cnst.HIST[1])+'), comparé à tous les scénarios futures disponibles de', 
+            'historical' : 'la distribution historique de', 
+            'percentageAnomaly' : 'le pourcentage de variation (tous les scénarios disponibles) de',  
+            'anomaly' : 'la variation absolue (tous les scénarios disponibles) de',
+            'allscen' : 'tous les scénarios disponibles de'
             }
             }
     try:
         pt_short_txt = pt_short[cnst.LANGUAGE][plottype]
     except:
         pt_short_txt = ''
+    # TODO: Put in deFunction here
     myCaption = myCaption.replace('xxx_pt_short_xxx', pt_short_txt)
     
     # Fix metric name peculiarities
@@ -299,14 +300,20 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
     if plottype == 'historical':
         wrt_txt = ''
     else:
-        wrt_txt = ' (compared to a baseline period of '+str(cnst.HIST[0])+' - ' +str(cnst.HIST[1])+') '
+        if cnst.LANGUAGE == 'ENGLISH':
+            wrt_txt = ' (compared to a baseline period of '+str(cnst.HIST[0])+' - ' +str(cnst.HIST[1])+') '
+        else:
+            wrt_txt = ' (par rapport à la période de référence de ' +str(cnst.HIST[0]) + ' à ' + str(cnst.HIST[1])+') '
     myCaption = myCaption.replace('xxx_wrt_xxx', wrt_txt)
     
     # Add nice season name
     if seas == 'ann':
         myCaption = myCaption.replace('xxx_seasinfo_xxx', '')
     else:
-        myCaption = myCaption.replace('xxx_seasinfo_xxx', ' for the '+monthLookUp(seas)+' season')
+        if cnst.LANGUAGE == 'ENGLISH':
+            myCaption = myCaption.replace('xxx_seasinfo_xxx', ' for the '+monthLookUp(seas)+' season')
+        else:
+            myCaption = myCaption.replace('xxx_seasinfo_xxx',  'pour la saison ' +monthLookUp(seas))
     
     # Add region nice name
     myCaption = myCaption.replace('xxx_region_xxx', region[1])
@@ -329,20 +336,20 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
             'allscen' : 'all available scenarios'
             },
             'FRANCAIS' : {
-            'rcp26PercentageAnomaly' : 'the percentage change for the RCP2.6 scenario',
-            'rcp45PercentageAnomaly' : 'the percentage change for the RCP4.5 scenario',
-            'rcp85PercentageAnomaly' : 'the percentage change for the RCP8.5 scenario',
-            'rcp26Anomaly' : 'the absolute change for the RCP2.6 scenario',
-            'rcp45Anomaly' : 'the absolute change for the RCP4.5 scenario',
-            'rcp85Anomaly' : 'the absolute change for the RCP8.5 scenario',
-            'rcp26' : 'future RCP2.6 scenario distribution',
-            'rcp45' : 'future RCP4.5 scenario distribution',
-            'rcp85' : 'future RCP8.5 scenario distribution',
-            'scenarios' : 'all available scenarios',
-            'historical' : 'the historical distribution',
-            'percentageAnomaly' : 'the percentage change for all available scenarios',  # not sure about the 'all available scenarios' bit
-            'anomaly' : 'the absolute change for all available scenarios',
-            'allscen' : 'all available scenarios'
+            'rcp26PercentageAnomaly' : 'le pourcentage de variation pour le scénario RCP2.6',
+            'rcp45PercentageAnomaly' : 'le pourcentage de variation pour le scénario RCP4.5',
+            'rcp85PercentageAnomaly' : 'le pourcentage de variation pour le scénario RCP8.5',
+            'rcp26Anomaly' : 'la variation absolue pour le scénario RCP2.6',
+            'rcp45Anomaly' : 'la variation absolue pour le scénario RCP4.5',
+            'rcp85Anomaly' : 'la variation absolue pour le scénario RCP8.5',
+            'rcp26' : 'future distribution pour le scénario RCP 2.6',
+            'rcp45' : 'future distribution pour le scénario RCP 4.5',
+            'rcp85' : 'future distribution pour le scénario RCP 8.5',
+            'scenarios' : 'tous les scénarios disponibles',
+            'historical' : 'la distribution historique',
+            'percentageAnomaly' : 'le pourcentage de variation pour tous les scénarios disponibles',  # not sure about the 'all available scenarios' bit
+            'anomaly' : 'le pourcentage de variation pour tous les scénarios disponibles',
+            'allscen' : 'tous les scénarios disponibles'
             }
             }
     try:
