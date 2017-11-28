@@ -202,9 +202,10 @@ def plot():
 
 
 def main():
-    #saves(multiprocessing=16)
-    #wfdei_saves(multiprocessing=16)
-    #plot()
+
+    saves(multiprocessing=16)
+    wfdei_saves(multiprocessing=16)
+    plot()
     for m in cnst.AGG_PERIODS:
         ca.runAtlas(m)
 

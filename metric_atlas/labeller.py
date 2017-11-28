@@ -74,7 +74,8 @@ def deFunction(atxt, metricname):
     if cnst.LANGUAGE == 'ENGLISH':
         atxt_new, metricname_new = [atxt, metricname]
     else:
-        ''
+        atxt_new, metricname_new = [atxt, metricname]
+
         
     return([atxt_new, metricname_new])
     
