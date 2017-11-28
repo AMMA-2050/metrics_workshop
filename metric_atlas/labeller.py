@@ -71,9 +71,10 @@ MONTHS = [  'jan', 'feb', 'mar', 'apr','may', 'jun', 'jul', 'aug', 'sep','oct', 
 
 def deFunction(atxt, metricname):
     
-    if cnst.LANGUAGE == ENGLISH:
+    if cnst.LANGUAGE == 'ENGLISH':
         atxt_new, metricname_new = [atxt, metricname]
     else:
+        ''
         
     return([atxt_new, metricname_new])
     
