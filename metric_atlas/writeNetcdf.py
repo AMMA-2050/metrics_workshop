@@ -183,7 +183,7 @@ def model_files(multi):
                     print 'newcube'
 
                     cubeout = atlas_utils.load_data(file, xmin, xmax, ymin, ymax)
-
+                    
                 calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
                 print '#######################################'
                 print 'Saving data for: '

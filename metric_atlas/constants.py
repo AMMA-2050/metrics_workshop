@@ -22,7 +22,7 @@ METRIC_PLOTDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] + '/save_files/plo
 METRIC_ATLASDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3]
 BC_RES = ['BC_0.5x0.5'] #'0.5x0.5'
 
-SCENARIO = ['historical', 'rcp26', 'rcp45', 'rcp85'] 
+SCENARIO = ['rcp85'] #['historical', 'rcp26', 'rcp45', 'rcp85'] 
 
 AGGREGATION = ['tseries', '2d', 'trend']
 
@@ -40,7 +40,7 @@ VARNAMES = {'ENGLISH' : {'pr' : 'daily precipitation',
             'tas' : '	température moyenne journalière',
             'tasmin' : 'température minimale journalière',
             'tasmax' : 'température maximale journalière',
-            'rsds' : 'flux solaire entrant à la surface', #'descendant radiation à ondes courtes alla surface', #??? flux solaire entrant à la surface 
+            'rsds' : 'flux solaire entrant à la surface', #'descendant radiation à ondes courtes alla surface'
             'wind' : 'vitesse du vent près de la surface',
             'multivars' : 'multiple input variables' # needs to stay the same (not used in captions)
             }
@@ -78,12 +78,12 @@ CONSTANT_PERIOD_METRIC = ['onsetMarteau', 'SPIbiannual', 'monthlyClimatologicalM
 ### slowest variables go first!
 
 METRICS_TORUN = [
-    ['pet', ['multivars'], AGG_PERIODS],
-    ['onsetMarteau', ['pr'], ['mjjas']],
-    ['SPIxMonthly', ['pr'], AGG_PERIODS],
-    ['SPIbiannual', ['pr'], ['ann']],
-    ['wetSpell10', ['pr'], AGG_PERIODS],
-    ['drySpell6', ['pr'], AGG_PERIODS],
+#    ['pet', ['multivars'], AGG_PERIODS],
+#    ['onsetMarteau', ['pr'], ['mjjas']],
+#    ['SPIxMonthly', ['pr'], AGG_PERIODS],
+#    ['SPIbiannual', ['pr'], ['ann']],
+#    ['wetSpell10', ['pr'], AGG_PERIODS],
+#    ['drySpell6', ['pr'], AGG_PERIODS],
     ['annualMax', ['pr', 'tasmax', 'rsds'], AGG_PERIODS],
     ['annualMin', ['tasmin'], AGG_PERIODS],
     ['annualTotalRain', ['pr'], AGG_PERIODS],
