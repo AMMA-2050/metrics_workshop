@@ -304,7 +304,7 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
     scen = []
     perc = []
     for ano in ano_list:
-
+        print ano
         fdict = atlas_utils.split_filename_path(ano)
         metric = fdict['metric']
         variable = fdict['variable']
