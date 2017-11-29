@@ -113,7 +113,7 @@ def monthLookUp(abrv):
         'ja'    : 'juillet et août',
         'as'    : 'août et septembre',
         'so'    : 'septembre et octobre',
-        'ann'   : 'Annuel'
+        'ann'   : 'Annuel',
         'may'   : 'mai',
         'jun'   : 'juin',
         'jul'   : 'juillet',

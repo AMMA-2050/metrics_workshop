@@ -281,7 +281,9 @@ def getFigSize(region, plottype):
     # (width, height)
     thisLUT = {'map_BF':(8,8),
                'map_SG': (8,8),
-               'map_WA': (8,6),
+               'map_SH': (10,6),
+               'map_SD': (10,6),
+               'map_GC': (10,6),
                'nbModelHistogram': (8.5,6)
             }
     

@@ -272,9 +272,13 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         ax2.set_title('Future 10th percentile')
 
         f.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['cblabel']), fontsize=10)
-        plt.tight_layout(rect=[0, 0.01, 1, 0.95])
 
-        f.subplots_adjust(right=0.8, left=0.2)
+        if (region[0] == 'BF') | (region[0] == 'SG'):
+            plt.tight_layout(rect=[0, 0.01, 1, 0.95])
+            f.subplots_adjust(right=0.8, left=0.2)
+        else:
+            plt.tight_layout(rect=[0, 0.01, 1, 0.95])
+            f.subplots_adjust(left=0.05, right=1)
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_mapPerc_' + p['ftag'] + '.png')
 
@@ -303,6 +307,7 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
     ldata = []
     scen = []
     perc = []
+
     for ano in ano_list:
 
         fdict = atlas_utils.split_filename_path(ano)
@@ -708,10 +713,15 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
             plevels = np.arange(-1, 1, 10)
             data_perc = np.zeros_like(data_perc)
 
+        try:
+            histo, h = np.histogram(data[np.isfinite(data)], bins=levels)
+        except ValueError:
+            pdb.set_trace()
 
-
-        histo, h = np.histogram(data, bins=levels)
-        histop, hp = np.histogram(data_perc, bins=plevels)
+        try:
+            histop, hp = np.histogram(data_perc[np.isfinite(data_perc)], bins=plevels)
+        except ValueError:
+            pdb.set_trace()
 
 
         plot_dic1 = {'data': histo,
