@@ -205,7 +205,8 @@ def _countSpells(incube, season, ncfile, spell_length=None, lower_threshold=None
     calc = incube.aggregated_by(['year'], SPELL_COUNT, threshold=threshold,
                                 spell_length=spell_length)
     calc.units = incube.units
-    calc.data = np.ma.masked_invalid(np.array(calc.data,dtype=float))
+    calc.data = np.array(calc.data,dtype=float)
+    calc.data = ma.masked_invalid(calc.data)
 
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
 
@@ -793,8 +794,8 @@ def SPIbiannual(incube, season, ncfile):
     clim_std_data = np.repeat(std.reshape(1, std.shape[0], std.shape[1]), c_biannual.shape[0],
                               axis=0)  # np.tile(std.data, (c_monthly.shape[0] / std.shape[0], 1, 1))
 
-    clim_mean_cube = ma.masked_invalid(c_biannual.copy(clim_mean_data))
-    clim_std_cube = ma.masked_invalid(c_biannual.copy(clim_std_data))
+    clim_mean_cube = c_biannual.copy(clim_mean_data)
+    clim_std_cube = c_biannual.copy(clim_std_data)
 
     spi = (c_biannual - clim_mean_cube) / clim_std_cube
     spi.data = ma.masked_invalid(spi.data)
