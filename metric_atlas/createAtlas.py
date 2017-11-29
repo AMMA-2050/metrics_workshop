@@ -5,11 +5,11 @@ from glob import glob
 import subprocess
 import constants as cnst
 import labeller as lblr
-import itertools
+#import itertools
 import atlas_utils
 import shutil
 import scipy.stats as ss
-import pdb
+#import pdb
 
 '''
 This script loops through all images created by the atlas plotting script, 
@@ -63,9 +63,9 @@ def getIntroText(metric):
             'annualExtremeRain30' : 'Cet indicateur illustre le nombre de jours pour lesquels la pluviométrie est au-dessus du seuil de 30 mm jour$^{-1}$, pendant la période indiquée.',
             'annualExtremeRain50' : 'Cet indicateur illustre le nombre de jours pour lesquels la pluviométrie est au-dessus du seuil de 50 mm jour$^{-1}$, pendant la période indiquée.',
             'annualExtremeRain100' : 'Cet indicateur illustre le nombre de jours pour lesquels la pluviométrie est au-dessus du seuil de 100 mm jour$^{-1}$, pendant la période indiquée.',
-            'annualStrongWindDays' : 'Cet indicateur illustre le nombre de jours pour lesquels la vitesse du vent est au-dessus du seuil de '+str(cnst.STRONGWIND_THRESHOLD)+'m s$^{-1}$,
+            'annualStrongWindDays' : 'Cet indicateur illustre le nombre de jours pour lesquels la vitesse du vent est au-dessus du seuil de '+str(cnst.STRONGWIND_THRESHOLD)+'m s$^{-1}$',
             'wetSpell10': 'Cet indicateur illustre le nombre de périodes pluvieuse d\'une durée plus longue que 10 jours, pendant la période indiquée.',
-            'drySpell6': 'Cet indicateur illustre le nombre de périodes sèche d\'une durée plus longue que 10 jours, pendant la période indiquée.,
+            'drySpell6': 'Cet indicateur illustre le nombre de périodes sèche d\'une durée plus longue que 10 jours, pendant la période indiquée.',
             'annualMaxRain5dSum': 'Cet indicateur illustre la pluviométrie maximale sur 5 jours.',
             'annualMaxRain3dSum' : 'Cet indicateur illustre la pluviométrie maximale sur 3 jours.',
             'annualMaxRain2dSum' : 'Cet indicateur illustre la pluviométrie maximale sur 2 jours.',
@@ -74,7 +74,7 @@ def getIntroText(metric):
             'annualMaxRain2dMean': 'Cet indicateur illustre les taux de précipitation maximal sur 2 jours (taux journalier moyen)',
             'SPIxMonthly' : 'L\'indice normalisé de précipitations ci-dessous est défini comme l\'anomalie par rapport à la période de référence divisée par l\'écart type pour cette même période. Cet indice normalisé de précipitations (SPI en anglais) est un indicateur qui a été développé principalement pour la caractérisation et la surveillance des sécheresses. Elle permet à un utilisateur de determiner la rareté de sécheresse à une échelle de temps donnée d\'intérêt. Elle peut aussi être utilisée pour identifier des périodes particulièrement humides.',
             'SPIbiannual' : 'L\'indice normalisé de précipitations ci-dessous est defini comme l\'anomalie par rapport à la période de référence diviser par l\'écart type pour cette même période. Une fenêtre glissante de 2 ans est utilisée pour calculer l\'anomalie.',
-            'onsetMarteau' : 'La date de déclenchement de la mousson basé sur critères d\'agronomie locale (Marteau) est definie comme le premier jour de pluie (précipitation supérieure à 1 mm) de deux jours de pluie consecutifs (avec précipitation totale supérieure à 20 mm) et pas de période de secheresse (7 jours consecutifs avec moins de 5 mm de pluie) pendant les 20 jours successifs'',
+            'onsetMarteau' : 'La date de déclenchement de la mousson basé sur critères d\'agronomie locale (Marteau) est definie comme le premier jour de pluie (précipitation supérieure à 1 mm) de deux jours de pluie consecutifs (avec précipitation totale supérieure à 20 mm) et pas de période de secheresse (7 jours consecutifs avec moins de 5 mm de pluie) pendant les 20 jours successifs',
             'cdd' : 'Cet indicateur illustre le nombre de jours secs consécutifs pendant la période indiquée',
             'pet' : 'Cet indicateur illustre l\'évapotranspiration potentielle (équation de Hargreaves, basée sur les valeurs journalières de Tmin, Tmax, Tmean et flux solaire)'
             }
@@ -226,7 +226,7 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
             'nbModelHistogram' : 'Cet histogramme illustre le nombre de modèles en accord avec  xxx_pt_short_xxx xxx_metric_xxx pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque barre verticale indique le nombre de modèles en accord avec la gamme de valeur indiquée sur l\'axe des abscisses pour la région xxx_region_xxx. Ce diagramme montre xxx_pt_plot_xxx.',# xxx_title_end_xxx.',
             'MultiNbModelHistogram' : 'Ces histogrammes illustrent le nombre de modèles en accord avec xxx_pt_short_xxx xxx_metric_xxx pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque barre verticale indique le nombre de modèles en accord avec la gamme de valeur indiquée sur l\'axe des abscisses pour la région xxx_region_xxx. Ce diagramme montre xxx_pt_long_xxx.',# xxx_title_end_xxx.',
             'allModelBoxplot' : 'Ce tracé en boîte illustre xxx_pt_short_xxx xxx_metric_xxx pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque point (ligne rouge horizontale) indique la moyenne spatiale d\'un modèle sur la région xxx_region_xxx, la boîte indiquant l\'intervalle entre le 25eme et le 75eme pourcentile, et les moustaches l\'intervalle entre le 10eme et le 90eme pourcentile. Ce diagramme montre xxx_pt_long_xxx.',# xxx_title_end_xxx.',
-            'lineplot' : 'Cette série chronologique illustre xxx_pt_short_xxx xxx_metric_xxx pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque ligne indique la moyenne spatiale d\'un modèle sur la région xxx_region_xxx étudiée, pour chaque année de la série chronologique. Ce diagramme montre xxx_pt_long_xxx xxx_title_end_xxx.'', 
+            'lineplot' : 'Cette série chronologique illustre xxx_pt_short_xxx xxx_metric_xxx pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque ligne indique la moyenne spatiale d\'un modèle sur la région xxx_region_xxx étudiée, pour chaque année de la série chronologique. Ce diagramme montre xxx_pt_long_xxx xxx_title_end_xxx.', 
             'allModelHisto' :  'Cet histogramme illustre xxx_pt_short_xxx xxx_metric_xxx pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque barre verticale indique la moyenne spatiale d\'un modèle sur la région xxx_region_xxx. Ce diagramme montre xxx_pt_long_xxx xxx_title_end_xxx.'  ,
             'allModelMonthClim':  'Ce tracé en boîte de la climatologie mensuelle illustre xxx_pt_short_xxx xxx_metric_xxx pour la période entre xxx_periodstart_xxx et xxx_periodend_xxxxxx_wrt_xxxxxx_seasinfo_xxx. Chaque point (ligne rouge horizontale) indique la moyenne spatiale d\'un modèle sur la région xxx_region_xxx region, la boîte indiquant l\'intervalle entre le 25eme et le 75eme pourcentile, et les moustaches l\'intervalle entre le 10eme et le 90eme pourcentile. Ce diagramme montre xxx_pt_long_xxx.' 
     }

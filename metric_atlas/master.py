@@ -114,10 +114,13 @@ def saves(multiprocessing=False):
         variable = row[1]
         season = row[2]
         multi_list.append((variable, scenarios, bc_and_resolution, inpath, outpath, season, metric, region, cnst.OVERWRITE))
-
+    
+    print multi_list
+    
     if multiprocessing:
         pool = Pool(processes=multiprocessing)
         res = pool.map(wNetcdf.model_files, multi_list)
+        print res.get(timeout=1)
         pool.close()
     else:
         # Metric-specific options are set in constants.py
@@ -149,9 +152,12 @@ def wfdei_saves(multiprocessing=False):
         season = row[2]
         multi_list.append((variable, outpath, season, metric, region, cnst.OVERWRITE))
 
+    print multi_list
+    
     if multiprocessing:
         pool = Pool(processes=multiprocessing)
         res = pool.map(wNetcdf.wfdei, multi_list)
+        print res.get(timeout=1)
         pool.close()
     else:
     # Metric-specific options are set in constants.py
@@ -203,8 +209,8 @@ def plot():
 
 def main():
 
-    saves(multiprocessing=16)
-    wfdei_saves(multiprocessing=16)
+    saves(multiprocessing=16) # multiprocessing=16
+    wfdei_saves(multiprocessing=16) # multiprocessing=16
     plot()
     for m in cnst.AGG_PERIODS:
         ca.runAtlas(m)
