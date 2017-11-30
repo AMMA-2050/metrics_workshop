@@ -419,7 +419,7 @@ def runAtlas(season):
     version = cnst.VERSION
     texdir = cnst.METRIC_ATLASDIR + os.sep + season + '_atlas'
     imgdir = cnst.METRIC_PLOTDIR 
-    coverpage = 'AMMA2050_atlas_coverpage_v0.2.2.pdf'
+    coverpage = 'AMMA2050_atlas_coverpage_v1.0.pdf'
 
     if os.path.isdir(texdir):
         shutil.rmtree(texdir, ignore_errors=True)
@@ -429,14 +429,13 @@ def runAtlas(season):
     except:
         print texdir + ' could not be created, so using the existing directory'
 
-    ##TODO: somehow change the file path mess here
+
     # Copy the coverpage and intro section from the scripts folder into the atlas output folder
-   # shutil.copyfile(os.getcwd() + os.sep + '1introduction.tex', texdir + os.sep + '1_introduction.tex')
-    shutil.copyfile('/users/global/cornkle/data/pythonWorkspace/metrics_workshop/metric_atlas' + os.sep + '1introduction.tex', texdir + os.sep + '1_introduction.tex')
-   # shutil.copyfile(os.getcwd() + os.sep + coverpage, texdir + os.sep + coverpage)
-    shutil.copyfile('/users/global/cornkle/data/pythonWorkspace/metrics_workshop/metric_atlas' + os.sep + coverpage, texdir + os.sep + coverpage)
-    shutil.copyfile(
-        '/users/global/cornkle/data/pythonWorkspace/metrics_workshop/metric_atlas' + os.sep + 'atlas_template.tex',   texdir + os.sep + 'atlas_template.tex')
+
+    shutil.copyfile(os.getcwd() + os.sep + '1introduction.tex', texdir + os.sep + '1_introduction.tex')
+
+    shutil.copyfile(os.getcwd() + os.sep + coverpage, texdir + os.sep + coverpage)
+    shutil.copyfile(os.getcwd() + os.sep + 'atlas_template.tex',   texdir + os.sep + 'atlas_template.tex')
 
     plot_sections = []
 #    last_plot_name = []
@@ -547,7 +546,7 @@ def runAtlas(season):
                     fout.write('\input{'+pltsec+'}\r\n')
                 # fout.write('%InsertHere\r\n')
             elif 'coverpage' in line.strip():
-                fout.write(line.strip().replace('coverpage', texdir + os.sep + 'AMMA2050_atlas_coverpage_v0.2.2.pdf'))
+                fout.write(line.strip().replace('coverpage', texdir + os.sep + 'AMMA2050_atlas_coverpage_v1.0.pdf'))
             elif '1introduction' in line.strip():
                 fout.write(line.strip().replace('1introduction', texdir + os.sep + '1_introduction'))
             else:
