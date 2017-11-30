@@ -3,26 +3,26 @@
 """
 Contains global constants for the CMIP5 atlas
 """
-VERSION = 'v0.2.3'
+VERSION = 'v1'
 LANGUAGE = 'ENGLISH' # 'FRANCAIS'
-DATADIR = '/project/FCFA/CMIP5/bias_corrected/WA_data' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
+DATADIR = '/users/global/cornkle/CMIP/CMIP5_Africa' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
 REGIONS = {'WA' : ['WA', 'West Africa' if LANGUAGE == 'ENGLISH' else "Afrique de l'Ouest", [-18, 25, 4, 25], 'WA_files'],   # lon1, lon2, lat1, lat2
            'BF' : ['BF','Burkina Faso',[-6, 2.8, 9 ,15.5], 'Burkina_files'],
            'SG' : ['SG', 'Senegal' if LANGUAGE == 'ENGLISH' else 'Sénégal', [-18, -11, 12, 17], 'Senegal_files'],
            'SH' : ['SH', 'Sahelian Zone' if LANGUAGE == 'ENGLISH' else 'Zone sahélienne', [-11, 30, 12.5, 17.5], 'Sahel_files'],
-           'SD' : ['SD', 'Sudanian Zone' if LANGUAGE == 'ENGLISH' else 'Zone soudanienne', [-18, 30, 9.5, 12.5], 'Sudanian_files'],
-           'GC' : ['GC', 'Guinea Coast Zone' if LANGUAGE == 'ENGLISH' else 'Zone de la côte guinéenne', [-15, 10, 5, 9.5], 'GuineaCoast_files']
+           'SD' : ['SD', 'Sudanian Zone' if LANGUAGE == 'ENGLISH' else 'Zone soudanienne', [-18, 30,8, 12.5], 'Sudanian_files'],
+           'GC' : ['GC', 'Guinea Coast Zone' if LANGUAGE == 'ENGLISH' else 'Zone de la côte guinéenne', [-15, 10, 3.5, 8], 'GuineaCoast_files']
            }
 #### Atlas production / file creation is supporting only one region at a time
 #ATLAS_REGION = REGIONS['SG']
-ATLAS_REGION = REGIONS['BF']
+ATLAS_REGION = REGIONS['SD']
 
 METRIC_DATADIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] +'/save_files/netcdf'
 METRIC_PLOTDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] + '/save_files/plots_' + LANGUAGE
 METRIC_ATLASDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3]
 BC_RES = ['BC_0.5x0.5'] #'0.5x0.5'
 
-SCENARIO = ['rcp85'] #['historical', 'rcp26', 'rcp45', 'rcp85'] 
+SCENARIO = ['historical', 'rcp26', 'rcp45', 'rcp85'] #['historical', 'rcp26', 'rcp45', 'rcp85']
 
 AGGREGATION = ['tseries', '2d', 'trend']
 
@@ -78,12 +78,12 @@ CONSTANT_PERIOD_METRIC = ['onsetMarteau', 'SPIbiannual', 'monthlyClimatologicalM
 ### slowest variables go first!
 
 METRICS_TORUN = [
-#    ['pet', ['multivars'], AGG_PERIODS],
-#    ['onsetMarteau', ['pr'], ['mjjas']],
-#    ['SPIxMonthly', ['pr'], AGG_PERIODS],
-#    ['SPIbiannual', ['pr'], ['ann']],
-#    ['wetSpell10', ['pr'], AGG_PERIODS],
-#    ['drySpell6', ['pr'], AGG_PERIODS],
+    ['pet', ['multivars'], AGG_PERIODS],
+    ['onsetMarteau', ['pr'], ['mjjas']],
+    ['SPIxMonthly', ['pr'], AGG_PERIODS],
+    ['SPIbiannual', ['pr'], ['ann']],
+    ['wetSpell10', ['pr'], AGG_PERIODS],
+    ['drySpell6', ['pr'], AGG_PERIODS],
     ['annualMax', ['pr', 'tasmax', 'rsds'], AGG_PERIODS],
     ['annualMin', ['tasmin'], AGG_PERIODS],
     ['annualTotalRain', ['pr'], AGG_PERIODS],
