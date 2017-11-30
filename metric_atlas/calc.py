@@ -726,8 +726,8 @@ def SPIxMonthly(incube, season, ncfile):
     mean = c_monthly.collapsed('year', iris.analysis.MEAN)
 
     # We need to change the shape of the monthly climatologies to match the shape of the timeseries (in the cube c_monthly)
-    mean = ma.masked_invalid(mean.data)
-    std = ma.masked_invalid(std.data)
+    mean.data = ma.masked_invalid(mean.data)
+    std.data = ma.masked_invalid(std.data)
 
     clim_mean_data = np.repeat(mean.reshape(1, mean.shape[0], mean.shape[1]), c_monthly.shape[0],
                                axis=0)  # np.tile(mean.data, (c_monthly.shape[0] / mean.shape[0], 1, 1))
@@ -786,8 +786,8 @@ def SPIbiannual(incube, season, ncfile):
     c_biannual = c_monthly.rolling_window(['year'], iris.analysis.MEAN, 2)
 
     # We need to change the shape of the monthly climatologies to match the shape of the timeseries (in the cube c_monthly)
-    mean = ma.masked_invalid(mean.data)
-    std = ma.masked_invalid(std.data)
+    mean.data = ma.masked_invalid(mean.data)
+    std.data = ma.masked_invalid(std.data)
 
     clim_mean_data = np.repeat(mean.reshape(1, mean.shape[0], mean.shape[1]), c_biannual.shape[0],
                                axis=0)  # np.tile(mean.data, (c_monthly.shape[0] / mean.shape[0], 1, 1))
