@@ -3,6 +3,7 @@
 Contains functions to create labels in all types of plots
 '''
 import constants as cnst
+import createAtlas as ca
 #import pdb
 
 DC = '$^\circ$C'
@@ -37,10 +38,10 @@ METRICLONGNAME = {'ENGLISH' : {
             'pet' : 'Potential Evapotranspiration'
     }, 
     'FRANCAIS' : {
-            'annualMax' : 'Maximale de',
-            'annualMin' : 'Minimale de',
-            'annualTotalRain' : 'Précipitations totales',
-            'annualMean' : 'Moyenne',
+            'annualMax' : u'Maximale de',
+            'annualMin' : u'Minimale de',
+            'annualTotalRain' : u'Précipitations totales',
+            'annualMean' : u'Moyenne',
             'annualMeanRainyDay' : 'Précipitations moyennes par journée pluvieuse', # 'Mean Daily Rainfall on Rainy Days',
             'monthlyClimatologicalMean' : 'Moyenne climatologique mensuelle', #'Monthly Climatological Mean',
             'annualHotDaysPerc' : 'Pourcentage de journées chaudes (température maximale $>$'+str(cnst.HOTDAYS_THRESHOLD)+DC,# 'Percentage of Hot Days (Max Temp $>$'+str(cnst.HOTDAYS_THRESHOLD)+DC,
@@ -75,6 +76,7 @@ def deFunction(atxt, metricname):
         atxt_new, metricname_new = [atxt, metricname]
     else:
         firstword = metricname.split(' ')[0]
+        print firstword
         if firstword in ['Nombre', 'Pourcentage', 'Maximale']:
             d = 'du '
         if firstword in ['Minimale']:
@@ -117,39 +119,39 @@ def getTitle(m, v, seas, scen, bc, r, anom=None):
     
     
     titleLUT = {'ENGLISH' : {
-            'annualMax_pr' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
-            'annualMax_tasmax' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
-            'annualMax_rsds' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
-            'annualMin_tasmin' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
-            'annualMean_tas' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
-            'annualMean_rsds' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_pr' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_tasmin' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_tas' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_tasmax' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_rsds' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')',
-            'monthlyClimatologicalMean_wind' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+seas+'; '+scen+bc+')'
+            'annualMax_pr' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')',
+            'annualMax_tasmax' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')',
+            'annualMax_rsds' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')',
+            'annualMin_tasmin' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')',
+            'annualMean_tas' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')',
+            'annualMean_rsds' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_pr' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_tasmin' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_tas' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_tasmax' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_rsds' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')',
+            'monthlyClimatologicalMean_wind' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')'
             },
             'FRANCAIS' : {
-            'annualMax_pr' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+seas+' ; '+scen+bc+')',
-            'annualMax_tasmax' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+seas+' ; '+scen+bc+')',
-            'annualMax_rsds' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+seas+' ; '+scen+bc+')',
-            'annualMin_tasmin' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+seas+' ; '+scen+bc+')',
-            'annualMean_tas' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+seas+' ; '+scen+bc+')',
-            'annualMean_rsds' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+seas+' ; '+scen+bc+')',
-            'monthlyClimatologicalMean_pr' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+seas+' ; '+scen+bc+')',
-            'monthlyClimatologicalMean_tasmin' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+seas+' ; '+scen+bc+')',
-            'monthlyClimatologicalMean_tas' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+seas+' ; '+scen+bc+')',
-            'monthlyClimatologicalMean_tasmax' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+seas+' ; '+scen+bc+')',
-            'monthlyClimatologicalMean_rsds' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+seas+' ; '+scen+bc+')',
-            'monthlyClimatologicalMean_wind' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+seas+' ; '+scen+bc+')'
+            'annualMax_pr' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+' ; '+scen+bc+')',
+            'annualMax_tasmax' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+' ; '+scen+bc+')',
+            'annualMax_rsds' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+' ; '+scen+bc+')',
+            'annualMin_tasmin' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+' ; '+scen+bc+')',
+            'annualMean_tas' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+' ; '+scen+bc+')',
+            'annualMean_rsds' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+' ; '+scen+bc+')',
+            'monthlyClimatologicalMean_pr' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+' ; '+scen+bc+')',
+            'monthlyClimatologicalMean_tasmin' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+' ; '+scen+bc+')',
+            'monthlyClimatologicalMean_tas' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+' ; '+scen+bc+')',
+            'monthlyClimatologicalMean_tasmax' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+' ; '+scen+bc+')',
+            'monthlyClimatologicalMean_rsds' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+' ; '+scen+bc+')',
+            'monthlyClimatologicalMean_wind' : r + ' : ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+' ; '+scen+bc+')'
             }
             }
 
     try:
         return(titleLUT[cnst.LANGUAGE][metvar])
     except:
-        temp_title = r + ': ' + atxt + metricname + '\n('+seas+'; '+scen+bc+')'
+        temp_title = r + ': ' + atxt + metricname.lower() + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')'
         return(temp_title)
 
 def getUnit(var):
@@ -276,9 +278,9 @@ def getYlab(m, v, anom=None):
         unit = '(No.)'
     
     if anom in ['percentage', 'percentageAnomaly']:
-        ylab = '% change ' if cnst.LANGUAGE == 'ENGLISH' else 'Changement (%) de '
+        ylab = '% change ' if cnst.LANGUAGE == 'ENGLISH' else 'Changement (%)'
     if anom in ['absolute', 'anomaly']:
-        ylab = 'Absolute change '+unit if cnst.LANGUAGE == 'ENGLISH' else 'Changement absolut de '+unit
+        ylab = 'Absolute change '+unit if cnst.LANGUAGE == 'ENGLISH' else 'Changement absolut '+unit
     
     return(ylab)
 

@@ -1,4 +1,4 @@
-# encoding: utf-8
+# -*- coding: utf-8 -*-
 import os
 from glob import glob
 #from operator import itemgetter
@@ -140,7 +140,7 @@ def getNicePlotName(plot_name):
     
     nice_plot_name = {'ENGLISH' : {
             'allModelRank' : 'Model ranking scatterplots', 
-            'mapPerc' : 'Maps of ensemble spread (10th and 90th percentiles)',
+            'mapPerc' : 'Maps of present climate and future ensemble spread (10th and 90th percentiles)',
             'nbModelHistogram' : '\'Number of model\' histograms', 
             'MultiNbModelHistogram' : '\'Number of model\' histograms for all scenarios', 
             'allModelBoxplot' : 'Boxplots', 
@@ -150,7 +150,7 @@ def getNicePlotName(plot_name):
             },
             'FRANCAIS' : {
             'allModelRank' : 'Diagrammes de dispersion des modèles climatiques', # 'Model ranking scatterplots',
-            'mapPerc' : 'Cartes de l\'écart de l\'ensemble (10e et 90e percentile)', # 'Maps of ensemble spread (10th and 90th percentiles)',
+            'mapPerc' : 'Cartes du climat historique et de l\'écart de l\'ensemble (10e et 90e percentile)', # 'Maps of ensemble spread (10th and 90th percentiles)',
             'nbModelHistogram' : 'Histogrammes de \'nombre des modèles\'', # '\'Number of model\' histograms',
             'MultiNbModelHistogram' : 'Histogrammes de \'nombre des modèles\' par tous les scénarios', # '\'Number of model\' histograms for all scenarios',
             'allModelBoxplot' : 'Les tracés en boîte', # 'Boxplots',
@@ -431,9 +431,7 @@ def runAtlas(season):
 
 
     # Copy the coverpage and intro section from the scripts folder into the atlas output folder
-
     shutil.copyfile(os.getcwd() + os.sep + '1introduction.tex', texdir + os.sep + '1_introduction.tex')
-
     shutil.copyfile(os.getcwd() + os.sep + coverpage, texdir + os.sep + coverpage)
     shutil.copyfile(os.getcwd() + os.sep + 'atlas_template.tex',   texdir + os.sep + 'atlas_template.tex')
 

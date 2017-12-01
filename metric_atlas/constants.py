@@ -3,14 +3,16 @@
 """
 Contains global constants for the CMIP5 atlas
 """
+
 VERSION = 'v1'
-LANGUAGE = 'ENGLISH' # 'FRANCAIS'
-DATADIR = '/users/global/cornkle/CMIP/CMIP5_Africa' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
+LANGUAGE = 'FRANCAIS' # 'ENGLISH' # 'FRANCAIS'
+DATADIR = '/project/FCFA/CMIP5/bias_corrected/WA_data' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
+
 REGIONS = {'WA' : ['WA', 'West Africa' if LANGUAGE == 'ENGLISH' else "Afrique de l'Ouest", [-18, 25, 4, 25], 'WA_files'],   # lon1, lon2, lat1, lat2
            'BF' : ['BF','Burkina Faso',[-6, 2.8, 9 ,15.5], 'Burkina_files'],
            'SG' : ['SG', 'Senegal' if LANGUAGE == 'ENGLISH' else 'Sénégal', [-18, -11, 12, 17], 'Senegal_files'],
            'SH' : ['SH', 'Sahelian Zone' if LANGUAGE == 'ENGLISH' else 'Zone sahélienne', [-11, 30, 12.5, 17.5], 'Sahel_files'],
-           'SD' : ['SD', 'Sudanian Zone' if LANGUAGE == 'ENGLISH' else 'Zone soudanienne', [-18, 30,8, 12.5], 'Sudanian_files'],
+           'SD' : ['SD', 'Sudanian Zone' if LANGUAGE == 'ENGLISH' else 'Zone soudanienne', [-18, 30, 8, 12.5], 'Sudanian_files'],
            'GC' : ['GC', 'Guinea Coast Zone' if LANGUAGE == 'ENGLISH' else 'Zone de la côte guinéenne', [-15, 10, 3.5, 8], 'GuineaCoast_files']
            }
 #### Atlas production / file creation is supporting only one region at a time
@@ -22,7 +24,7 @@ METRIC_PLOTDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] + '/save_files/plo
 METRIC_ATLASDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3]
 BC_RES = ['BC_0.5x0.5'] #'0.5x0.5'
 
-SCENARIO = ['historical', 'rcp26', 'rcp45', 'rcp85'] #['historical', 'rcp26', 'rcp45', 'rcp85']
+SCENARIO = ['historical', 'rcp26', 'rcp45', 'rcp85'] 
 
 AGGREGATION = ['tseries', '2d', 'trend']
 
@@ -85,18 +87,18 @@ METRICS_TORUN = [
     ['wetSpell10', ['pr'], AGG_PERIODS],
     ['drySpell6', ['pr'], AGG_PERIODS],
     ['annualMax', ['pr', 'tasmax', 'rsds'], AGG_PERIODS],
-    ['annualMin', ['tasmin'], AGG_PERIODS],
-    ['annualTotalRain', ['pr'], AGG_PERIODS],
-    ['annualMean', ['tas', 'rsds'], AGG_PERIODS],
-    ['annualMeanRainyDay', ['pr'], AGG_PERIODS],
-    ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['ann']],
-    ['annualRainyDays', ['pr'], AGG_PERIODS],
-    ['annualHotDays', ['tasmax'], AGG_PERIODS],
-    ['annualExtremeRain30', ['pr'], AGG_PERIODS],
-    ['annualExtremeRain50', ['pr'], AGG_PERIODS],
-    ['annualMaxRain5dSum', ['pr'], AGG_PERIODS],
-    ['annualMaxRain3dSum', ['pr'], AGG_PERIODS],
-    ['annualMaxRain2dSum', ['pr'], AGG_PERIODS]
+#    ['annualMin', ['tasmin'], AGG_PERIODS],
+#    ['annualTotalRain', ['pr'], AGG_PERIODS],
+#    ['annualMean', ['tas', 'rsds'], AGG_PERIODS],
+#    ['annualMeanRainyDay', ['pr'], AGG_PERIODS],
+#    ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['ann']],
+#    ['annualRainyDays', ['pr'], AGG_PERIODS],
+#    ['annualHotDays', ['tasmax'], AGG_PERIODS],
+#    ['annualExtremeRain30', ['pr'], AGG_PERIODS],
+#    ['annualExtremeRain50', ['pr'], AGG_PERIODS],
+#    ['annualMaxRain5dSum', ['pr'], AGG_PERIODS],
+#    ['annualMaxRain3dSum', ['pr'], AGG_PERIODS],
+#    ['annualMaxRain2dSum', ['pr'], AGG_PERIODS]
 ]
 
 # NB: Currently excluding the following (but may add in later):

@@ -156,6 +156,7 @@ def wfdei_saves(multiprocessing=False):
     if multiprocessing:
         pool = Pool(processes=multiprocessing)
         res = pool.map(wNetcdf.wfdei, multi_list)
+        #print res.get(timeout=1)
         pool.close()
     else:
     # Metric-specific options are set in constants.py
@@ -209,7 +210,7 @@ def main():
 
     #saves(multiprocessing=16) # multiprocessing=16
     #wfdei_saves(multiprocessing=16) # multiprocessing=16
-    #plot()
+    plot()
     for m in cnst.AGG_PERIODS:
         ca.runAtlas(m)
 
