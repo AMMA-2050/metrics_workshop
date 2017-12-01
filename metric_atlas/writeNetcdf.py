@@ -95,7 +95,7 @@ def wfdei(multi):
             calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
             print '#######################################'
             print 'Saving data for: '
-            print metric, var, seas
+            print metric, var, seas, region[0]
             print '#######################################'
 
 
@@ -187,7 +187,7 @@ def model_files(multi):
                 calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
                 print '#######################################'
                 print 'Saving data for: '
-                print nme, metric, var, seas
+                print nme, metric, var, seas, region[0]
                 print '#######################################'
 
         # runs big_cube for all available aggregations

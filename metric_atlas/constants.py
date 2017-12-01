@@ -3,9 +3,11 @@
 """
 Contains global constants for the CMIP5 atlas
 """
-VERSION = 'v0.2.3'
+
+VERSION = 'v1'
 LANGUAGE = 'FRANCAIS' # 'ENGLISH' # 'FRANCAIS'
 DATADIR = '/project/FCFA/CMIP5/bias_corrected/WA_data' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
+
 REGIONS = {'WA' : ['WA', 'West Africa' if LANGUAGE == 'ENGLISH' else "Afrique de l'Ouest", [-18, 25, 4, 25], 'WA_files'],   # lon1, lon2, lat1, lat2
            'BF' : ['BF','Burkina Faso',[-6, 2.8, 9 ,15.5], 'Burkina_files'],
            'SG' : ['SG', 'Senegal' if LANGUAGE == 'ENGLISH' else 'Sénégal', [-18, -11, 12, 17], 'Senegal_files'],
@@ -15,7 +17,7 @@ REGIONS = {'WA' : ['WA', 'West Africa' if LANGUAGE == 'ENGLISH' else "Afrique de
            }
 #### Atlas production / file creation is supporting only one region at a time
 #ATLAS_REGION = REGIONS['SG']
-ATLAS_REGION = REGIONS['BF']
+ATLAS_REGION = REGIONS['SD']
 
 METRIC_DATADIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] +'/save_files/netcdf'
 METRIC_PLOTDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] + '/save_files/plots_' + LANGUAGE
@@ -78,12 +80,12 @@ CONSTANT_PERIOD_METRIC = ['onsetMarteau', 'SPIbiannual', 'monthlyClimatologicalM
 ### slowest variables go first!
 
 METRICS_TORUN = [
-#    ['pet', ['multivars'], AGG_PERIODS],
-#    ['onsetMarteau', ['pr'], ['mjjas']],
-#    ['SPIxMonthly', ['pr'], AGG_PERIODS],
-#    ['SPIbiannual', ['pr'], ['ann']],
-#    ['wetSpell10', ['pr'], AGG_PERIODS],
-#    ['drySpell6', ['pr'], AGG_PERIODS],
+    ['pet', ['multivars'], AGG_PERIODS],
+    ['onsetMarteau', ['pr'], ['mjjas']],
+    ['SPIxMonthly', ['pr'], AGG_PERIODS],
+    ['SPIbiannual', ['pr'], ['ann']],
+    ['wetSpell10', ['pr'], AGG_PERIODS],
+    ['drySpell6', ['pr'], AGG_PERIODS],
     ['annualMax', ['pr', 'tasmax', 'rsds'], AGG_PERIODS],
 #    ['annualMin', ['tasmin'], AGG_PERIODS],
 #    ['annualTotalRain', ['pr'], AGG_PERIODS],

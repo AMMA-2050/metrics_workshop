@@ -205,7 +205,8 @@ def _countSpells(incube, season, ncfile, spell_length=None, lower_threshold=None
     calc = incube.aggregated_by(['year'], SPELL_COUNT, threshold=threshold,
                                 spell_length=spell_length)
     calc.units = incube.units
-    calc.data = np.ma.masked_invalid(np.array(calc.data,dtype=float))
+    calc.data = np.array(calc.data,dtype=float)
+    calc.data = ma.masked_invalid(calc.data)
 
     tseries = calc.collapsed(['longitude', 'latitude'], iris.analysis.MEDIAN)
 
@@ -725,8 +726,8 @@ def SPIxMonthly(incube, season, ncfile):
     mean = c_monthly.collapsed('year', iris.analysis.MEAN)
 
     # We need to change the shape of the monthly climatologies to match the shape of the timeseries (in the cube c_monthly)
-    mean = ma.masked_invalid(mean.data)
-    std = ma.masked_invalid(std.data)
+    mean.data = ma.masked_invalid(mean.data)
+    std.data = ma.masked_invalid(std.data)
 
     clim_mean_data = np.repeat(mean.reshape(1, mean.shape[0], mean.shape[1]), c_monthly.shape[0],
                                axis=0)  # np.tile(mean.data, (c_monthly.shape[0] / mean.shape[0], 1, 1))
@@ -785,16 +786,16 @@ def SPIbiannual(incube, season, ncfile):
     c_biannual = c_monthly.rolling_window(['year'], iris.analysis.MEAN, 2)
 
     # We need to change the shape of the monthly climatologies to match the shape of the timeseries (in the cube c_monthly)
-    mean = ma.masked_invalid(mean.data)
-    std = ma.masked_invalid(std.data)
+    mean.data = ma.masked_invalid(mean.data)
+    std.data = ma.masked_invalid(std.data)
 
     clim_mean_data = np.repeat(mean.reshape(1, mean.shape[0], mean.shape[1]), c_biannual.shape[0],
                                axis=0)  # np.tile(mean.data, (c_monthly.shape[0] / mean.shape[0], 1, 1))
     clim_std_data = np.repeat(std.reshape(1, std.shape[0], std.shape[1]), c_biannual.shape[0],
                               axis=0)  # np.tile(std.data, (c_monthly.shape[0] / std.shape[0], 1, 1))
 
-    clim_mean_cube = ma.masked_invalid(c_biannual.copy(clim_mean_data))
-    clim_std_cube = ma.masked_invalid(c_biannual.copy(clim_std_data))
+    clim_mean_cube = c_biannual.copy(clim_mean_data)
+    clim_std_cube = c_biannual.copy(clim_std_data)
 
     spi = (c_biannual - clim_mean_cube) / clim_std_cube
     spi.data = ma.masked_invalid(spi.data)
