@@ -9,7 +9,7 @@ import labeller as lblr
 import atlas_utils
 import shutil
 import scipy.stats as ss
-#import pdb
+import pdb
 
 '''
 This script loops through all images created by the atlas plotting script, 
@@ -316,7 +316,7 @@ def getFullCaption(metric, var, region, bc, seas, plotnm, plottype):
             myCaption = myCaption.replace('xxx_seasinfo_xxx',  'pour la saison ' +monthLookUp(seas))
     
     # Add region nice name
-    myCaption = myCaption.replace('xxx_region_xxx', region[1])
+    myCaption = myCaption.replace('xxx_region_xxx', region)
     
     # Add plot type information
     pt_long_desc = {'ENGLISH' : {
@@ -517,6 +517,7 @@ def runAtlas(season):
     #                            fmetric.write('\\caption{'+getShortCaption(metric, bc_res, seas, pt)+'}\r\n')
     #                        else:
     #                            fmetric.write('\\caption{'+getFullCaption(metric, bc_res, seas, pt)+'}\r\n')
+
                             fmetric.write('\\caption{'+getFullCaption(metric, var, cnst.ATLAS_REGION[1], bc_res, seas, pn, pt)+'}\r\n')
     
                             fmetric.write('\\label{fig:'+os.path.basename(this_file).rstrip(".png")+'}\r\n')
