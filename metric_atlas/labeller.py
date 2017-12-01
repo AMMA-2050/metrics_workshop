@@ -226,12 +226,12 @@ def getYlab(m, v, anom=None):
             'annualStrongWindDays' : 'No. of Days', # >'+str(cnst.STRONGWIND_THRESHOLD)+'ms$^{-1}$',
             'wetSpell10': 'No. of Wet Periods', # > 10 Days',
             'drySpell6': 'No. of Dry Periods', # > 6 Days',
-            'annualMaxRain_5dSum': '5-day Total Precipitation',
-            'annualMaxRain_3dSum' : '3-day Total Precipitation',
-            'annualMaxRain_2dSum' : '2-day Total Precipitation',
-            'annualMaxRain_5dMean': '5-day Mean Precipitation Rate (mm day$^{-1}$)',
-            'annualMaxRain_3dMean': '3-day Mean Precipitation Rate (mm day$^{-1}$)',
-            'annualMaxRain_2dMean': '2-day Mean Precipitation Rate (mm day$^{-1}$)',
+            'annualMaxRain5dSum': '5-day Total Precipitation',
+            'annualMaxRain3dSum' : '3-day Total Precipitation',
+            'annualMaxRain2dSum' : '2-day Total Precipitation',
+            'annualMaxRain5dMean': '5-day Mean Precipitation Rate (mm day$^{-1}$)',
+            'annualMaxRain3dMean': '3-day Mean Precipitation Rate (mm day$^{-1}$)',
+            'annualMaxRain2dMean': '2-day Mean Precipitation Rate (mm day$^{-1}$)',
             'SPIxMonthly' : 'SPI',
             'SPIbiannual' : 'SPI (bi-annual)',
             'onsetMarteau' : 'Julian Day',
@@ -251,12 +251,12 @@ def getYlab(m, v, anom=None):
             'annualStrongWindDays' : 'Nombre de jours', # >'+str(cnst.STRONGWIND_THRESHOLD)+'ms$^{-1}$',
             'wetSpell10': 'Nombre de périodes pluvieuses', # > 10 Days',
             'drySpell6': 'Nombre de périodes sèches', # > 6 Days',
-            'annualMaxRain_5dSum': 'Précipitations totales (depuis 5 jours)',
-            'annualMaxRain_3dSum' : 'Précipitations totales (depuis 3 jours)',
-            'annualMaxRain_2dSum' : 'Précipitations totales (depuis 2 jours)',
-            'annualMaxRain_5dMean': 'Précipitations moyennes (depuis 5 jours ; mm jour$^{-1}$)',
-            'annualMaxRain_3dMean': 'Précipitations moyennes (depuis 3 jours ; mm jour$^{-1}$)',
-            'annualMaxRain_2dMean': 'Précipitations moyennes (depuis 2 jours ; mm jour$^{-1}$)',
+            'annualMaxRain5dSum': 'Précipitations totales (depuis 5 jours)',
+            'annualMaxRain3dSum' : 'Précipitations totales (depuis 3 jours)',
+            'annualMaxRain2dSum' : 'Précipitations totales (depuis 2 jours)',
+            'annualMaxRain5dMean': 'Précipitations moyennes (depuis 5 jours ; mm jour$^{-1}$)',
+            'annualMaxRain3dMean': 'Précipitations moyennes (depuis 3 jours ; mm jour$^{-1}$)',
+            'annualMaxRain2dMean': 'Précipitations moyennes (depuis 2 jours ; mm jour$^{-1}$)',
             'SPIxMonthly' : 'Indice de précipitations standardisées',
             'SPIbiannual' : 'Indice de précipitations standardisées (bi-annuelle)',
             'onsetMarteau' : 'Jour julien',
@@ -266,12 +266,11 @@ def getYlab(m, v, anom=None):
             }
     
     try:
-        if any([m in mykey for mykey in ylabLUT_metvar[cnst.LANGUAGE].keys()]):
-            ylab = ylabLUT_metvar[cnst.LANGUAGE][metvar]
-        else:
-            ylab = ylabLUT[cnst.LANGUAGE][m]
+        #if any([m in mykey for mykey in ylabLUT_metvar[cnst.LANGUAGE].keys()]):
+        ylab = ylabLUT_metvar[cnst.LANGUAGE][metvar]
     except:
-        ylab = cnst.VARNAMES[cnst.LANGUAGE][v] + ': ' + m
+        ylab = ylabLUT[cnst.LANGUAGE][m]
+    # ylab = cnst.VARNAMES[cnst.LANGUAGE][v] + ': ' + m
 
     unit = getUnit(v)
     if 'No.' in ylab:
