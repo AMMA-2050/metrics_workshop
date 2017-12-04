@@ -418,9 +418,11 @@ def isExcluded(metric, var, bc_res, seas, reg, pn, pt):
 def runAtlas(season):
     version = cnst.VERSION
     texdir = cnst.METRIC_ATLASDIR + os.sep + season + '_atlas'
-    imgdir = cnst.METRIC_PLOTDIR 
-    coverpage = 'AMMA2050_atlas_coverpage_v1.0.pdf'
-
+    imgdir = cnst.METRIC_PLOTDIR
+    if cnst.LANGUAGE == 'ENGLISH':
+        coverpage = 'AMMA2050_atlas_coverpage_v1.0_EN.pdf'
+    else:
+        coverpage = 'AMMA2050_atlas_coverpage_v1.0_FR.pdf'
     if os.path.isdir(texdir):
         shutil.rmtree(texdir, ignore_errors=True)
 
@@ -545,7 +547,7 @@ def runAtlas(season):
                     fout.write('\input{'+pltsec+'}\r\n')
                 # fout.write('%InsertHere\r\n')
             elif 'coverpage' in line.strip():
-                fout.write(line.strip().replace('coverpage', texdir + os.sep + 'AMMA2050_atlas_coverpage_v1.0.pdf'))
+                fout.write(line.strip().replace('coverpage', texdir + os.sep + coverpage))
             elif '1introduction' in line.strip():
                 fout.write(line.strip().replace('1introduction', texdir + os.sep + '1_introduction'))
             else:
