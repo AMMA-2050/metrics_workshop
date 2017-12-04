@@ -1,0 +1,53 @@
+\documentclass[11pt, oneside]{article}   	% use "amsart" instead of "article" for AMSLaTeX format
+\usepackage[bottom=1.5cm, top=1.5cm, left=2cm, right=2cm]{geometry}
+%\usepackage{geometry}                		% See geometry.pdf to learn the layout options. There are lots.
+\geometry{letterpaper}                   		% ... or a4paper or a5paper or ... 
+%\geometry{landscape}                		% Activate for rotated page geometry
+%\usepackage[parfill]{parskip}    		% Activate to begin paragraphs with an empty line rather than an indent
+\usepackage{graphicx}				% Use pdf, png, jpg, or eps§ with pdflatex; use eps in DVI mode
+\usepackage{grffile}                                   % Searches for welknown image extensions. graphicx uses the first dot it finds ... which doesn't help when we have long filenames with dots in
+								% TeX will automatically convert eps --> pdf in pdflatex		
+\usepackage{amssymb}
+\usepackage{textcomp}
+\usepackage{setspace,caption}
+\usepackage[titletoc,title]{appendix}
+\usepackage[linkcolor=blue,colorlinks=true,urlcolor=blue,citecolor=black]{hyperref}
+\usepackage{pdfpages}
+\usepackage[utf8]{inputenc}
+\usepackage[T1]{fontenc}
+\usepackage{titlesec}
+%\newcommand{\sectionbreak}{\clearpage}
+
+%\title{AMMA-2050 Atlas of Climate Metrics}
+%\author{Rory Fitzpatrick, Conni Klein, Andrew Hartley, Famien Moise\\Adama Bamba, Nana Ama Browne Klutse, N'Datchoh Evelyne Toure, Oumar Konte\\Siny N'Doye, Youssouph Sane, Dave Rowell, Serge Janicot}
+
+%\date{v0.1 May 2017}							% Activate to display a given date or no date
+
+%\newpage
+
+\begin{document}
+
+%\maketitle
+
+\includepdf[pages={1,2}]{coverpage}
+
+\input{0titlepage}
+\clearpage
+
+\tableofcontents
+\clearpage
+%\thispagestyle{empty}
+%\listoffigures
+
+\input{1introduction}
+\clearpage
+%InsertHere
+
+%\begin{appendices}
+%\include{MetricDescriptions}
+%\end{appendices}
+
+%\bibliographystyle{abbrvnat}
+%\bibliography{atlasBibliography}
+
+\end{document}  
