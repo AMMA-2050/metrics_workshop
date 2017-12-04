@@ -204,7 +204,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
                 # Countries
                 ax.add_feature(cartopy.feature.BORDERS, linestyle='--')
                 cb = plt.colorbar(map, format='%1.1f')
-                cb.set_label(lblr.getYlab(metric, variable).decode('utf-8'))
+                cb.set_label(lblr.getYlab(metric, variable))
 
         if cnst.LANGUAGE == 'ENGLISH':
             ax.set_title('WFDEI historical')
@@ -243,7 +243,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
                 ax1.add_feature(cartopy.feature.BORDERS, linestyle='--');
                 cb = plt.colorbar(map1, format='%1.1f')
                 # cb.set_label('10th percentile ' + p['cblabel'])
-                cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']).decode('utf-8'))
+                cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']))
 
         if cnst.LANGUAGE == 'ENGLISH':
             ax1.set_title('Future 90th percentile')
@@ -279,14 +279,14 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
                 # Countries
                 ax2.add_feature(cartopy.feature.BORDERS, linestyle='--');
                 cb = plt.colorbar(map2, format='%1.1f')
-                cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']).decode('utf-8'))
+                cb.set_label(lblr.getYlab(metric, variable, anom=p['cblabel']))
 
         if cnst.LANGUAGE == 'ENGLISH':
             ax2.set_title('Future 10th percentile')
         else:
             ax2.set_title('10e percentile (futur)')
 
-        f.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['cblabel']).decode('utf-8'), fontsize=10)
+        f.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['cblabel']), fontsize=10)
         plt.tight_layout(rect=[0, 0.01, 1, 0.95])
 
         if (region[0] == 'BF') | (region[0] == 'SG'):
@@ -395,14 +395,14 @@ def boxplot_scenarios(incubes, outpath, region, anomaly=False):
             print('Boxplot data has a problem, please check. Cannot continue')
             pdb.set_trace()
 
-        plt.title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']).decode('utf-8'), fontsize=10) # .decode('utf-8') 
+        plt.title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']), fontsize=10)
         
         if cnst.LANGUAGE == 'ENGLISH':
             plt.xlabel('Scenario')
             plt.ylabel(p['ylabel'])
         else:
             plt.xlabel(u'Scénario')
-            plt.ylabel(p['ylabel'].decode('utf-8'))
+            plt.ylabel(p['ylabel'])
 
         for median, box, lab in zip(bp['medians'], bp['boxes'], p['xlabel']):
             box.set(facecolor='none')
@@ -511,14 +511,14 @@ def boxplotMonthlyClim(incubes, outpath, region, anomaly=False):
         except ValueError:
             print('Boxplot data has a problem, please check. Cannot continue')
             pdb.set_trace()
-        plt.title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']).decode('utf-8'),
+        plt.title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']),
                   fontsize=10)  # (region[1])
         if cnst.LANGUAGE == 'ENGLISH':
             plt.xlabel('Month')
-            plt.ylabel(p['ylabel'].decode('utf-8'))
+            plt.ylabel(p['ylabel'])
         else:
             plt.xlabel('Mois')
-            plt.ylabel(p['ylabel'].decode('utf-8'))
+            plt.ylabel(p['ylabel'])
 
         for median, box in zip(bp['medians'], bp['boxes']):
             box.set(facecolor='none')
@@ -653,11 +653,11 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
 
             plt.xticks(xticks_pos, p['models'][id], ha='right', rotation=45)
 
-            plt.ylabel(p['ylabel'].decode('utf-8'))
-            plt.title(p['xlabel'][id].decode('utf-8'))
+            plt.ylabel(p['ylabel'])
+            plt.title(p['xlabel'][id])
 
         plt.tight_layout(h_pad=0.2, rect=(0, 0, 1, 0.92))
-        plt.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']).decode('utf-8'), fontsize=10)
+        plt.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']), fontsize=10)
 
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_allModelHisto_' + p[
@@ -798,7 +798,7 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
             ax.set_xlim(np.floor(np.nanmin((bin[0:-1])[(p['data'])>0])-(bin[1] - bin[0])), np.ceil(np.nanmax((bin[1::])[(p['data'])>0])+(bin[-1] - bin[-2])) )
         except ValueError:
             pass
-        ax.set_xlabel(p['ylabel'].decode('utf-8'))
+        ax.set_xlabel(p['ylabel'])
         if cnst.LANGUAGE == 'ENGLISH':
             ax.set_ylabel('Number of models')
         else:
@@ -807,7 +807,7 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
         if not np.nansum(p['data']):
             ax.text(0.5, 0.5, 'Zero values', zorder=10)
             print metric, 'set text'
-        ax.set_title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']).decode('utf-8'), fontsize=11)
+        ax.set_title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']), fontsize=11)
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_nbModelHistogram_' + p[
                         'ftag'] + '.png')
@@ -934,13 +934,13 @@ def nbModels_histogram_scenarios(incubes, outpath, region, anomaly=False):
                        width=(bin[1::] - bin[0:-1]),
                        align='edge', color='darkseagreen')
 
-                ax.set_xlabel(p['ylabel'].decode('utf-8'))
+                ax.set_xlabel(p['ylabel'])
                 if cnst.LANGUAGE == 'ENGLISH':
                     ax.set_ylabel('Number of models')
                 else:
                     ax.set_ylabel(u'Nombre de modèles')
 
-                ax.set_title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']).decode('utf-8'),
+                ax.set_title(lblr.getTitle(metric, variable, season, scenario, bc, region[1], anom=p['ftag']),
                              fontsize=10)
 
             plt.tight_layout()
@@ -1045,13 +1045,13 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
             plt.scatter(i, p['data'][i], c=p['data'][i], vmin=p['minmax'][0], vmax=p['minmax'][1], cmap=cm,
                         edgecolors='k', s=50, zorder=10)
 
-        plt.ylabel(p['ylabel'].decode('utf-8'))
+        plt.ylabel(p['ylabel'])
         if cnst.LANGUAGE == 'ENGLISH':
             plt.xlabel("Model Rank")
         else:
             plt.xlabel(u"Classement de modèles")
         
-        plt.title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']).decode('utf-8'), fontsize=11)
+        plt.title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']), fontsize=11)
         plt.tick_params(axis='x', which='both', bottom='off', top='off')
 
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
@@ -1099,8 +1099,8 @@ def lineplot_scenarios(incubes, outpath, region):
 
     bottom, top = ax.get_ylim()
     plt.vlines(2005, bottom, top, linestyle='--', linewidth=1.5, zorder=10)
-    plt.ylabel(lblr.getYlab(metric, variable, anom="").decode('utf-8'))
-    plt.title(lblr.getTitle(metric, variable, season, scenarios, bc, region[1], anom='').decode('utf-8'), fontsize=10)
+    plt.ylabel(lblr.getYlab(metric, variable, anom=""))
+    plt.title(lblr.getTitle(metric, variable, season, scenarios, bc, region[1], anom=''), fontsize=10)
     plt.legend()
     plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                 fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_lineplot_allscen_' + '.png')
