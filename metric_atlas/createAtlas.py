@@ -431,9 +431,9 @@ def runAtlas(season):
 
 
     # Copy the coverpage and intro section from the scripts folder into the atlas output folder
-    shutil.copyfile(os.getcwd() + os.sep + '1introduction.tex', texdir + os.sep + '1_introduction.tex')
-    shutil.copyfile(os.getcwd() + os.sep + coverpage, texdir + os.sep + coverpage)
-    shutil.copyfile(os.getcwd() + os.sep + 'atlas_template.tex',   texdir + os.sep + 'atlas_template.tex')
+    shutil.copyfile(os.getcwd() + os.sep + 'metric_atlas' + os.sep +  '1introduction.tex', texdir + os.sep + '1_introduction.tex')
+    shutil.copyfile(os.getcwd() + os.sep + 'metric_atlas' + os.sep + coverpage, texdir + os.sep + coverpage)
+    shutil.copyfile(os.getcwd() +os.sep + 'metric_atlas' + os.sep + 'atlas_template.tex',   texdir + os.sep + 'atlas_template.tex')
 
     plot_sections = []
 #    last_plot_name = []

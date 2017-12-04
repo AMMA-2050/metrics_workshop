@@ -210,7 +210,7 @@ def main():
 
     #saves(multiprocessing=16) # multiprocessing=16
     #wfdei_saves(multiprocessing=16) # multiprocessing=16
-    plot()
+    #plot()
     for m in cnst.AGG_PERIODS:
         ca.runAtlas(m)
 
