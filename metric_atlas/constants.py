@@ -4,20 +4,21 @@
 Contains global constants for the CMIP5 atlas
 """
 
-VERSION = 'v1'
+VERSION = '1.0'
 LANGUAGE = 'FRANCAIS' # 'ENGLISH' # 'FRANCAIS'
-DATADIR = '/project/FCFA/CMIP5/bias_corrected/WA_data' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
+DATADIR = '/users/global/cornkle/CMIP/CMIP5_Africa' #'/users/global/cornkle/CMIP/CMIP5_Africa' #'/Users/ajh235/Work/DataLocal/Projects/AMMA-2050' #'/project/FCFA/CMIP5/bias_corrected/WA_data'
 
 REGIONS = {'WA' : ['WA', 'West Africa' if LANGUAGE == 'ENGLISH' else "Afrique de l'Ouest", [-18, 25, 4, 25], 'WA_files'],   # lon1, lon2, lat1, lat2
-           'BF' : ['BF','Burkina Faso',[-6, 2.8, 9 ,15.5], 'Burkina_files'],
-           'SG' : ['SG', 'Senegal' if LANGUAGE == 'ENGLISH' else 'Sénégal', [-18, -11, 12, 17], 'Senegal_files'],
-           'SH' : ['SH', 'Sahelian Zone' if LANGUAGE == 'ENGLISH' else 'Zone sahélienne', [-11, 30, 12.5, 17.5], 'Sahel_files'],
-           'SD' : ['SD', 'Sudanian Zone' if LANGUAGE == 'ENGLISH' else 'Zone soudanienne', [-18, 30, 8, 12.5], 'Sudanian_files'],
-           'GC' : ['GC', 'Guinea Coast Zone' if LANGUAGE == 'ENGLISH' else 'Zone de la côte guinéenne', [-15, 10, 3.5, 8], 'GuineaCoast_files']
-           }
+            'BF' : ['BF', u'Burkina Faso',[-6, 2.8, 9 ,15.5], 'Burkina_files'],
+            'SG' : ['SG', u'Senegal' if LANGUAGE == 'ENGLISH' else u'Sénégal', [-18, -11, 12, 17], 'Senegal_files'],
+            'SH' : ['SH', u'Sahelian Zone' if LANGUAGE == 'ENGLISH' else u'Zone sahélienne', [-11, 30, 12.5, 17.5], 'Sahel_files'],
+            'SD' : ['SD', u'Sudanian Zone' if LANGUAGE == 'ENGLISH' else u'Zone soudanienne', [-18, 30, 8, 12.5], 'Sudanian_files'],
+            'GC' : ['GC', u'Guinea Coast Zone' if LANGUAGE == 'ENGLISH' else u'Zone de la côte guinéenne', [-15, 10, 3.5, 8], 'GuineaCoast_files']
+  }
+
 #### Atlas production / file creation is supporting only one region at a time
 #ATLAS_REGION = REGIONS['SG']
-ATLAS_REGION = REGIONS['SD']
+ATLAS_REGION = REGIONS['BF']
 
 METRIC_DATADIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] +'/save_files/netcdf'
 METRIC_PLOTDIR = DATADIR + '/metric_atlas/' + ATLAS_REGION[3] + '/save_files/plots_' + LANGUAGE
@@ -30,21 +31,21 @@ AGGREGATION = ['tseries', '2d', 'trend']
 
 FTYPES = ['singleModels', 'allModels', 'anomalies', 'anomaliesPerc']
 
-VARNAMES = {'ENGLISH' : {'pr' : 'daily precipitation',
-            'tas' : 'daily mean temperature',
-            'tasmin' : 'daily minimum temperature',
-            'tasmax' : 'daily maximum temperature',
-            'rsds' : 'surface downwelling shortwave radiation',
-            'wind' : 'near surface wind speed',
-            'multivars' : 'multiple input variables'
+VARNAMES = {'ENGLISH' : {'pr' : u'daily precipitation',
+            'tas' : u'daily mean temperature',
+            'tasmin' : u'daily minimum temperature',
+            'tasmax' : u'daily maximum temperature',
+            'rsds' : u'surface downwelling shortwave radiation',
+            'wind' : u'near surface wind speed',
+            'multivars' : u'multiple input variables'
             },
-            'FRANCAIS' :{'pr' : 'précipitations journalières',
-            'tas' : '	température moyenne journalière',
-            'tasmin' : 'température minimale journalière',
-            'tasmax' : 'température maximale journalière',
-            'rsds' : 'flux solaire entrant à la surface', #'descendant radiation à ondes courtes alla surface'
-            'wind' : 'vitesse du vent près de la surface',
-            'multivars' : 'multiple input variables' # needs to stay the same (not used in captions)
+            'FRANCAIS' :{'pr' : u'précipitations journalières',
+            'tas' : u'température moyenne journalière',
+            'tasmin' : u'température minimale journalière',
+            'tasmax' : u'température maximale journalière',
+            'rsds' : u'flux solaire entrant à la surface', #'descendant radiation à ondes courtes alla surface'
+            'wind' : u'vitesse du vent près de la surface',
+            'multivars' : u'multiple input variables' # needs to stay the same (not used in captions)
             }
             }
 
@@ -87,18 +88,18 @@ METRICS_TORUN = [
     ['wetSpell10', ['pr'], AGG_PERIODS],
     ['drySpell6', ['pr'], AGG_PERIODS],
     ['annualMax', ['pr', 'tasmax', 'rsds'], AGG_PERIODS],
-#    ['annualMin', ['tasmin'], AGG_PERIODS],
-#    ['annualTotalRain', ['pr'], AGG_PERIODS],
-#    ['annualMean', ['tas', 'rsds'], AGG_PERIODS],
-#    ['annualMeanRainyDay', ['pr'], AGG_PERIODS],
-#    ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['ann']],
-#    ['annualRainyDays', ['pr'], AGG_PERIODS],
-#    ['annualHotDays', ['tasmax'], AGG_PERIODS],
-#    ['annualExtremeRain30', ['pr'], AGG_PERIODS],
-#    ['annualExtremeRain50', ['pr'], AGG_PERIODS],
-#    ['annualMaxRain5dSum', ['pr'], AGG_PERIODS],
-#    ['annualMaxRain3dSum', ['pr'], AGG_PERIODS],
-#    ['annualMaxRain2dSum', ['pr'], AGG_PERIODS]
+    ['annualMin', ['tasmin'], AGG_PERIODS],
+    ['annualTotalRain', ['pr'], AGG_PERIODS],
+    ['annualMean', ['tas', 'rsds'], AGG_PERIODS],
+    ['annualMeanRainyDay', ['pr'], AGG_PERIODS],
+    ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['ann']],
+    ['annualRainyDays', ['pr'], AGG_PERIODS],
+    ['annualHotDays', ['tasmax'], AGG_PERIODS],
+    ['annualExtremeRain30', ['pr'], AGG_PERIODS],
+    ['annualExtremeRain50', ['pr'], AGG_PERIODS],
+    ['annualMaxRain5dSum', ['pr'], AGG_PERIODS],
+    ['annualMaxRain3dSum', ['pr'], AGG_PERIODS],
+    ['annualMaxRain2dSum', ['pr'], AGG_PERIODS]
 ]
 
 # NB: Currently excluding the following (but may add in later):

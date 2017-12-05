@@ -20,11 +20,22 @@ iris.FUTURE.netcdf_promote = True
 iris.FUTURE.netcdf_no_unlimited = True
 
 
-def allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric):
+def allScenarios_plot(m):
     ###
     # Plots that need all scenarios at once
     ###
+    inpath = m[0]
+    outpath = m[1]
+    bc_and_resolution = m[2]
+    region = m[3]
+    variable = m[4]
+    season = m[5]
+    metric = m[6]
 
+    print '#######################################'
+    print 'Plotting all scenarios for: '
+    print metric, variable, season
+    print '#######################################'
 
 
     for bc, var, seas in itertools.product(bc_and_resolution, variable, season):
@@ -50,10 +61,23 @@ def allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, seas
 
 
 
-def singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric):
+def singleScenario_plot(m):
     ###
     # Plots that need a single scenario
     ###
+
+    inpath = m[0]
+    outpath = m[1]
+    bc_and_resolution = m[2]
+    region = m[3]
+    variable = m[4]
+    season = m[5]
+    metric = m[6]
+
+    print '#######################################'
+    print 'Plotting single scenario for: '
+    print metric, variable, season
+    print '#######################################'
 
     for bc, var, scen, seas in itertools.product(bc_and_resolution, variable, cnst.SCENARIO, season):
         print 'Single scenario: ', var, scen, seas
@@ -78,6 +102,8 @@ def singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, se
 
         #    mplot.map_percentile_single(cube_path, out, reg, anomaly=False)
             mplot.map_percentile_single(cube_path, out, region, anomaly=True)
+
+
 
 
 def saves(multiprocessing=False):
@@ -167,7 +193,7 @@ def wfdei_saves(multiprocessing=False):
 
 
 
-def plot():
+def plot(multiprocessing=False):
 
     """
     Plotting script, could run loops. Has to define regions etc. (full cube is West Africa) 
@@ -187,18 +213,33 @@ def plot():
     atlas_utils.create_outdirs(outpath, bc_and_resolution, metrics=inpath)
 
     # Metric-specific options are set in constants.py
-    for row in cnst.METRICS_TORUN:
 
+    multi_list = []
+    for row in cnst.METRICS_TORUN:
         metric = row[0]
         variable = row[1]
         season = row[2]
-        print '#######################################'
-        print 'Plotting data for: '
-        print metric, variable, season
-        print '#######################################'
+        multi_list.append((inpath, outpath, bc_and_resolution, region, variable, season, metric))
 
-        allScenarios_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
-        singleScenario_plot(inpath, outpath, bc_and_resolution, region, variable, season, metric)
+    if multiprocessing:
+        pool = Pool(processes=multiprocessing)
+        res = pool.map(allScenarios_plot, multi_list)
+        # print res.get(timeout=1)
+        pool.close()
+    else:
+        # Metric-specific options are set in constants.py
+        for m in multi_list:
+            allScenarios_plot(m)
+
+    if multiprocessing:
+        pool = Pool(processes=multiprocessing)
+        res = pool.map(singleScenario_plot, multi_list)
+        # print res.get(timeout=1)
+        pool.close()
+    else:
+        # Metric-specific options are set in constants.py
+        for m in multi_list:
+            singleScenario_plot(m)
 
     print '#######################################'
     print 'Finished plotting'
@@ -208,11 +249,20 @@ def plot():
 
 def main():
 
-    #saves(multiprocessing=16) # multiprocessing=16
-    #wfdei_saves(multiprocessing=16) # multiprocessing=16
-    #plot()
-    for m in cnst.AGG_PERIODS:
-        ca.runAtlas(m)
+    for reg in cnst.REGIONS:
+
+        #saves(multiprocessing=16) # multiprocessing=16
+        #wfdei_saves(multiprocessing=16) # multiprocessing=16
+        #plot()
+        cnst.ATLAS_REGION = reg
+        for m in cnst.AGG_PERIODS:
+            ca.runAtlas(m)
+
+
+def atlas():
+    #for m in cnst.AGG_PERIODS:
+    m = cnst.AGG_PERIODS[0]
+    ca.runAtlas(m)
 
 
 if __name__ == "__main__":
