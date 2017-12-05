@@ -76,7 +76,7 @@ def getIntroText(metric):
             'annualMaxRain2dMean': u'Cet indicateur illustre les taux de précipitation maximal sur 2 jours (taux journalier moyen)',
             'SPIxMonthly' : u'L\'indice normalisé de précipitations ci-dessous est défini comme l\'anomalie par rapport à la période de référence divisée par l\'écart type pour cette même période. Cet indice permet de determiner la rareté de sécheresse ou d\'identifier des périodes particulièrement humides.',
             'SPIbiannual' : u'L\'indice normalisé de précipitations ci-dessous est defini comme l\'anomalie par rapport à la période de référence diviser par l\'écart type pour cette même période. Une fenêtre glissante de 2 ans est utilisée pour calculer l\'anomalie.',
-            'onsetMarteau' : u'La date est definie comme le premier jour de pluie (> 1 mm) de 2 jours de pluie consecutifs (précip. totale > 20 mm) et pas de période de secheresse (7 jours consecutifs <5 mm ) pendant les 20 jours successifs',
+            'onsetMarteau' : u'La date est definie comme le premier jour de pluie (> 1 mm) de 2 jours de pluie consecutifs (précip. totale > 20 mm) et pas de période de secheresse (7 jours consecutifs <5 mm ) pendant les 20 jours successifs.',
             'cdd' : u'Cet indicateur illustre le nombre de jours secs consécutifs pendant la période indiquée',
             'pet' : u'Cet indicateur illustre l\'évapotranspiration potentielle (équation de Hargreaves, basée sur les valeurs journalières de Tmin, Tmax, Tmean et flux solaire)'
             }

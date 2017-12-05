@@ -4,7 +4,7 @@ Contains functions to create labels in all types of plots
 '''
 import constants as cnst
 import createAtlas as ca
-#import pdb
+import pdb
 
 DC = '$^\circ$C'
 
@@ -76,17 +76,17 @@ def deFunction(atxt, metricname):
         atxt_new, metricname_new = [atxt, metricname]
     else:
         firstword = metricname.split(' ')[0]
+        d = ' '
         print firstword
         if firstword in ['Nombre', 'Pourcentage', 'Maximale']:
             d = u'du '
         if firstword in ['Minimale']:
             d = u'de la '
-        elif firstword in ['Précipitations']:
+        if firstword in ['Précipitations']:
             d = u'des '
-        elif firstword in ['Indice']:
+        if firstword in ['Indice', 'Evapotranspiration']:
             d = u'd\''
-        else:
-            d = ' '
+
         atxt_new, metricname_new = [atxt, d + metricname.lower()]
         
     return([atxt_new, metricname_new])
@@ -116,7 +116,6 @@ def getTitle(m, v, seas, scen, bc, r, anom=None):
     varname = cnst.VARNAMES[cnst.LANGUAGE][v].title()
     
     atxt, metricname = deFunction(atxt, metricname) # Changes de to du/de/de la/des/de l' and removes capitalisation
-    
     
     titleLUT = {'ENGLISH' : {
             'annualMax_pr' : r + ': ' + atxt + metricname + ' ' + varname + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')',
@@ -281,7 +280,7 @@ def getYlab(m, v, anom=None):
     if anom in ['percentage', 'percentageAnomaly']:
         ylab = u'% change ' if cnst.LANGUAGE == 'ENGLISH' else u'Changement (%)'
     if anom in ['absolute', 'anomaly']:
-        ylab = u'Absolute change '+unit if cnst.LANGUAGE == 'ENGLISH' else u'Changement absolut '+unit
+        ylab = u'Absolute change '+unit if cnst.LANGUAGE == 'ENGLISH' else u'Changement absolu '+unit
     
     return(ylab)
 
