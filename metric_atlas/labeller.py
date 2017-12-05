@@ -99,17 +99,16 @@ def getTitle(m, v, seas, scen, bc, r, anom=None):
         scen = ''
     else:
         scen = scen + '; '
-    
+    atxt = ''
     if anom in ['percentage', 'percentageAnomaly']:
         atxt = u'% change in ' if cnst.LANGUAGE == 'ENGLISH' else u'Changements (%) '
-    elif anom in ['absolute', 'anomaly']:
+    if anom in ['absolute', 'anomaly']:
         atxt = u'Change in ' if cnst.LANGUAGE == 'ENGLISH' else u'Changements '
-    elif anom in ['scenarios']:
+    if anom in ['scenarios']:
         # This covers the case for multi-scenario boxplots, and possibly others
         scen = ''
         atxt = ''
-    else:
-        atxt = ''
+
     
     # e.g. Burkina Faso: Number of days when daily maximum temperature exceeds 40C (JAS)
     metricname= METRICLONGNAME[cnst.LANGUAGE][m]
