@@ -82,7 +82,7 @@ def deFunction(atxt, metricname):
             d = u'du '
         if firstword in ['Minimale']:
             d = u'de la '
-        if firstword in ['Précipitations']:
+        if firstword in [u'Précipitations']:
             d = u'des '
         if firstword in ['Indice', 'Evapotranspiration']:
             d = u'd\''
@@ -108,8 +108,7 @@ def getTitle(m, v, seas, scen, bc, r, anom=None):
         # This covers the case for multi-scenario boxplots, and possibly others
         scen = ''
         atxt = ''
-
-    
+    pdb.set_trace()
     # e.g. Burkina Faso: Number of days when daily maximum temperature exceeds 40C (JAS)
     metricname= METRICLONGNAME[cnst.LANGUAGE][m]
     varname = cnst.VARNAMES[cnst.LANGUAGE][v].title()
