@@ -56,9 +56,6 @@ def wfdei(multi):
         ymin = box[2]
         ymax = box[3]
 
-        if metric == 'pet' and var == 'multivars':
-            var = 'rsds'
-
         out = outpath + os.sep + bc
 
         calc_to_call = getattr(calc, metric)  # calls the metric calc function from calc.py
@@ -183,7 +180,7 @@ def model_files(multi):
                     print 'newcube'
 
                     cubeout = atlas_utils.load_data(file, xmin, xmax, ymin, ymax)
-                    
+
                 calc_to_call(cubeout, seas, nc_file)  # saves single model netcdf
                 print '#######################################'
                 print 'Saving data for: '

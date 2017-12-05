@@ -728,7 +728,7 @@ def SPIxMonthly(incube, season, ncfile):
     # We need to change the shape of the monthly climatologies to match the shape of the timeseries (in the cube c_monthly)
     mean = ma.masked_invalid(mean.data)  # this must be a numpy array, not a cube!
     std = ma.masked_invalid(std.data)   # this must be a numpy array, not a cube!
-    pdb.set_trace()
+
     clim_mean_data = np.repeat(mean.reshape(1, mean.shape[0], mean.shape[1]), c_monthly.shape[0],
                                axis=0)  # np.tile(mean.data, (c_monthly.shape[0] / mean.shape[0], 1, 1))
     clim_std_data = np.repeat(std.reshape(1, std.shape[0], std.shape[1]), c_monthly.shape[0],
