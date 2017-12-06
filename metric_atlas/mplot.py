@@ -289,12 +289,11 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         f.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['cblabel']), fontsize=10)
         plt.tight_layout(rect=[0, 0.01, 1, 0.95])
 
-        if (region[0] == 'BF') | (region[0] == 'SG'):
-            plt.tight_layout(rect=[0, 0.01, 1, 0.95])
+        if (region[0] == 'BF') or (region[0] == 'SG'):
             f.subplots_adjust(right=0.8, left=0.2)
         else:
-            plt.tight_layout(rect=[0, 0.01, 1, 0.95])
             f.subplots_adjust(left=0.05, right=1)
+
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
                     fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_mapPerc_' + p['ftag'] + '.png')
 
