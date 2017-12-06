@@ -129,7 +129,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
                        atlas_utils.datalevels(np.append(data_perc[0].data, data_perc[1].data)))
 
         plot_dic1 = {'data': data,
-                     'ftag': scen + 'Anomaly',
+                     'ftag': 'Anomaly',
                      'cblabel': 'anomaly',
                      'levels': levels,
                      'cmap': cmap
@@ -137,7 +137,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
 
         if not 'tas' in variable:
             plot_dic2 = {'data': data_perc,
-                         'ftag': scen + 'PercentageAnomaly', # if cnst.LANGUAGE == 'ENGLISH' else '
+                         'ftag': 'PercentageAnomaly', # if cnst.LANGUAGE == 'ENGLISH' else '
                          'cblabel': 'percentageAnomaly',
                          'levels': plevels,
                          'cmap': cmap
@@ -295,7 +295,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
             f.subplots_adjust(left=0.05, right=1)
 
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
-                    fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_mapPerc_' + p['ftag'] + '.png')
+                    fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_mapPerc_' + scen+p['ftag'] + '.png')
 
         plt.close(f)
 
