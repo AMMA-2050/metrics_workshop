@@ -102,7 +102,7 @@ def getTitle(m, v, seas, scen, bc, r, anom=None):
     atxt = ''
     if anom in ['percentageAnomaly', 'PercentageAnomaly']:
         atxt = u'% change in ' if cnst.LANGUAGE == 'ENGLISH' else u'Changements (%) '
-    if anom in ['absolute', 'Absolute' 'anomaly', 'Anomaly']:
+    if anom in ['absolute', 'Absolute', 'anomaly', 'Anomaly']:
         atxt = u'Change in ' if cnst.LANGUAGE == 'ENGLISH' else u'Changements '
     if anom in ['scenarios']:
         # This covers the case for multi-scenario boxplots, and possibly others
