@@ -274,6 +274,9 @@ def getYlab(m, v, anom=None):
         unit = u'(No.)'
     if 'Nb.' in ylab:
         unit = u'(Nb.)'
+
+    if ('SPI' in m) or ('Marteau' in m):
+        unit = ''
     
     if anom in ['percentage', 'percentageAnomaly']:
         ylab = u'% change ' if cnst.LANGUAGE == 'ENGLISH' else u'Changement (%)'
