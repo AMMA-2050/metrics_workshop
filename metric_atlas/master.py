@@ -24,6 +24,7 @@ def allScenarios_plot(m):
     ###
     # Plots that need all scenarios at once
     ###
+
     inpath = m[0]
     outpath = m[1]
     bc_and_resolution = m[2]
@@ -208,6 +209,7 @@ def plot(multiprocessing=False):
 
     bc_and_resolution = cnst.BC_RES
     region = cnst.ATLAS_REGION
+    print region
     #####
     
     atlas_utils.create_outdirs(outpath, bc_and_resolution, metrics=inpath)
@@ -250,19 +252,25 @@ def plot(multiprocessing=False):
 def main():
 
     for reg in cnst.REGIONS:
+        if (reg == 'WA'):
+            continue
+        cnst.ATLAS_REGION = cnst.REGIONS[reg]
+        cnst.METRIC_DATADIR = cnst.DATADIR + '/metric_atlas/' + cnst.ATLAS_REGION[3] + '/save_files/netcdf'
+        cnst.METRIC_PLOTDIR = cnst.DATADIR + '/metric_atlas/' + cnst.ATLAS_REGION[3] + '/save_files/plots_' + cnst.LANGUAGE
+        cnst.METRIC_ATLASDIR = cnst.DATADIR + '/metric_atlas/' + cnst.ATLAS_REGION[3]
 
-        #saves(multiprocessing=16) # multiprocessing=16
-        #wfdei_saves(multiprocessing=16) # multiprocessing=16
-        #plot()
-        cnst.ATLAS_REGION = reg
+        # # saves(multiprocessing=16) # multiprocessing=16
+        # wfdei_saves(multiprocessing=16) # multiprocessing=16
+        plot(multiprocessing=4)
         for m in cnst.AGG_PERIODS:
+
             ca.runAtlas(m)
 
 
 def atlas():
-    #for m in cnst.AGG_PERIODS:
-    m = cnst.AGG_PERIODS[0]
-    ca.runAtlas(m)
+    for m in cnst.AGG_PERIODS:
+
+        ca.runAtlas(m)
 
 
 if __name__ == "__main__":

@@ -474,14 +474,14 @@ def boxplotMonthlyClim(incubes, outpath, region, anomaly=False):
         data_perc = data_perc.data
 
         plot_dic1 = {'data': data,
-                     'ftag': scen + 'Anomaly',
+                     'ftag': 'Anomaly',
                      'ylabel': lblr.getYlab(metric, variable, anom="anomaly"),
 
                      }
 
         if not 'tas' in variable:
             plot_dic2 = {'data': data_perc,
-                         'ftag': scen + 'PercentageAnomaly',
+                         'ftag': 'PercentageAnomaly',
                          'ylabel': lblr.getYlab(metric, variable, anom="percentageAnomaly"),
 
                          }
@@ -494,7 +494,7 @@ def boxplotMonthlyClim(incubes, outpath, region, anomaly=False):
     else:
         cube = cube.data
         plot_dic1 = {'data': cube,
-                     'ftag': scen,
+                     'ftag': '',
                      'ylabel': lblr.getYlab(metric, variable, anom=""),
 
                      }
@@ -534,7 +534,7 @@ def boxplotMonthlyClim(incubes, outpath, region, anomaly=False):
             plt.hlines(0, 0, len(d), linestyle='dashed', color='grey')
 
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
-                    fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_allModelMonthClim_' + p[
+                    fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_allModelMonthClim_' + scen +p[
                         'ftag'] + '.png')
 
         plt.close(f)
@@ -565,6 +565,7 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
     scen = []
     perc = []
     lmodels = []
+
     for ano in ano_list:
 
         fdict = atlas_utils.split_filename_path(ano)
@@ -657,6 +658,7 @@ def barplot_scenarios(incubes, outpath, region, anomaly=False):
             plt.title(p['xlabel'][id])
 
         plt.tight_layout(h_pad=0.2, rect=(0, 0, 1, 0.92))
+
         plt.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']), fontsize=10)
 
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
@@ -750,14 +752,14 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
 
 
         plot_dic1 = {'data': histo,
-                     'ftag': scen + 'Anomaly',
+                     'ftag': 'Anomaly',
                      'ylabel': lblr.getYlab(metric, variable, anom="anomaly"),
                      'bins': h
                      }
 
         if not 'tas' in variable:
             plot_dic2 = {'data': histop,
-                         'ftag': scen + 'PercentageAnomaly',
+                         'ftag': 'PercentageAnomaly',
                          'ylabel': lblr.getYlab(metric, variable, anom="percentageAnomaly"),
                          'bins': hp
                          }
@@ -776,7 +778,7 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
 
         histo, h = np.histogram(cube, bins=levels)
         plot_dic1 = {'data': histo,
-                     'ftag': scen,
+                     'ftag': '',
                      'ylabel': lblr.getYlab(metric, variable, anom=""),
                      'bins': h
                      }
@@ -807,9 +809,10 @@ def nbModels_histogram_single(incubes, outpath, region, anomaly=False):
         if not np.nansum(p['data']):
             ax.text(0.5, 0.5, 'Zero values', zorder=10)
             print metric, 'set text'
+
         ax.set_title(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['ftag']), fontsize=11)
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
-                    fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_nbModelHistogram_' + p[
+                    fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_nbModelHistogram_' + scen+p[
                         'ftag'] + '.png')
         plt.close(f)
 
@@ -1002,14 +1005,14 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
         data_perc.sort()
 
         plot_dic1 = {'data': data,
-                     'ftag': scen + 'Anomaly',
+                     'ftag': 'Anomaly',
                      'ylabel': lblr.getYlab(metric, variable, anom="anomaly"),
                      # vname + ' anomaly: ' + fdict['metric'],
                      'minmax': atlas_utils.data_minmax(data)}
 
         if not 'tas' in variable:
             plot_dic2 = {'data': data_perc,
-                         'ftag': scen + 'PercentageAnomaly',
+                         'ftag': 'PercentageAnomaly',
                          'ylabel': lblr.getYlab(metric, variable, anom="percentageAnomaly"),
                          # vname + ' anomaly percentage: ' + fdict['metric'],
                          'minmax': atlas_utils.data_minmax(data_perc)
@@ -1024,7 +1027,7 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
         cube.sort()
 
         plot_dic1 = {'data': cube,
-                     'ftag': scen,
+                     'ftag': '',
                      'ylabel': lblr.getYlab(metric, variable, anom=""),
                      'minmax': atlas_utils.data_minmax(cube)
                      }
@@ -1055,7 +1058,7 @@ def modelRank_scatter_single(incubes, outpath, region, anomaly=False):
         plt.tick_params(axis='x', which='both', bottom='off', top='off')
 
         plt.savefig(outpath + os.sep + fdict['metric'] + '_' + fdict['variable'] + '_' +
-                    fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_allModelRank_' + p['ftag'] + '.png',
+                    fdict['bc_res'] + '_' + fdict['season'] + '_' + region[0] + '_allModelRank_' + scen+p['ftag'] + '.png',
                     dpi=400)
 
         plt.close(f)
