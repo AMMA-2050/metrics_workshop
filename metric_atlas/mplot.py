@@ -166,9 +166,10 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
     map = False
     map1 = False
     map2 = False
-
+    zero_values = False
 
     for p in toplot:
+
         f = plt.figure(figsize=lblr.getFigSize(region[0], 'map'), dpi=300)
         siz = 6
         lon = data.coord('longitude').points
@@ -186,6 +187,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
                                   vmin=np.nanmin(dataw), vmax=np.nanmax(dataw), extend='both')
                 ax.set_ylim(np.min(lat), np.max(lat))
                 ax.set_xlim(np.min(lon), np.max(lon))
+                print np.min(lon), np.max(lon)
             except ValueError:
                 ax = f.add_subplot(311)
                 ax.text(0.5, 0.5, 'Zero values', ha='center')
@@ -253,6 +255,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
         if not np.nansum(p['data'][0].data):
             ax2 = f.add_subplot(313)
             ax2.text(0.5, 0.5, 'Zero values', ha='center')
+            zero_values = True
         else:
             try:
                 ax2 = f.add_subplot(313, projection=ccrs.PlateCarree())
@@ -265,6 +268,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
             except ValueError:
                 ax2 = f.add_subplot(313)
                 ax2.text(0.5, 0.5, 'Zero values', ha='center')
+                zero_values = True
 
             if map2:
                 ax2.coastlines()
@@ -287,7 +291,11 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
             ax2.set_title('10e percentile (futur)')
 
         f.suptitle(lblr.getTitle(metric, variable, season, scen, bc, region[1], anom=p['cblabel']), fontsize=10)
-        plt.tight_layout(rect=[0, 0.01, 1, 0.95])
+
+        if zero_values:
+            plt.tight_layout(rect=[0, 0.01, 1, 0.90])
+        else:
+            plt.tight_layout(rect=[0, 0.01, 1, 0.95])
 
         if (region[0] == 'BF') or (region[0] == 'SG'):
             f.subplots_adjust(right=0.8, left=0.2)

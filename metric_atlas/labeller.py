@@ -278,7 +278,7 @@ def getYlab(m, v, anom=None):
     if anom in ['percentage', 'percentageAnomaly']:
         ylab = u'% change ' if cnst.LANGUAGE == 'ENGLISH' else u'Changement (%)'
     if anom in ['absolute', 'anomaly']:
-        ylab = u'Absolute change '+unit if cnst.LANGUAGE == 'ENGLISH' else u'Changement absolu '+unit
+        ylab = u'Change '+unit if cnst.LANGUAGE == 'ENGLISH' else u'Changement '+unit
     
     return(ylab)
 
