@@ -67,10 +67,7 @@ def create_outdirs(save_path, bc_and_resolution, metrics=None):
             except OSError:
                 sys.exit(bc + ' directory could not be created. Check path and permission')
 
-            try:
-                os.makedirs(out + os.sep + 'allModels')
-            except OSError:
-                sys.exit(bc + ' directory could not be created. Check path and permission')
+
 
         if metrics:
             inp = metrics + os.sep + bc

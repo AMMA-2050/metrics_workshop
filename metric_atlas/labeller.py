@@ -78,13 +78,13 @@ def deFunction(atxt, metricname):
         firstword = metricname.split(' ')[0]
         d = ' '
         print firstword
-        if firstword in ['Nombre', 'Pourcentage', 'Maximale']:
+        if firstword in [u'Nombre', u'Pourcentage', u'Maximale']:
             d = u'du '
-        if firstword in ['Minimale']:
+        if firstword in [u'Minimale']:
             d = u'de la '
-        if firstword in ['Précipitations']:
+        if firstword in [u'Précipitations']:
             d = u'des '
-        if firstword in ['Indice', 'Evapotranspiration']:
+        if firstword in [u'Indice', u'Evapotranspiration']:
             d = u'd\''
 
         atxt_new, metricname_new = [atxt, d + metricname.lower()]
@@ -99,18 +99,16 @@ def getTitle(m, v, seas, scen, bc, r, anom=None):
         scen = ''
     else:
         scen = scen + '; '
-    
-    if anom in ['percentage', 'percentageAnomaly']:
+    atxt = ''
+    if anom in ['percentageAnomaly', 'PercentageAnomaly']:
         atxt = u'% change in ' if cnst.LANGUAGE == 'ENGLISH' else u'Changements (%) '
-    elif anom in ['absolute', 'anomaly']:
+    if anom in ['absolute', 'Absolute', 'anomaly', 'Anomaly']:
         atxt = u'Change in ' if cnst.LANGUAGE == 'ENGLISH' else u'Changements '
-    elif anom in ['scenarios']:
+    if anom in ['scenarios']:
         # This covers the case for multi-scenario boxplots, and possibly others
         scen = ''
         atxt = ''
-    else:
-        atxt = ''
-    
+
     # e.g. Burkina Faso: Number of days when daily maximum temperature exceeds 40C (JAS)
     metricname= METRICLONGNAME[cnst.LANGUAGE][m]
     varname = cnst.VARNAMES[cnst.LANGUAGE][v].title()
@@ -149,7 +147,7 @@ def getTitle(m, v, seas, scen, bc, r, anom=None):
 
     try:
         return(titleLUT[cnst.LANGUAGE][metvar])
-    except:
+    except KeyError:
         temp_title = r + ': ' + atxt + metricname.lower() + '\n('+ca.monthLookUp(seas)+'; '+scen+bc+')'
         return(temp_title)
 
