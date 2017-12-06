@@ -248,23 +248,56 @@ def plot(multiprocessing=False):
     print '#######################################'
 
 
+def update_constants(region_string):
+
+    cnst.ATLAS_REGION = cnst.REGIONS[region_string]
+    if cnst.ATLAS_REGION[0] == 'GC':
+        cnst.AGG_PERIODS = ['jas', 'may', 'jun', 'jul', 'aug', 'sep', 'oct', 'nov']
+    else:
+        cnst.AGG_PERIODS = ['jas', 'jun', 'jul', 'aug', 'sep', 'oct']
+
+    cnst.METRIC_DATADIR = cnst.DATADIR + '/metric_atlas/' + cnst.ATLAS_REGION[3] + '/save_files/netcdf'
+    cnst.METRIC_PLOTDIR = cnst.DATADIR + '/metric_atlas/' + cnst.ATLAS_REGION[3] + '/save_files/plots_' + cnst.LANGUAGE
+    cnst.METRIC_ATLASDIR = cnst.DATADIR + '/metric_atlas/' + cnst.ATLAS_REGION[3]
+
+    cnst.METRICS_TORUN = [
+        # ['pet', ['multivars'], cnst.AGG_PERIODS],
+        # ['onsetMarteau', ['pr'], ['mjjas']],
+        # ['SPIxMonthly', ['pr'], cnst.AGG_PERIODS],
+        # ['SPIbiannual', ['pr'], ['ann']],
+        # ['wetSpell10', ['pr'], cnst.AGG_PERIODS],
+        # ['drySpell6', ['pr'], cnst.AGG_PERIODS],
+        # ['annualMax', ['pr', 'tasmax', 'rsds'], cnst.AGG_PERIODS],
+        # ['annualMin', ['tasmin'], cnst.AGG_PERIODS],
+        # ['annualTotalRain', ['pr'], cnst.AGG_PERIODS],
+        # ['annualMean', ['tas', 'rsds'], cnst.AGG_PERIODS],
+        # ['annualMeanRainyDay', ['pr'], cnst.AGG_PERIODS],
+        # ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['ann']],
+        # ['annualRainyDays', ['pr'], cnst.AGG_PERIODS],
+        ['annualHotDays', ['tasmax'], cnst.AGG_PERIODS],
+        # ['annualExtremeRain30', ['pr'], cnst.AGG_PERIODS],
+        # ['annualExtremeRain50', ['pr'], cnst.AGG_PERIODS],
+        # ['annualMaxRain5dSum', ['pr'], cnst.AGG_PERIODS],
+        # ['annualMaxRain3dSum', ['pr'], cnst.AGG_PERIODS],
+        # ['annualMaxRain2dSum', ['pr'], cnst.AGG_PERIODS]
+    ]
+
+
 
 def main():
 
     for reg in cnst.REGIONS:
-        if (reg == 'WA') :
+        if (reg != 'GC') :
             continue
-        cnst.ATLAS_REGION = cnst.REGIONS[reg]
-        cnst.METRIC_DATADIR = cnst.DATADIR + '/metric_atlas/' + cnst.ATLAS_REGION[3] + '/save_files/netcdf'
-        cnst.METRIC_PLOTDIR = cnst.DATADIR + '/metric_atlas/' + cnst.ATLAS_REGION[3] + '/save_files/plots_' + cnst.LANGUAGE
-        cnst.METRIC_ATLASDIR = cnst.DATADIR + '/metric_atlas/' + cnst.ATLAS_REGION[3]
 
-        # # saves(multiprocessing=16) # multiprocessing=16
-        # wfdei_saves(multiprocessing=16) # multiprocessing=16
-        plot(multiprocessing=4)
+        update_constants(reg)
+
+        #saves(multiprocessing=16)
+        #wfdei_saves(multiprocessing=16)
+        plot()
         for m in cnst.AGG_PERIODS:
-
-            ca.runAtlas(m)
+            print m, reg
+            #ca.runAtlas(m)
 
 
 def atlas():
