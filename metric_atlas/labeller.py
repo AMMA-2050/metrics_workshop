@@ -77,7 +77,7 @@ def deFunction(atxt, metricname):
     else:
         firstword = metricname.split(' ')[0]
         d = ' '
-        print firstword
+
         if firstword in [u'Nombre', u'Pourcentage', u'Maximale']:
             d = u'du '
         if firstword in [u'Minimale']:

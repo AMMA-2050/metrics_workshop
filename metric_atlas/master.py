@@ -261,25 +261,25 @@ def update_constants(region_string):
     cnst.METRIC_ATLASDIR = cnst.DATADIR + '/metric_atlas/' + cnst.ATLAS_REGION[3]
 
     cnst.METRICS_TORUN = [
-        # ['pet', ['multivars'], cnst.AGG_PERIODS],
-        # ['onsetMarteau', ['pr'], ['mjjas']],
-        # ['SPIxMonthly', ['pr'], cnst.AGG_PERIODS],
-        # ['SPIbiannual', ['pr'], ['ann']],
-        # ['wetSpell10', ['pr'], cnst.AGG_PERIODS],
-        # ['drySpell6', ['pr'], cnst.AGG_PERIODS],
-        # ['annualMax', ['pr', 'tasmax', 'rsds'], cnst.AGG_PERIODS],
-        # ['annualMin', ['tasmin'], cnst.AGG_PERIODS],
-        # ['annualTotalRain', ['pr'], cnst.AGG_PERIODS],
-        # ['annualMean', ['tas', 'rsds'], cnst.AGG_PERIODS],
-        # ['annualMeanRainyDay', ['pr'], cnst.AGG_PERIODS],
-        # ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['ann']],
-        # ['annualRainyDays', ['pr'], cnst.AGG_PERIODS],
+        ['pet', ['multivars'], cnst.AGG_PERIODS],
+        ['onsetMarteau', ['pr'], ['mjjas']],
+        ['SPIxMonthly', ['pr'], cnst.AGG_PERIODS],
+        ['SPIbiannual', ['pr'], ['ann']],
+        ['wetSpell10', ['pr'], cnst.AGG_PERIODS],
+        ['drySpell6', ['pr'], cnst.AGG_PERIODS],
+        ['annualMax', ['pr', 'tasmax', 'rsds'], cnst.AGG_PERIODS],
+        ['annualMin', ['tasmin'], cnst.AGG_PERIODS],
+        ['annualTotalRain', ['pr'], cnst.AGG_PERIODS],
+        ['annualMean', ['tas', 'rsds'], cnst.AGG_PERIODS],
+        ['annualMeanRainyDay', ['pr'], cnst.AGG_PERIODS],
+        ['monthlyClimatologicalMean', ['pr', 'tasmin', 'tas', 'tasmax', 'rsds', 'wind'], ['ann']],
+        ['annualRainyDays', ['pr'], cnst.AGG_PERIODS],
         ['annualHotDays', ['tasmax'], cnst.AGG_PERIODS],
-        # ['annualExtremeRain30', ['pr'], cnst.AGG_PERIODS],
-        # ['annualExtremeRain50', ['pr'], cnst.AGG_PERIODS],
-        # ['annualMaxRain5dSum', ['pr'], cnst.AGG_PERIODS],
-        # ['annualMaxRain3dSum', ['pr'], cnst.AGG_PERIODS],
-        # ['annualMaxRain2dSum', ['pr'], cnst.AGG_PERIODS]
+        ['annualExtremeRain30', ['pr'], cnst.AGG_PERIODS],
+        ['annualExtremeRain50', ['pr'], cnst.AGG_PERIODS],
+        ['annualMaxRain5dSum', ['pr'], cnst.AGG_PERIODS],
+        ['annualMaxRain3dSum', ['pr'], cnst.AGG_PERIODS],
+        ['annualMaxRain2dSum', ['pr'], cnst.AGG_PERIODS]
     ]
 
 
@@ -287,17 +287,16 @@ def update_constants(region_string):
 def main():
 
     for reg in cnst.REGIONS:
-        if (reg != 'GC') :
+        if (reg == 'WA') :
             continue
 
         update_constants(reg)
 
         #saves(multiprocessing=16)
         #wfdei_saves(multiprocessing=16)
-        plot()
+        plot(multiprocessing=4)
         for m in cnst.AGG_PERIODS:
-            print m, reg
-            #ca.runAtlas(m)
+            ca.runAtlas(m)
 
 
 def atlas():

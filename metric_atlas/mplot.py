@@ -187,7 +187,7 @@ def map_percentile_single(incubes, outpath, region, anomaly=False):
                                   vmin=np.nanmin(dataw), vmax=np.nanmax(dataw), extend='both')
                 ax.set_ylim(np.min(lat), np.max(lat))
                 ax.set_xlim(np.min(lon), np.max(lon))
-                print np.min(lon), np.max(lon)
+
             except ValueError:
                 ax = f.add_subplot(311)
                 ax.text(0.5, 0.5, 'Zero values', ha='center')
