@@ -252,7 +252,7 @@ def plot(multiprocessing=False):
 def main():
 
     for reg in cnst.REGIONS:
-        if (reg == 'WA'):
+        if (reg == 'WA') :
             continue
         cnst.ATLAS_REGION = cnst.REGIONS[reg]
         cnst.METRIC_DATADIR = cnst.DATADIR + '/metric_atlas/' + cnst.ATLAS_REGION[3] + '/save_files/netcdf'
