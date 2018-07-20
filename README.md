@@ -1,6 +1,15 @@
 # metrics_workshop
 Scripts developed at the metrics workshop, 12-16.12.2016
 
+ToDo:
+- PET formula is incorrect and needs to be updated
+- Dry spells/wet spells are based on rolling windows, which should be changed to index difference approach or image label
+- additional rainy season calculations could be added
+- Check annual mean rainy day 
+- SPI calculation should average rainfall instead of averaging SPI for time series
+- Above files should be rerun to update the atlases accordingly
+
+
 Packages:
 
 dev_code: code under development for workshop preparation
